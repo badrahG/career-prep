@@ -9,14 +9,15 @@ from sqlalchemy import text
 
 from app.database import engine, Base
 
-# Import all models so Base.metadata knows about them
+# Import all models
 from app.models.user import User  # noqa
 from app.models.cv import CV  # noqa
 from app.models.scholarship import Scholarship  # noqa
 from app.models.email_token import EmailToken  # noqa
 from app.models.interview import InterviewQuestion  # noqa
+from app.models.advice import Advice  # noqa
 
-from app.routers import auth, cv, interview, scholarship, admin
+from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.seed import seed_data
 
 Base.metadata.create_all(bind=engine)
@@ -43,24 +44,21 @@ app.include_router(cv.router)
 app.include_router(interview.router)
 app.include_router(scholarship.router)
 app.include_router(admin.router)
+app.include_router(advice.router)
 
 
 def run_migrations():
-    """Idempotent SQL migrations for new columns."""
+    """Idempotent SQL migrations."""
     with engine.connect() as conn:
-        # Users: admin & verification fields
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT TRUE"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT FALSE"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_at TIMESTAMP WITH TIME ZONE"))
         conn.execute(text("UPDATE users SET is_verified = TRUE WHERE is_verified = FALSE AND created_at < NOW() - INTERVAL '1 minute'"))
 
-        # Interview questions: metadata
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS difficulty VARCHAR(20) DEFAULT 'medium'"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS tags VARCHAR(255)"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE"))
-
-        # Interview questions: quiz fields
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS is_quiz BOOLEAN NOT NULL DEFAULT FALSE"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS option_a TEXT"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS option_b TEXT"))

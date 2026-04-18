@@ -1,438 +1,701 @@
 from app.database import SessionLocal
 from app.models.interview import InterviewQuestion
 from app.models.scholarship import Scholarship
+from app.models.advice import Advice
 from datetime import date
+import json
 
 
 def seed_data():
     db = SessionLocal()
 
-    # Seed interview questions (25 flashcard + 15 quiz)
+    # Seed interview questions (unchanged from before)
     if db.query(InterviewQuestion).count() == 0:
-        questions = [
-            # ========== ЕРӨНХИЙ (10 flashcard) ==========
-            InterviewQuestion(
-                question_mn="Өөрийнхөө тухай товч ярина уу",
-                category="general",
-                sample_answer="Боловсрол, туршлага, зорилгоо 1-2 минутад товч тайлбарлана. Хувийн амьдралын тухай биш, мэргэжлийн мэдээлэлд анхаарна. 'Elevator pitch' хэлбэрээр: хэн байна, юу хийдэг, юу сонирхдог, юуг хайж байна — гэсэн 4 асуултад хариулах.",
-                advice="Урьдчилж толинд 30 секунд, 1 минут, 2 минутын хувилбар бэлдэж дадлагажих. Огт өөрийн тухай ерөнхий ярихгүй — ажилд шууд хамааралтай зүйл хэлэх.",
-                difficulty="easy",
-                tags="self-intro, warmup",
-            ),
-            InterviewQuestion(
-                question_mn="Яагаад манай компанид ажиллахыг хүсэж байна вэ?",
-                category="general",
-                sample_answer="Компанийн зорилго, соёлтой таны ур чадвар хэрхэн нийцэж байгааг тайлбарлана. 'Надад цалин хэрэгтэй' гэж хариулахгүй — тодорхой шалтгаан: бүтээгдэхүүн, баг, өсөх боломж, чиглэл.",
-                advice="Ярилцлагын өмнө компанийн сайт, сүүлийн мэдээ, LinkedIn-ий ажилчдыг судлаарай. Тодорхой 2-3 зүйл дурдаж чадвал гайхалтай.",
-                difficulty="easy",
-                tags="motivation, company-research",
-            ),
-            InterviewQuestion(
-                question_mn="Таны хамгийн том давуу тал юу вэ?",
-                category="general",
-                sample_answer="Бодит жишээгээр давуу талаа тайлбарлана. Жишээ нь: 'Багаар ажиллах чадвартай — сүүлийн төслийнхөө үед 5 хүний багийг зохион байгуулж, хугацаанаас 2 долоо хоногийн өмнө дуусгасан.'",
-                advice="Тодорхой жишээ заавал бэлдэх. Зүгээр 'хичээнгүй', 'хариуцлагатай' гэж хэлэхгүй — ажлын шаардлагатай уялдсан 1-2 давуу талаа жишээтэй ярих.",
-                difficulty="easy",
-                tags="strengths",
-            ),
-            InterviewQuestion(
-                question_mn="Таны сул тал юу вэ?",
-                category="general",
-                sample_answer="Бодит сул талаа хэлж, түүнийг хэрхэн сайжруулж байгаагаа нэмнэ. Жишээ: 'Нийтийн өмнө илтгэх нь надад хэцүү байсан. Тиймээс сүүлийн 6 сар Toastmasters клубт оролцож, семинарын илтгэл хийдэг болсон.'",
-                advice="Сул тал байхгүй гэж хэлэхгүй. Ажлын гол шаардлагад үл нийцэх сул тал хэлэхгүй (жишээ нь dev-д 'код бичих удаан').",
-                difficulty="medium",
-                tags="weaknesses",
-            ),
-            InterviewQuestion(
-                question_mn="5 жилийн дараа өөрийгөө хаана харж байна вэ?",
-                category="general",
-                sample_answer="Тухайн салбарт өсөж хөгжих зорилгоо хэлнэ. Бодитой, ажлын байртай уялдсан байх. 'Junior developer → Senior → Team lead' гэх мэт мэргэжлийн замналыг тайлбарлах.",
-                advice="Хэт ерөнхий 'амжилттай болох' гэж хэлэхгүй. Мөн 'өөрийн бизнес нээх' гэж хэлэх нь тухайн компанид үлдэнэ гэдэг итгэл өгөхгүй.",
-                difficulty="medium",
-                tags="career-goals",
-            ),
-            InterviewQuestion(
-                question_mn="Яагаад таныг сонгох ёстой вэ?",
-                category="general",
-                sample_answer="Таны ур чадвар, туршлага тухайн ажилд хэрхэн тохирохыг тодорхой тайлбарлана. 'Би хариуцлагатай, идэвхтэй' гэхгүй, 'Өмнөх ажилд X төсөл хийж Y үр дүнд хүрсэн' гэх байдлаар баримттай.",
-                advice="Job description-ийг уншиж, хамгийн чухал 3 шаардлагад таарах жишээгээ бэлтгэх.",
-                difficulty="medium",
-                tags="selling-yourself",
-            ),
-            InterviewQuestion(
-                question_mn="Цалингийн хүлээлт тань хэд вэ?",
-                category="general",
-                sample_answer="Зах зээлийн судалгааны үндсэн дээр тодорхой хүрээ өгнө. Жишээ: 'Миний ур чадвар, туршлагад үндэслэн 2.5–3.5 сая төгрөг тохиромжтой гэж үзэж байна.' Компанийн бюджет, ажлын үүрэгт уян хатан хандах.",
-                advice="Тодорхой тоо хүрээ өгөх. glassdoor.mn, worki.mn дээр ижил албан тушаалын цалинг судлах.",
-                difficulty="hard",
-                tags="salary",
-            ),
-            InterviewQuestion(
-                question_mn="Яагаад өмнөх ажлаасаа гарсан/гарах гэж байна вэ?",
-                category="general",
-                sample_answer="Өсөлтийн шинэ боломж хайж байгаа, мэргэжлийн чиглэлээ өөрчлөх, шинэ сорилт хүсэж байгаагаа хэлнэ. Өмнөх ажил олгогчийг шүүмжлэхгүй.",
-                advice="Ямар ч байсан өмнөх ажил, хамт ажиллагсдаа муугаар ярихгүй — энэ нь профессионал биш харагдана.",
-                difficulty="medium",
-                tags="job-change",
-            ),
-            InterviewQuestion(
-                question_mn="Танд юу асуух уу?",
-                category="general",
-                sample_answer="3-5 асуулт бэлдэж ирэх. Жишээ нь: 'Энэ албан тушаал дээр амжилттай ажиллахын тулд юуг чухалчлах ёстой вэ?', 'Багийн соёл ямар вэ?', 'Эхний 3 сарын хүлээлт юу вэ?'",
-                advice="Цалин, амралтын өдрийг эхний ярилцлагад асуухгүй. 'Надад асуух юм байхгүй' гэж хэзээ ч хэлэхгүй — сонирхолгүй мэт харагдана.",
-                difficulty="easy",
-                tags="your-questions",
-            ),
-            InterviewQuestion(
-                question_mn="Бидэнтэй хамт ажиллах юу танд хамгийн тохиромжтой вэ?",
-                category="general",
-                sample_answer="Компанийн онцлог давуу талтай өөрийн хэрэгцээ, зорилгыг уялдуулан тайлбарлана. Жишээ: 'Танай баг remote-first соёлтой нь надад чухал, гэр бүлийн хажууд уян хатан ажиллах боломж олгоно.'",
-                advice="Компанийн вэбсайтаас соёл, давуу тал судалж тодорхой дурдах.",
-                difficulty="medium",
-                tags="company-fit",
-            ),
+        _seed_interview(db)
 
-            # ========== ТЕХНИКИЙН FLASHCARD (8) ==========
-            InterviewQuestion(
-                question_mn="REST API гэж юу вэ? HTTP методуудыг нэрлэж тайлбарлана уу",
-                category="technical",
-                sample_answer="REST (Representational State Transfer) нь веб сервисийн архитектурын загвар. Үндсэн методууд: GET (унших), POST (шинээр үүсгэх), PUT (бүхэлд нь шинэчлэх), PATCH (хэсэгчилсэн шинэчлэл), DELETE (устгах). Resource-д URL-аар хандана (/api/users/1).",
-                advice="Жишээ URL, request/response бичиж үзүүлэх. Stateless гэдэг ойлголтыг дурдах.",
-                difficulty="medium",
-                tags="web, backend, api",
-            ),
-            InterviewQuestion(
-                question_mn="Git гэж юу вэ? Branch, merge, rebase ялгааг тайлбарла",
-                category="technical",
-                sample_answer="Git бол хувилбар удирдлагын систем. Branch нь кодын бие даасан салбар — feature бүрийг тусад нь хөгжүүлэхэд ашиглана. Merge — хоёр салбарыг нэгтгэх, merge commit үүсгэнэ. Rebase — branch-ийн commit-уудыг өөр base дээр шилжүүлэх, түүхийг цэвэрхэн хадгалах.",
-                advice="Pull request, conflict resolution туршлага дурдах.",
-                difficulty="medium",
-                tags="git, version-control",
-            ),
-            InterviewQuestion(
-                question_mn="SQL ба NoSQL өгөгдлийн сангийн ялгаа, хэзээ аль нэгийг сонгох вэ?",
-                category="technical",
-                sample_answer="SQL (PostgreSQL, MySQL): бүтэцтэй, хүснэгт суурилсан, ACID баталгаа, сайн normalize хийсэн өгөгдөлд тохиромжтой. NoSQL (MongoDB, Redis): уян хатан schema, хэвтээ scale, document/key-value загвар. Transactional өгөгдөлд SQL, real-time analytics/caching-д NoSQL.",
-                advice="Тодорхой хэрэглээний жишээ өгөх (банкны гүйлгээ → SQL, chat message → NoSQL).",
-                difficulty="hard",
-                tags="database, architecture",
-            ),
-            InterviewQuestion(
-                question_mn="OOP-ийн дөрвөн үндсэн зарчмыг тайлбарлана уу",
-                category="technical",
-                sample_answer="1) Encapsulation — өгөгдөл, түүнд үйлдэл хийх функцийг нэг class-д багцлах. 2) Inheritance — class нь өөр class-аас property/method өвлөх. 3) Polymorphism — нэг interface-д олон төрлийн implementation. 4) Abstraction — зөвхөн хэрэгцээт хэсгийг харуулж, нарийн ширийнийг нуух.",
-                advice="Код дээр жишээ өгч чадвал маш сайн.",
-                difficulty="medium",
-                tags="oop, programming",
-            ),
-            InterviewQuestion(
-                question_mn="JavaScript-ийн var, let, const ялгаа юу вэ?",
-                category="technical",
-                sample_answer="var: function-scoped, hoisted (undefined гэж), дахин зарлаж болно. let: block-scoped, hoisted ч temporal dead zone, дахин зарлаж болохгүй ч утгыг өөрчилж болно. const: block-scoped, анхдагч утга өгөх шаардлагатай, дахин зарлах/утгыг сольж болохгүй.",
-                advice="Code жишээгээр hoisting болон scope-ыг харуулах.",
-                difficulty="medium",
-                tags="javascript, frontend",
-            ),
-            InterviewQuestion(
-                question_mn="React-ийн useState болон useEffect hook-ийн ялгаа юу вэ?",
-                category="technical",
-                sample_answer="useState — component дотор local state удирдах ([value, setValue] pair буцаана). useEffect — side effect-үүд хийх (API дуудах, subscription, DOM өөрчлөлт). useEffect нь render-ийн дараа ажиллана, dependency array-аар хэзээ дахин ажиллах нь удирдагдана.",
-                advice="Жишээ код бичиж харуулах, cleanup function-ийн хэрэглээг дурдах.",
-                difficulty="medium",
-                tags="react, frontend",
-            ),
-            InterviewQuestion(
-                question_mn="HTTP болон HTTPS ялгаа, TLS юу хийдэг вэ?",
-                category="technical",
-                sample_answer="HTTP нь шифрлэгдээгүй, HTTPS нь TLS/SSL шифрлэлттэй. TLS: 1) client-server хооронд аюулгүй handshake, 2) тэгш хэмт түлхүүр солилцох, 3) дамжиж буй өгөгдлийг шифрлэх.",
-                advice="Certificate authority, handshake процессыг нэмж тайлбарлах.",
-                difficulty="hard",
-                tags="security, web",
-            ),
-            InterviewQuestion(
-                question_mn="Frontend-д state management сан (Redux, Zustand) яагаад хэрэгтэй вэ?",
-                category="technical",
-                sample_answer="Том аппликешн дээр олон component хооронд state хуваалцах шаардлагатай. Prop drilling нь засвар үйлчилгээг хэцүү болгодог. Redux/Zustand нь global store үүсгэж, аль ч component-аас state унших/өөрчлөх боломжийг өгнө.",
-                advice="Жижиг төсөлд context API хангалттай гэдгийг нэмэх.",
-                difficulty="hard",
-                tags="react, state-management",
-            ),
-
-            # ========== ЗАН ҮЙЛИЙН (7 STAR-д тохиромжтой) ==========
-            InterviewQuestion(
-                question_mn="Багаар ажиллаж амжилтанд хүрсэн туршлагаа ярина уу",
-                category="behavioral",
-                sample_answer="S(Situation) — ямар нөхцөлд, T(Task) — ямар үүрэг, A(Action) — юу хийсэн, R(Result) — ямар үр дүн. Жишээ: '3-р курст бүлгийн төсөл хийхэд (S), би Git workflow тохируулах үүрэгтэй байсан (T). 4 хүнд зориулж branch strategy, code review процесс бий болгосон (A). Үр дүнд код зөрчилдөөн 80% буурч, төслөө 2 долоо хоногийн өмнө дуусгасан (R).'",
-                advice="Заавал тоон үр дүн оруулах (хэмжих боломжтой).",
-                difficulty="medium",
-                tags="star, teamwork",
-            ),
-            InterviewQuestion(
-                question_mn="Хүнд хэцүү шийдвэр гаргасан туршлагаа ярина уу",
-                category="behavioral",
-                sample_answer="Тодорхой жишээ сонгож STAR бүтэцтэй ярих. Жишээ: хоёр сайн сонголтын аль нэгийг шалгах, багийн гишүүний алдааг хэлэх, deadline-ийг өөрчлөхөөр шаардах гэх мэт. Ямар хүчин зүйлсийг харгалзсан, хэрхэн шийдсэн, үр дүн юу байсныг тайлбарлана.",
-                advice="Үнэн зөв, шийдвэрлэхэд хэцүү жишээ сонгох. Тайлан бичих, бусдаас зөвлөгөө авах зэрэг арга зам дурдах.",
-                difficulty="hard",
-                tags="star, decision-making",
-            ),
-            InterviewQuestion(
-                question_mn="Алдаанаасаа сургамж авсан туршлагаа ярина уу",
-                category="behavioral",
-                sample_answer="Алдаагаа хүлээн зөвшөөрч, юу сурсан, цаашид хэрхэн сайжирсныг хэлнэ. Жишээ: 'Нэгэн удаа тестгүйгээр production-д шууд deploy хийж bug үүсгэсэн. Ингэснээр CI/CD-д заавал тест нэмж ажиллуулдаг процесс сурсан. Одоо ямар ч өөрчлөлтөд тестийг урьтал болгодог.'",
-                advice="Алдааг нууцлахгүй, харин юу сурснаа анхаарах. 'Perfectionist-ийн төлөө' гэж хуурамч алдаа хэлэхгүй.",
-                difficulty="medium",
-                tags="star, growth-mindset",
-            ),
-            InterviewQuestion(
-                question_mn="Стресстэй нөхцөлд хэрхэн ажилладаг вэ?",
-                category="behavioral",
-                sample_answer="Тодорхой жишээ сонгож STAR хариулна. 'Deadline 2 өдрийн өмнө өөрчлөгдсөн үед (S), зорилт эрэмблэх шаардлагатай байсан (T). Ажлыг critical vs nice-to-have гэж хувааж, өдөр бүрийн milestone тогтоосон (A). Хугацаандаа дуусгасан бөгөөд багт эерэг уур амьсгал үлдсэн (R).'",
-                advice="Нойргүй хоноод бүтсэн гэхгүй — удирдлагын сайн арга зам харуулах.",
-                difficulty="medium",
-                tags="star, stress-management",
-            ),
-            InterviewQuestion(
-                question_mn="Багийн гишүүнтэй зөрчилдөөн үүссэн тохиолдлыг ярина уу",
-                category="behavioral",
-                sample_answer="Эерэг, бүтээмжтэй шийдсэн жишээ. 'Кодын стандарт талаар санал зөрөгдсөн (S). Багийн үр ашгийг хадгалах шаардлагатай байсан (T). 1-1 уулзалт хийж, хоёулангийн санааг сонсож, компромис гаргасан (A). Үр дүнд ажил үргэлжилсэн бөгөөд баг улам бэхжсэн (R).'",
-                advice="Хүнийг буруутгах ярилтлгүй, процессоор шийдсэн байдлыг харуулах.",
-                difficulty="hard",
-                tags="star, conflict-resolution",
-            ),
-            InterviewQuestion(
-                question_mn="Удирдлага тань шаардсан зүйлд эсэргүүцсэн туршлага?",
-                category="behavioral",
-                sample_answer="Профессионал зан чанар харуулсан жишээ. 'Чанар муутай код-ыг хурдан release-лэхийг шаардсан (S). Urgent боловч цаашдын асуудал үүсэх эрсдэлтэй байсан (T). Боломжит эрсдэлийг баримттайгаар танилцуулж, alternative хувилбар санал болгосон (A). Удирдлага хүлээн авч, 3 хоногийн дараа бүрэн release хийсэн (R).'",
-                advice="Буруу шалтгаанаар эсэргүүцсэн гэхгүй, шалтгаантай, шийдэлтэй байдлыг харуулах.",
-                difficulty="hard",
-                tags="star, upward-management",
-            ),
-            InterviewQuestion(
-                question_mn="Хэзээ нэгэн цагт санал болгоогүй үүрэг хариуцсан туршлага?",
-                category="behavioral",
-                sample_answer="Санаачлагатай байсан жишээ. 'Өмнөх ажлын бүх документ хуучирсан (S). Албан үүрэг минь биш ч багийн үр ашгийг сайжруулахыг хүссэн (T). 2 долоо хоногт Confluence дээр онбординг гарын авлага бичсэн (A). Шинэ ажилтны онбординг хугацаа 2 долоо хоногоос 4 өдөр болж буурсан (R).'",
-                advice="Өөрийн зорилгоо ялгаруулж биш, багийн үр ашиг дээр анхаарах.",
-                difficulty="medium",
-                tags="star, initiative",
-            ),
-
-            # ========== QUIZ АСУУЛТ (15) ==========
-            # --- Техникийн quiz (10) ---
-            InterviewQuestion(
-                question_mn="HTTP статус код 404 юуг илэрхийлдэг вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="Серверийн дотоод алдаа",
-                option_b="Хандалт хориотой",
-                option_c="Хүссэн resource олдсонгүй",
-                option_d="Хүсэлт амжилттай",
-                correct_option="c",
-                explanation="404 Not Found — хэрэглэгчийн хүссэн resource (page, file г.м.) сервер дээр олдсонгүй гэсэн үг. 500 — сервер алдаа, 403 — хориотой, 200 — амжилттай.",
-                difficulty="easy",
-                tags="http, web",
-            ),
-            InterviewQuestion(
-                question_mn="Дараах өгөгдлийн сангаас аль нь NoSQL вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="PostgreSQL",
-                option_b="MongoDB",
-                option_c="MySQL",
-                option_d="Oracle",
-                correct_option="b",
-                explanation="MongoDB нь document-based NoSQL өгөгдлийн сан. PostgreSQL, MySQL, Oracle бүгд relational (SQL) өгөгдлийн сан.",
-                difficulty="easy",
-                tags="database",
-            ),
-            InterviewQuestion(
-                question_mn="Git-д хамгийн сүүлийн commit-ийг буцаах тушаал аль нь вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="git undo",
-                option_b="git revert HEAD",
-                option_c="git remove last",
-                option_d="git delete",
-                correct_option="b",
-                explanation="git revert HEAD — хамгийн сүүлийн commit-ийн эсрэг шинэ commit үүсгэж буцаана (түүхийг хадгалсан). git reset --hard HEAD~1 нь түүхээс устгана.",
-                difficulty="medium",
-                tags="git",
-            ),
-            InterviewQuestion(
-                question_mn="JavaScript-д аль нь primitive data type биш вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="string",
-                option_b="number",
-                option_c="object",
-                option_d="boolean",
-                correct_option="c",
-                explanation="object нь reference type. JavaScript-ийн primitive төрлүүд: string, number, boolean, null, undefined, symbol, bigint.",
-                difficulty="easy",
-                tags="javascript",
-            ),
-            InterviewQuestion(
-                question_mn="React-д component-ийн state өөрчлөгдөх үед юу болдог вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="Хуудас бүхэлдээ дахин ачаалагдана",
-                option_b="Component дахин render хийгдэнэ",
-                option_c="State шинэчлэгдэхгүй",
-                option_d="Алдаа гарна",
-                correct_option="b",
-                explanation="React-д state өөрчлөгдвөл тухайн component болон түүний children дахин render хийгдэнэ (виртуал DOM дифф хийсний дараа шаардлагатай хэсгийг DOM-д update-дана).",
-                difficulty="medium",
-                tags="react",
-            ),
-            InterviewQuestion(
-                question_mn="SQL-д мөр устгах тушаал аль нь вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="REMOVE FROM users WHERE id=1",
-                option_b="DELETE FROM users WHERE id=1",
-                option_c="DROP FROM users WHERE id=1",
-                option_d="ERASE FROM users WHERE id=1",
-                correct_option="b",
-                explanation="DELETE FROM table WHERE condition — мөр устгана. DROP TABLE бүхэл хүснэгтийг устгана. REMOVE, ERASE нь SQL command биш.",
-                difficulty="easy",
-                tags="sql, database",
-            ),
-            InterviewQuestion(
-                question_mn="Нууц үгийг өгөгдлийн санд хэрхэн хадгалах нь зөв вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="Plain text-ээр",
-                option_b="Base64-ээр encode хийж",
-                option_c="Bcrypt-ээр hash хийж",
-                option_d="Reverse хийж",
-                correct_option="c",
-                explanation="Bcrypt, Argon2 зэрэг one-way hash алгоритмоор хадгална. Plain text-ээр хадгалах хэзээ ч болохгүй, Base64 нь encoding (буцаан read хийгдэх) тул аюулгүй биш.",
-                difficulty="medium",
-                tags="security",
-            ),
-            InterviewQuestion(
-                question_mn="JWT token ямар форматтай байдаг вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="XML тэгт",
-                option_b="3 хэсгээс бүрдсэн, .-ээр зааглагдсан (header.payload.signature)",
-                option_c="Binary файл",
-                option_d="Зөвхөн тоо",
-                correct_option="b",
-                explanation="JWT = JSON Web Token. Дараах бүтэцтэй: header.payload.signature, тус бүр base64url encode-логдсон JSON. Signature нь toсtampering хамгаалалт.",
-                difficulty="medium",
-                tags="security, auth",
-            ),
-            InterviewQuestion(
-                question_mn="Python-д list болон tuple-ийн гол ялгаа юу вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="Хоёр нь ялгаагүй",
-                option_b="List нь mutable, tuple нь immutable",
-                option_c="Tuple илүү хурдан биш",
-                option_d="List зөвхөн тоо хадгална",
-                correct_option="b",
-                explanation="List — өөрчилж (mutable) болно, []. Tuple — өөрчлөх боломжгүй (immutable), (). Tuple хурдан, санах ойд бага эзэлнэ.",
-                difficulty="easy",
-                tags="python",
-            ),
-            InterviewQuestion(
-                question_mn="CSS-д хамгийн өндөр priority-той аль нь вэ?",
-                category="technical",
-                is_quiz=True,
-                option_a="Class selector",
-                option_b="ID selector",
-                option_c="!important",
-                option_d="Inline style",
-                correct_option="c",
-                explanation="!important нь CSS-ийн хамгийн өндөр priority. Priority дараалал: inline > ID > class > tag. Гэвч !important бүгдийг давна.",
-                difficulty="medium",
-                tags="css, frontend",
-            ),
-
-            # --- Ерөнхий quiz (5) ---
-            InterviewQuestion(
-                question_mn="Ярилцлагад хамгийн чухал юу вэ?",
-                category="general",
-                is_quiz=True,
-                option_a="Үнэтэй хувцас өмсөх",
-                option_b="Өөрийгөө мэдрэх, компанийг судалж бэлдэх",
-                option_c="Асуулт бүрд маш удаан хариулах",
-                option_d="Өмнөх ажлаа шүүмжлэх",
-                correct_option="b",
-                explanation="Өөрийн давуу сул талыг мэдэж, компанийн тухай судалж, яагаад тэнд ажиллахыг хүсч буйгаа тодорхой болгох нь ярилцлагын амжилтын үндэс.",
-                difficulty="easy",
-                tags="interview-basics",
-            ),
-            InterviewQuestion(
-                question_mn="'Таны сул тал юу вэ?' асуултад хэрхэн хариулах нь зөв вэ?",
-                category="general",
-                is_quiz=True,
-                option_a="Сул тал байхгүй гэх",
-                option_b="Ажилд огт нөлөөлдөггүй хамаагүй сул тал нэрлэх",
-                option_c="Бодит сул тал + түүнийг хэрхэн сайжруулж буйгаа хэлэх",
-                option_d="Perfectionist байдгаа хэлэх",
-                correct_option="c",
-                explanation="Ярилцлага авагч таны өөрийгөө үнэлэх чадвар, хөгжүүлэх сэтгэлгээг хардаг. Бодит сул тал хэлж, яаж сайжруулж буйгаа нэмэх нь зөв. 'Perfectionist' нь хэт ашиглагдсан clichéд тооцогддог.",
-                difficulty="medium",
-                tags="weaknesses",
-            ),
-            InterviewQuestion(
-                question_mn="Ярилцлагад орохоос өмнө хэр өмнө компани дээр очих нь зөв вэ?",
-                category="general",
-                is_quiz=True,
-                option_a="Яг хугацаандаа",
-                option_b="30 минутын өмнө",
-                option_c="10-15 минутын өмнө",
-                option_d="1 цагийн өмнө",
-                correct_option="c",
-                explanation="10-15 минутын өмнө ирэх нь хамгийн тохиромжтой. Хэт эрт ирэх нь ярилцлага авагчийг айж дарамталдаг, хэт оройтох нь буруу сэтгэгдэл төрүүлнэ.",
-                difficulty="easy",
-                tags="interview-basics",
-            ),
-            InterviewQuestion(
-                question_mn="Ярилцлагын төгсгөлд 'Танд юу асуух уу?' гэхэд хэрхэн хариулах вэ?",
-                category="general",
-                is_quiz=True,
-                option_a="'Байхгүй' гэж хэлэх",
-                option_b="Цалингийн тухай шууд асуух",
-                option_c="Компани, албан тушаал, багийн тухай бодолтой асуулт асуух",
-                option_d="Хувийн амьдралын тухай асуух",
-                correct_option="c",
-                explanation="Энэ нь таны сонирхол, бэлтгэлийг харуулах боломж. 'Эхний 3 сарын амжилтын шалгуур юу вэ?', 'Багийн соёл ямар вэ?' гэх бодолтой асуулт асуух нь зүйтэй.",
-                difficulty="medium",
-                tags="your-questions",
-            ),
-            InterviewQuestion(
-                question_mn="Онлайн ярилцлагад хамгийн чухал техник бэлтгэл аль нь вэ?",
-                category="general",
-                is_quiz=True,
-                option_a="Шинэ камер худалдаж авах",
-                option_b="Интернэт, камер, микрофон, арын орчин шалгах",
-                option_c="Үнэтэй наушник худалдаж авах",
-                option_d="Зөвхөн камераа шалгах",
-                correct_option="b",
-                explanation="Онлайн ярилцлагад интернэтийн холболт, камерын чанар, микрофоны дуу, арын орчин (цэвэрхэн, сайн гэрэлтэй) бүгдийг урьдчилан шалгаж, 1 өдрийн өмнө туршилт хийх нь чухал.",
-                difficulty="easy",
-                tags="online-interview",
-            ),
-        ]
-
-        db.add_all(questions)
-        db.commit()
-        print(f"✓ Seeded {len(questions)} interview questions ({sum(1 for q in questions if q.is_quiz)} quiz)")
-
-    # Seed scholarships (only if empty)
+    # Seed scholarships (unchanged from before)
     if db.query(Scholarship).count() == 0:
-        scholarships = [
-            Scholarship(name="Монголын Хөгжлийн Банкны тэтгэлэг", organization="Хөгжлийн банк", target="Бакалавр", requirements="GPA 3.0+, санхүүгийн хэрэгцээ", deadline=date(2026, 6, 30), website_url="https://mdb.mn", description="Санхүүгийн салбарын оюутнуудад зориулсан"),
-            Scholarship(name="Голомт банкны тэтгэлэг", organization="Голомт банк", target="Бакалавр", requirements="GPA 3.2+, идэвхтэй оролцоо", deadline=date(2026, 5, 15), website_url="https://golomtbank.com", description="Бизнесийн чиглэлийн оюутнуудад"),
-            Scholarship(name="МУИС-ийн Ректорын тэтгэлэг", organization="МУИС", target="Бакалавр", requirements="GPA 3.5+", deadline=date(2026, 9, 1), website_url="https://num.edu.mn", description="Сурлагын амжилт өндөртэй оюутнуудад"),
-            Scholarship(name="ШУТИС-ийн тэтгэлэг", organization="ШУТИС", target="Бакалавр", requirements="GPA 3.0+, инженерийн чиглэл", deadline=date(2026, 8, 15), website_url="https://must.edu.mn", description="Инженерийн чиглэлийн оюутнуудад"),
-            Scholarship(name="Оюу толгой тэтгэлэг", organization="Оюу толгой", target="Бакалавр", requirements="Уул уурхайн чиглэл, GPA 3.0+", deadline=date(2026, 4, 30), website_url="https://ot.mn", description="Уул уурхайн салбарын оюутнуудад"),
-            Scholarship(name="MCS группын тэтгэлэг", organization="MCS Group", target="Бакалавр", requirements="Бизнесийн удирдлага, маркетинг", deadline=date(2026, 7, 1), website_url="https://mcs.mn", description="Бизнесийн чиглэлийн оюутнуудад"),
-        ]
-        db.add_all(scholarships)
-        db.commit()
-        print(f"✓ Seeded {len(scholarships)} scholarships")
+        _seed_scholarships(db)
+
+    # Seed advice (new)
+    if db.query(Advice).count() == 0:
+        _seed_advice(db)
 
     db.close()
+
+
+def _seed_interview(db):
+    questions = [
+        InterviewQuestion(question_mn="Өөрийнхөө тухай товч ярина уу", category="general",
+            sample_answer="Боловсрол, туршлага, зорилгоо 1-2 минутад товч тайлбарлана. 'Elevator pitch' хэлбэрээр: хэн байна, юу хийдэг, юу сонирхдог, юуг хайж байна.",
+            advice="Урьдчилж толинд 30 секунд, 1 минут, 2 минутын хувилбар бэлдэж дадлагажих.",
+            difficulty="easy", tags="self-intro"),
+        InterviewQuestion(question_mn="Яагаад манай компанид ажиллахыг хүсэж байна вэ?", category="general",
+            sample_answer="Компанийн зорилго, соёлтой таны ур чадвар хэрхэн нийцэж байгааг тайлбарлана.",
+            advice="Ярилцлагын өмнө компанийн сайт судлах.", difficulty="easy"),
+        InterviewQuestion(question_mn="Таны хамгийн том давуу тал юу вэ?", category="general",
+            sample_answer="Бодит жишээгээр давуу талаа тайлбарлана.", advice="Тодорхой жишээ бэлдэх.", difficulty="easy"),
+        InterviewQuestion(question_mn="Таны сул тал юу вэ?", category="general",
+            sample_answer="Бодит сул талаа хэлж, хэрхэн сайжруулж буйгаа нэмнэ.",
+            advice="Сул тал байхгүй гэж хэлэхгүй.", difficulty="medium"),
+        InterviewQuestion(question_mn="5 жилийн дараа өөрийгөө хаана харж байна вэ?", category="general",
+            sample_answer="Тухайн салбарт өсөж хөгжих зорилгоо хэлнэ.", advice="Тодорхой зорилго.", difficulty="medium"),
+        InterviewQuestion(question_mn="Яагаад таныг сонгох ёстой вэ?", category="general",
+            sample_answer="Таны ур чадвар, туршлага ажилд хэрхэн тохирохыг тайлбарлана.",
+            advice="Job description-ийн шаардлагад таарах жишээ бэлтгэх.", difficulty="medium"),
+        InterviewQuestion(question_mn="Цалингийн хүлээлт тань хэд вэ?", category="general",
+            sample_answer="Зах зээлийн судалгаанд үндэслэн тодорхой хүрээ өгнө.",
+            advice="glassdoor.mn, worki.mn дээр судлаарай.", difficulty="hard"),
+        InterviewQuestion(question_mn="Яагаад өмнөх ажлаасаа гарсан вэ?", category="general",
+            sample_answer="Өсөлтийн шинэ боломж хайж байгаагаа хэлнэ.",
+            advice="Өмнөх ажил олгогчийг шүүмжлэхгүй.", difficulty="medium"),
+        InterviewQuestion(question_mn="Танд юу асуух уу?", category="general",
+            sample_answer="3-5 асуулт бэлдэж ирэх.", advice="'Байхгүй' гэж хэзээ ч хэлэхгүй.", difficulty="easy"),
+        InterviewQuestion(question_mn="Бидэнтэй хамт ажиллах юу танд тохиромжтой вэ?", category="general",
+            sample_answer="Компанийн онцлогтой уялдуулан тайлбарлана.", advice="Тодорхой дурдах.", difficulty="medium"),
+
+        InterviewQuestion(question_mn="REST API гэж юу вэ? HTTP методуудыг нэрлэнэ үү", category="technical",
+            sample_answer="REST нь веб сервисийн архитектурын загвар. GET, POST, PUT, DELETE.",
+            advice="Stateless гэдэг ойлголтыг дурдах.", difficulty="medium"),
+        InterviewQuestion(question_mn="Git гэж юу вэ? Branch, merge, rebase ялгааг тайлбарла", category="technical",
+            sample_answer="Git бол хувилбар удирдлагын систем.",
+            advice="Pull request дурдах.", difficulty="medium"),
+        InterviewQuestion(question_mn="SQL ба NoSQL ялгаа, хэзээ аль нэгийг сонгох вэ?", category="technical",
+            sample_answer="SQL хүснэгт, NoSQL document-based.", advice="Жишээ дурдах.", difficulty="hard"),
+        InterviewQuestion(question_mn="OOP-ийн 4 үндсэн зарчмыг тайлбарла", category="technical",
+            sample_answer="Encapsulation, Inheritance, Polymorphism, Abstraction.",
+            advice="Код дээр жишээ өгөх.", difficulty="medium"),
+        InterviewQuestion(question_mn="JavaScript-ийн var, let, const ялгаа юу вэ?", category="technical",
+            sample_answer="var function-scoped, let болон const block-scoped.",
+            advice="Hoisting жишээгээр.", difficulty="medium"),
+        InterviewQuestion(question_mn="React-ийн useState болон useEffect hook-ийн ялгаа юу вэ?", category="technical",
+            sample_answer="useState — state, useEffect — side effects.",
+            advice="Cleanup function дурдах.", difficulty="medium"),
+        InterviewQuestion(question_mn="HTTP болон HTTPS ялгаа, TLS юу хийдэг вэ?", category="technical",
+            sample_answer="HTTPS нь TLS/SSL шифрлэлттэй.",
+            advice="Certificate authority дурдах.", difficulty="hard"),
+        InterviewQuestion(question_mn="State management сан яагаад хэрэгтэй вэ?", category="technical",
+            sample_answer="Олон component хооронд state хуваалцах.",
+            advice="Context API сонголт.", difficulty="hard"),
+
+        InterviewQuestion(question_mn="Багаар ажиллаж амжилтанд хүрсэн туршлагаа ярина уу", category="behavioral",
+            sample_answer="STAR бүтэц: S(Situation), T(Task), A(Action), R(Result).",
+            advice="Тоон үр дүн оруулах.", difficulty="medium"),
+        InterviewQuestion(question_mn="Хүнд хэцүү шийдвэр гаргасан туршлагаа ярина уу", category="behavioral",
+            sample_answer="STAR бүтэцтэй.", advice="Хэцүү жишээ сонгох.", difficulty="hard"),
+        InterviewQuestion(question_mn="Алдаанаасаа сургамж авсан туршлагаа ярина уу", category="behavioral",
+            sample_answer="Алдаагаа хүлээн зөвшөөрч, юу сурсныг хэлнэ.",
+            advice="Хуурамч алдаа хэлэхгүй.", difficulty="medium"),
+        InterviewQuestion(question_mn="Стресстэй нөхцөлд хэрхэн ажилладаг вэ?", category="behavioral",
+            sample_answer="STAR жишээ. Эрэмбэлэх чадвар.", advice="Арга зам харуулах.", difficulty="medium"),
+        InterviewQuestion(question_mn="Багийн гишүүнтэй зөрчилдөөн шийдсэн туршлага?", category="behavioral",
+            sample_answer="Эерэг, бүтээмжтэй шийдсэн жишээ.",
+            advice="Процессоор шийдсэн байдал.", difficulty="hard"),
+        InterviewQuestion(question_mn="Удирдлагад эсэргүүцсэн туршлага?", category="behavioral",
+            sample_answer="Профессионал байдлаар эсэргүүцсэн жишээ.",
+            advice="Шалтгаантай байх.", difficulty="hard"),
+        InterviewQuestion(question_mn="Санал болгоогүй үүрэг хариуцсан туршлага?", category="behavioral",
+            sample_answer="Санаачлагатай байсан жишээ.", advice="Багийн үр ашиг.", difficulty="medium"),
+
+        # Quiz (15)
+        InterviewQuestion(question_mn="HTTP статус код 404 юуг илэрхийлдэг вэ?", category="technical",
+            is_quiz=True, option_a="Серверийн дотоод алдаа", option_b="Хандалт хориотой",
+            option_c="Хүссэн resource олдсонгүй", option_d="Хүсэлт амжилттай", correct_option="c",
+            explanation="404 Not Found — resource сервер дээр олдсонгүй.", difficulty="easy"),
+        InterviewQuestion(question_mn="Аль нь NoSQL өгөгдлийн сан вэ?", category="technical",
+            is_quiz=True, option_a="PostgreSQL", option_b="MongoDB", option_c="MySQL", option_d="Oracle",
+            correct_option="b", explanation="MongoDB document-based NoSQL.", difficulty="easy"),
+        InterviewQuestion(question_mn="Git-д сүүлийн commit-ийг буцаах тушаал?", category="technical",
+            is_quiz=True, option_a="git undo", option_b="git revert HEAD",
+            option_c="git remove last", option_d="git delete", correct_option="b",
+            explanation="git revert HEAD — шинэ commit үүсгэж буцаана.", difficulty="medium"),
+        InterviewQuestion(question_mn="JavaScript-д аль нь primitive data type биш вэ?", category="technical",
+            is_quiz=True, option_a="string", option_b="number", option_c="object", option_d="boolean",
+            correct_option="c", explanation="object нь reference type.", difficulty="easy"),
+        InterviewQuestion(question_mn="React-д state өөрчлөгдөх үед юу болдог вэ?", category="technical",
+            is_quiz=True, option_a="Хуудас reload", option_b="Component дахин render",
+            option_c="Шинэчлэгдэхгүй", option_d="Алдаа гарна", correct_option="b",
+            explanation="State өөрчлөгдвөл re-render.", difficulty="medium"),
+        InterviewQuestion(question_mn="SQL-д мөр устгах тушаал?", category="technical",
+            is_quiz=True, option_a="REMOVE FROM", option_b="DELETE FROM",
+            option_c="DROP FROM", option_d="ERASE FROM", correct_option="b",
+            explanation="DELETE FROM мөр устгана.", difficulty="easy"),
+        InterviewQuestion(question_mn="Нууц үгийг DB-д яаж хадгалах зөв вэ?", category="technical",
+            is_quiz=True, option_a="Plain text", option_b="Base64",
+            option_c="Bcrypt hash", option_d="Reverse", correct_option="c",
+            explanation="Bcrypt one-way hash.", difficulty="medium"),
+        InterviewQuestion(question_mn="JWT token ямар форматтай вэ?", category="technical",
+            is_quiz=True, option_a="XML", option_b="header.payload.signature",
+            option_c="Binary", option_d="Тоо", correct_option="b",
+            explanation="3 хэсэгтэй JSON encode.", difficulty="medium"),
+        InterviewQuestion(question_mn="Python-д list болон tuple ялгаа?", category="technical",
+            is_quiz=True, option_a="Ялгаагүй", option_b="List mutable, tuple immutable",
+            option_c="Tuple удаан", option_d="List зөвхөн тоо", correct_option="b",
+            explanation="List өөрчилж болно, tuple болохгүй.", difficulty="easy"),
+        InterviewQuestion(question_mn="CSS priority хамгийн өндөр?", category="technical",
+            is_quiz=True, option_a="Class", option_b="ID",
+            option_c="!important", option_d="Inline", correct_option="c",
+            explanation="!important бүгдийг давна.", difficulty="medium"),
+        InterviewQuestion(question_mn="Ярилцлагад хамгийн чухал юу вэ?", category="general",
+            is_quiz=True, option_a="Үнэтэй хувцас", option_b="Өөрийгөө мэдрэх, компани судлах",
+            option_c="Удаан хариулах", option_d="Өмнөх ажлаа шүүмжлэх", correct_option="b",
+            explanation="Бэлтгэл амжилтын үндэс.", difficulty="easy"),
+        InterviewQuestion(question_mn="'Сул тал' асуултад зөв хариулт?", category="general",
+            is_quiz=True, option_a="Сул тал байхгүй", option_b="Хамаагүй сул тал",
+            option_c="Бодит сул + сайжруулалт", option_d="Perfectionist", correct_option="c",
+            explanation="Хөгжүүлэх чадварыг харуулна.", difficulty="medium"),
+        InterviewQuestion(question_mn="Ярилцлагад хэр өмнө очих вэ?", category="general",
+            is_quiz=True, option_a="Яг цагтаа", option_b="30 мин өмнө",
+            option_c="10-15 мин өмнө", option_d="1 цагийн өмнө", correct_option="c",
+            explanation="10-15 мин тохиромжтой.", difficulty="easy"),
+        InterviewQuestion(question_mn="'Танд юу асуух уу?' гэхэд?", category="general",
+            is_quiz=True, option_a="Байхгүй", option_b="Цалин шууд",
+            option_c="Бодолтой асуулт", option_d="Хувийн амьдрал", correct_option="c",
+            explanation="Сонирхлыг харуулна.", difficulty="medium"),
+        InterviewQuestion(question_mn="Онлайн ярилцлагын чухал бэлтгэл?", category="general",
+            is_quiz=True, option_a="Шинэ камер", option_b="Интернэт, камер, микрофон шалгах",
+            option_c="Наушник", option_d="Зөвхөн камер", correct_option="b",
+            explanation="Бүх техник урьдчилан шалгана.", difficulty="easy"),
+    ]
+    db.add_all(questions)
+    db.commit()
+    print(f"✓ Seeded {len(questions)} interview questions")
+
+
+def _seed_scholarships(db):
+    scholarships = [
+        Scholarship(name="Монголын Хөгжлийн Банкны тэтгэлэг", organization="Хөгжлийн банк", target="Бакалавр", requirements="GPA 3.0+, санхүүгийн хэрэгцээ", deadline=date(2026, 6, 30), website_url="https://mdb.mn", description="Санхүүгийн салбарын оюутнуудад зориулсан"),
+        Scholarship(name="Голомт банкны тэтгэлэг", organization="Голомт банк", target="Бакалавр", requirements="GPA 3.2+, идэвхтэй оролцоо", deadline=date(2026, 5, 15), website_url="https://golomtbank.com", description="Бизнесийн чиглэлийн оюутнуудад"),
+        Scholarship(name="МУИС-ийн Ректорын тэтгэлэг", organization="МУИС", target="Бакалавр", requirements="GPA 3.5+", deadline=date(2026, 9, 1), website_url="https://num.edu.mn", description="Сурлагын амжилт өндөртэй оюутнуудад"),
+        Scholarship(name="ШУТИС-ийн тэтгэлэг", organization="ШУТИС", target="Бакалавр", requirements="GPA 3.0+, инженерийн чиглэл", deadline=date(2026, 8, 15), website_url="https://must.edu.mn", description="Инженерийн чиглэлийн оюутнуудад"),
+        Scholarship(name="Оюу толгой тэтгэлэг", organization="Оюу толгой", target="Бакалавр", requirements="Уул уурхайн чиглэл, GPA 3.0+", deadline=date(2026, 4, 30), website_url="https://ot.mn", description="Уул уурхайн салбарын оюутнуудад"),
+        Scholarship(name="MCS группын тэтгэлэг", organization="MCS Group", target="Бакалавр", requirements="Бизнесийн удирдлага, маркетинг", deadline=date(2026, 7, 1), website_url="https://mcs.mn", description="Бизнесийн чиглэлийн оюутнуудад"),
+    ]
+    db.add_all(scholarships)
+    db.commit()
+    print(f"✓ Seeded {len(scholarships)} scholarships")
+
+
+def _seed_advice(db):
+    advices = [
+        # CV (4)
+        Advice(category="cv", sort_order=1,
+            title="Сайн CV-ийн үндсэн бүтэц",
+            summary="Мэргэжлийн CV-нд заавал байх ёстой хэсгүүд, бүтэц.",
+            content="""Сайн CV нь тодорхой бүтэцтэй, унших хүнд хурдан мэдээлэл өгөх ёстой.
+
+1. Хувийн мэдээлэл
+   - Бүтэн нэр, утас, и-мэйл, LinkedIn (байгаа бол)
+   - Зураг заавал биш
+   - Төрсөн он, гэрлэлтийн байдал шаардлагагүй
+
+2. Мэргэжлийн товч тайлбар (Summary)
+   - 2-3 өгүүлбэр: хэн байна, юу хийдэг, ямар зорилготой
+   - CV-ийн дээд хэсэгт тавина
+
+3. Ажлын туршлага
+   - Сүүлийн туршлагаас эхэлж буурах дарааллаар
+   - Байгууллага, албан тушаал, огноо
+   - 3-5 bullet point action verb-ээр эхэлсэн
+   - Тоон үр дүн (%, $, хэмжээ) заавал
+
+4. Боловсрол
+   - Их сургууль, мэргэжил, GPA (3.0+ бол)
+   - Онцгой амжилт
+
+5. Ур чадвар
+   - Техникийн (програм, хэл)
+   - Хэл — түвшин (B2, IELTS 7.0)
+
+6. Гэрчилгээ, төсөл (сонголтоор)
+
+Нийт 1-2 хуудас. Төгсөгч — 1 хуудас хангалттай.""",
+            external_links=json.dumps([
+                {"title": "Canva CV загварууд", "url": "https://www.canva.com/resumes/templates/"},
+                {"title": "Action verbs жагсаалт", "url": "https://www.themuse.com/advice/185-powerful-verbs-that-will-make-your-resume-awesome"},
+            ]),
+            youtube_url="https://www.youtube.com/watch?v=y8YH0Qbu5h4"),
+
+        Advice(category="cv", sort_order=2,
+            title="CV-д гардаг 10 нийтлэг алдаа",
+            summary="Ажил олгогчийн CV-г шууд татгалзах шалтгаан болдог алдаанууд.",
+            content="""Ажил олгогч CV-г дунджаар 7 секундэд харна. Алдаа маш муу сэтгэгдэл үлдээнэ.
+
+1. Бичгийн алдаа — заавал spellcheck
+2. Хэт ерөнхий үг ("хариуцлагатай" гэх мэт клишé)
+3. Хэт урт — 1-2 хуудсаар хязгаарлах
+4. Хамааралгүй туршлага оруулах
+5. Тоон үр дүн байхгүй ("борлуулалт нэмэгдүүлсэн" биш "40% өсгөсөн")
+6. Буруу форматлалт — PDF-ээр илгээх
+7. И-мэйл хаяг тохиромжгүй
+8. Зураг муу — заавал биш, оруулвал профессионал
+9. Хувийн мэдээлэл хэт их (шашин, гэрлэлт гэх мэт)
+10. Cover letter бичихгүй""",
+            external_links=json.dumps([
+                {"title": "Grammarly", "url": "https://www.grammarly.com"},
+            ])),
+
+        Advice(category="cv", sort_order=3,
+            title="ATS-д таних CV бичих арга",
+            summary="Том компаниуд ATS систем ашигладаг. Үүнд таних CV хэрхэн бичих вэ?",
+            content="""ATS (Applicant Tracking System) — CV-г автомат шүүдэг систем.
+
+1. Keyword ашиглах
+   - Job description-ийн үгсийг CV-д оруулах
+   - Байгалийн байдлаар (keyword stuffing биш)
+
+2. Энгийн формат
+   - Table, column, text box биш
+   - Стандарт heading: "Work Experience", "Education"
+
+3. Сайн шрифт
+   - Arial, Calibri, Times New Roman
+   - PDF формат
+
+4. Огноо формат
+   - "June 2023 - Present" буюу "06/2023"
+
+5. Товчлолыг бүрэн бичих
+   - "Bachelor of Science in Computer Science"
+   - Эхэнд бүтнээр, хаалтанд товчилсон (BSc)
+
+6. Стандарт bullet point — • эсвэл -
+
+ATS-ийн дараа хүн харна. Хоёуланд нь тохиромжтой байх ёстой.""",
+            youtube_url="https://www.youtube.com/watch?v=vPmxJWlmPpk"),
+
+        Advice(category="cv", sort_order=4,
+            title="CV-ийн ур чадвар хэсгийг хэрхэн бичих вэ?",
+            summary="Ур чадварыг зөв категорилж, үнэн зөв түвшинг харуулах.",
+            content="""Ур чадвар (Skills) — CV-ийн хамгийн чухал хэсгүүдийн нэг.
+
+1. Категорилох
+   - Техникийн: програмчлалын хэл, framework
+   - Хэл: түвшинтэй
+   - Soft skills: харилцаа, удирдлага
+
+2. Түвшин
+   - Intermediate / Advanced / Expert
+   - Эсвэл жилээр "Python — 3 жил"
+   - "Expert" гэж хэт хэлэхгүй
+
+3. Холбогдох нь л
+   - Job description-ийн шаардлагыг заавал
+
+4. Хэлний түвшин стандартаар
+   - CEFR: A1-C2
+   - IELTS, TOEFL оноотой
+
+5. Туршлагатай холбох
+   - "Python" оруулсан бол туршлагад Python-аар хийсэн ажил
+
+Жишээ:
+Техникийн:
+- Frontend: React (3 жил), TypeScript, Tailwind
+- Backend: Node.js, PostgreSQL
+
+Хэл:
+- Монгол — Эх хэл
+- Англи — B2 (IELTS 6.5)"""),
+
+        # Interview (4)
+        Advice(category="interview", sort_order=1,
+            title="Ярилцлагын өмнө хийх 5 алхам",
+            summary="Амжилттай ярилцлагын үндэс нь сайн бэлтгэл.",
+            content="""Ярилцлагын амжилтын 80% нь бэлтгэл.
+
+1. Компанийг судлах
+   - Албан ёсны сайт, "About Us"
+   - Сүүлийн мэдээ, пресс-релиз
+   - LinkedIn дээр ажилчдыг хар
+   - Бүтээгдэхүүн/үйлчилгээ туршиж үзэх
+   - Glassdoor сэтгэгдэл
+
+2. Албан тушаал судлах
+   - Job description 2-3 удаа унших
+   - Шаардлага бүрд тохирох жишээ бэлтгэх
+
+3. Өөрийн CV-г давтах
+   - CV-ийн бүх зүйлийг тайлбарлахад бэлэн
+   - Хугацааны зөрөөг тайлбарлах
+
+4. Асуултад бэлтгэх
+   - Flashcard горимоор дадлагажих
+   - STAR-ын 3-5 жишээ бэлтгэх
+
+5. Логистик
+   - Хаяг, зам Google Maps
+   - Хувцас 1 өдрийн өмнө
+   - Онлайн — техник туршилт
+
+Нэмэлт: шөнө 7-8 цаг унтах, өглөөний хоол идэх.""",
+            youtube_url="https://www.youtube.com/watch?v=HG68Ymazo18"),
+
+        Advice(category="interview", sort_order=2,
+            title="Ярилцлагын үед биеийн хэлний зөв байдал",
+            summary="Биеийн хэл нь 55% сэтгэгдлийг бүрдүүлдэг.",
+            content="""1. Орж ирэх
+   - Хаалгыг тогшиж, инээмсэглэн орно
+   - Гараа баталгаатай барих
+
+2. Суух
+   - Шулуун суух, нуруугаа түших биш
+   - Хөлөө шалан дээр
+
+3. Нүдний контакт
+   - 5-7 секунд нэг удаа
+   - Олон хүнтэй бол ээлжлэн
+
+4. Инээмсэглэл
+   - Цайвар, байгалийн
+
+5. Гарын хөдөлгөөн
+   - Тодруулахад ашиглах
+   - Нүүрээ барих биш
+
+6. Дуу хоолой
+   - Тодорхой, хангалттай
+   - "Ээ", "уг нь" багасгах
+
+7. Онлайн
+   - Камер нүдний түвшинд
+   - Камерыг хардаг, дэлгэц биш
+   - Гэрэл урдаас
+   - Орчин цэвэр"""),
+
+        Advice(category="interview", sort_order=3,
+            title="Хүнд асуултад хэрхэн хариулах вэ",
+            summary="'Сул тал', 'Яагаад гарсан бэ?' гэх мэт асуултад.",
+            content="""1. "Сул тал юу вэ?"
+Хууль: Бодит сул + сайжруулалт
+Жишээ: "Нийтийн өмнө илтгэх стресстэй байсан. Тиймээс 6 сар Toastmasters-д оролцсон. Одоо 50+ хүний өмнө ярьж чадна."
+❌ "Перфекционист" — клишé
+
+2. "Яагаад гарсан бэ?"
+Хууль: Эерэг, ирээдүйд чиглэсэн
+Жишээ: "2.5 жил ажилласан, маш их сурсан. Одоо илүү том scale төсөл, шинэ технологи сурахыг хүсэж байна."
+❌ Шүүмжлэл
+
+3. "Яагаад таныг сонгох вэ?"
+Хууль: Ур чадвар + тохиромж + сэдэл
+Жишээ: "Танай бүтээгдэхүүн миний 3 жилийн React туршлагатай тохирч байна."
+
+4. "5 жилийн дараа хаана?"
+Хууль: Өсөлт + компанийн замналтай уялдаа
+Жишээ: "Senior болж, дараа нь tech lead — танай компанид ийм боломж бий."
+
+5. "Цалин хэд?"
+Хууль: Тодорхой хүрээ + уян хатан
+Жишээ: "3.5-4.5 сая хүрээ, нийт багц хэлбэлзэнэ."
+
+Анхаар: 1-2 минутаас хэтрэхгүй, тодорхой жишээгээр."""),
+
+        Advice(category="interview", sort_order=4,
+            title="Ярилцлагын дараа хийх зүйлс",
+            summary="Ярилцлагын үр дүн дараах үйлдлээс хамаардаг.",
+            content="""1. Талархах (24 цагийн дотор)
+Thank You имэйл, товч, чухал сэдвийг дурдсан.
+
+Загвар:
+"Хүндэт [нэр],
+Өнөөдөр уулзсан цагт талархаж байна. [Тодорхой сэдэв] сонирхолтой байлаа. [Туршлага]-ыг оруулах үнэтэй гэж итгэж байна.
+Хүндэтгэсэн, [Нэр]"
+
+2. Өөрийгөө үнэлэх
+- Аль нь сайн, аль нь тааруу байсан?
+- Юу сурсан?
+
+3. Хүлээх
+- Хариу өгнө гэсэн хугацааг хүлээх
+
+4. Follow-up (1 7 хоногийн дараа)
+- Хариу байхгүй бол эелдэг follow-up
+
+5. Татгалзсан бол
+- Эелдэг хариу, feedback асуух
+
+6. Санал ирсэн бол
+- 24-48 цаг бодох гуйж болно
+- Цалин, огноо, тэтгэмж нарийн асуух
+- Бичгээр баталгаа"""),
+
+        # Job Search (4)
+        Advice(category="job_search", sort_order=1,
+            title="Монгол дахь гол ажлын сайтууд",
+            summary="Ажил хайх хамгийн түгээмэл онлайн эх сурвалжууд.",
+            content="""1. Worki.mn — хамгийн том, өдөр бүр шинэчлэгдэнэ
+2. Jobs.mn — маш их байрлал, имэйл мэдэгдэлтэй
+3. Zangia.mn — засгийн газар, олон улсын
+4. LinkedIn — гадаад, remote их
+5. Unread.today — оюутны, intern
+6. Facebook группууд — салбар тус бүрт
+7. Компанийн сайт шууд — careers хуудас
+
+Зөвлөмж: олон сайт дээр CV үүсгэх, өдөрт 15-30 минут зарцуулах.""",
+            external_links=json.dumps([
+                {"title": "Worki.mn", "url": "https://worki.mn"},
+                {"title": "Jobs.mn", "url": "https://jobs.mn"},
+                {"title": "Zangia.mn", "url": "https://zangia.mn"},
+                {"title": "LinkedIn", "url": "https://www.linkedin.com"},
+                {"title": "Unread.today", "url": "https://unread.today"},
+            ])),
+
+        Advice(category="job_search", sort_order=2,
+            title="Networking — ажлын 70% нь энэ замаар олддог",
+            summary="Онлайнаар зарлагдахаас өмнөх далд боломжуудыг хэрхэн олох вэ?",
+            content="""Ажлын 70-80% нь 'hidden job market'-аар олддог.
+
+1. LinkedIn
+   - Профайл бүрэн бөглөх
+   - Connection хүсэх
+   - Өдөр 15 мин идэвх
+
+2. Арга хэмжээ
+   - Tech Talks, карьерын форум
+   - Alumni эвент
+
+3. Coffee chat
+   - "15 минут цаг гаргаж ажлынхаа тухай хуваалцаж чадах уу?"
+   - Зорилго: мэдээлэл, танилцах
+
+4. Ангийнхан, багш нартай холбоо
+   - Жилд 1-2 удаа
+
+5. Community
+   - Meetup.com
+   - Discord/Slack
+
+6. Mentor
+   - 5-10 жилийн туршлагатай
+   - Сард 1 удаа
+
+7. Өгөхөөс эхлэх
+   - Бусдад тус болох — зөвлөмж, контакт
+
+Networking бол 'өгөөд авах' мөчлөг. Хэрэгцээтэй үед биш тогтмол."""),
+
+        Advice(category="job_search", sort_order=3,
+            title="Cover letter (танилцуулга захидал) бичих",
+            summary="CV-тэй хамт илгээдэг 1 хуудасны захидал.",
+            content="""Cover letter нь "яагаад таныг сонгох вэ?"-д хариулна.
+
+Бүтэц (1 хуудас, 3-4 догол):
+
+1. Танилцуулга (2-3 өгүүлбэр)
+Жишээ: "Танай Worki.mn дээр Frontend Developer байрлалд өргөдөл гаргаж байна. 3 жил React-р ажилласан туршлагатай, [бүтээгдэхүүн] сонирхолтой."
+
+2. Яагаад би тохирох вэ? (4-5 өгүүлбэр)
+Жишээ: "[Компани] дээр 50,000+ хэрэглэгчтэй платформын frontend-г хөгжүүлсэн. Next.js ашиглан ачаалалтын хугацааг 60% богиносгосон. Танай 'хурдан, scale' шаардлагад тохирно."
+
+3. Яагаад тус компани (3-4 өгүүлбэр)
+Компанийн онцлогт дуртай зүйл, таны хэрэгцээтэй уялдаа.
+
+4. Уулзалт хүсэх (1-2 өгүүлбэр)
+Жишээ: "Танай багт оруулах үнэ цэнээ дэлгэрэнгүй ярилцахад бэлэн."
+
+Зөвлөмж:
+- Template биш, компани бүрт тусгайлан
+- 400 үгээс хэтрэхгүй
+- Тодорхой нэрээр ("To whom it may concern" биш)
+- PDF-ээр"""),
+
+        Advice(category="job_search", sort_order=4,
+            title="Remote ажил олох арга",
+            summary="Олон улсын компаниудтай remote ажиллах боломжууд.",
+            content="""1. Сайтууд
+   - RemoteOK.com, WeWorkRemotely.com
+   - Remotive.io, Toptal
+   - Arc.dev, Turing.com
+
+2. Бэлтгэл
+   - Англи B2+
+   - GitHub, portfolio
+   - Англи CV
+   - LinkedIn, Stack Overflow profile
+
+3. Цагийн бүс
+   - US: 12-13 цаг зөрөө
+   - Europe: 6-8 цаг
+
+4. Харилцаа
+   - Англи бичгийн чадвар
+   - Zoom дадлага
+   - Async communication
+
+5. Цалин
+   - levels.fyi, glassdoor
+   - Монголоос 2-5 дахин
+   - Татвар, insurance өөрөө
+
+6. Эхлэх
+   - Freelance жижиг ажлаас
+   - Open source оролцох
+   - Portfolio төсөл
+
+7. Нэхэмжлэх
+   - Мэргэжлийн нягтлан
+
+Remote ажил нь сахилга бат шаарддаг.""",
+            external_links=json.dumps([
+                {"title": "RemoteOK", "url": "https://remoteok.com"},
+                {"title": "We Work Remotely", "url": "https://weworkremotely.com"},
+                {"title": "Arc.dev", "url": "https://arc.dev"},
+            ])),
+
+        # Career (4)
+        Advice(category="career", sort_order=1,
+            title="Эхний ажлаа сонгохдоо юуг анхаарах вэ?",
+            summary="Өсөлт, компанийн хэмжээ, цалин — юуг тэргүүн чухалчлах вэ?",
+            content="""1. Суралцах боломж
+   - Mentor байгаа эсэх
+   - Юу сурах вэ?
+   - Technology stack шинэ үү?
+
+2. Компанийн хэмжээ
+Startup (10-50):
++ Олон чиглэл, хурдан өсөх
+— Ментор бага, цалин бага
+
+Дунд (50-500):
++ Бүтэц, тогтвортой
+~ Дунд өсөлт
+
+Том (500+):
++ Өндөр цалин, тогтвортой
+— Удаан өсөлт, bureaucracy
+
+3. Багийн соёл
+- "Эхний 3 сар ямар байх вэ?"
+- Current employees-тэй уулзах
+- Glassdoor
+
+4. Технологи
+- Modern stack уу?
+- 5 жилд хэрэгтэй байх уу?
+
+5. Цалин (3-р байранд)
+- Зах зээлийн 80-120%
+
+6. Лайф баланс
+- 9-6 уу, 9-9 уу?
+- Remote боломж
+
+Эцэст: эхний ажилд 1-2 жил үлдэх."""),
+
+        Advice(category="career", sort_order=2,
+            title="Карьераа хурдан ургуулах 7 дадал",
+            summary="Нотлогдсон карьерын өсөлтийн дадал.",
+            content="""1. Өдөр бүр суралцах
+   - 30 мин — 1 цаг
+   - Подкаст, ном, курс
+
+2. Тодорхой зорилго
+   - SMART: Specific, Measurable, Achievable, Relevant, Time-bound
+   - 1 жил + 3 сар milestone
+
+3. Mentor
+   - Сард 1 удаа
+   - Асуулт бэлдэж
+
+4. Харагдах бай
+   - Баг, удирдлагад сонсгох
+   - Meeting идэвхтэй
+   - LinkedIn пост
+
+5. Хүнд ажлыг авах
+   - "Би хийе"
+   - Шинэ чиглэл
+
+6. Feedback
+   - Сард 1 удаа 1-1
+   - "Яаж илүү сайн болох вэ?"
+
+7. Эрүүл мэнд
+   - 7-8 цаг унтах
+   - Спорт
+   - Burnout-аас зайлсхийх
+
+Хамгийн чухал: тууштай байх."""),
+
+        Advice(category="career", sort_order=3,
+            title="Цалингаа яаж хэлэлцэх вэ?",
+            summary="Салари талаар яриа хийх, илүү цалин авах арга.",
+            content="""1. Судалгаа
+   - Levels.fyi, Glassdoor
+   - Worki.mn
+   - Мэргэжил нэгтнүүдээс
+
+2. Анкор (anchoring)
+   - Өндөр хувилбараас эхлэх
+   - "4-4.5 сая" гэх "3-4 сая" биш
+
+3. Нийт багц
+   - Цалин (gross, net)
+   - Bonus, stock
+   - Insurance, амралт
+   - Remote, training budget
+
+4. Үнэ цэнэ баримттай
+   - "X ажил, Y үр дүн"
+
+5. Цаг нь ирэхэд
+   - Санал ирсний дараа л
+   - Эхний ярилцлагад нуух
+
+6. Сөрөг тохирол
+   - "Надад [X] тохиромжтой"
+   - Дараа чимээгүй — дарамт тэдэнд
+
+7. Баримтжуулах
+   - Бичгээр санал
+   - Огноо, цалин, тэтгэмж
+
+Хамгийн муу асуулт — асуугаагүй асуулт."""),
+
+        Advice(category="career", sort_order=4,
+            title="Burnout-аас хэрхэн зайлсхийх вэ?",
+            summary="Ажлын ачаалал, стресс ихсэхэд өөрийгөө хамгаалах арга.",
+            content="""Шинж тэмдгүүд:
+- Байнга ядрах
+- Ажилдаа дургүй
+- Сэтгэл санаа муу
+- Нойргүйдэл, толгой өвдөх
+- Бүтээмж буурах
+
+1. Ажил-амьдралын хил
+   - Ажлын имэйл гадуур харахгүй
+   - Notification унтраах
+   - Weekend ажиллахгүй
+
+2. Цагийн удирдлага
+   - Pomodoro: 25 мин + 5 мин
+   - Өдрийн 3 чухал ажил
+   - "Yes" биш "No"
+
+3. Бие эрүүл мэнд
+   - 7-8 цаг унтах
+   - Өдөрт 30 мин хөдөлгөөн
+   - Өглөө наранд гарах
+
+4. Сэтгэл санаа
+   - Сэтгэлзүйчтэй уулзах (Монголд байдаг)
+   - Meditation, yoga
+   - Дур сонирхол
+
+5. Ажлын байранд
+   - Удирдлагатай ачаалал ярилцах
+   - Амралт бүрэн авах
+
+6. Үнэ цэнэ эргэн санах
+   - Ямар зорилгын төлөө?
+   - Ажил нэг хэсэг, бүгд биш
+
+7. Хэзээ ажил солих?
+   - 6 сараас илүү шинж тэмдэг
+   - Сайжруулах боломжгүй бол
+
+Burnout нь сул дорой байдал биш. Өөртөө эелдэг хандаарай."""),
+    ]
+    db.add_all(advices)
+    db.commit()
+    print(f"✓ Seeded {len(advices)} advice articles")

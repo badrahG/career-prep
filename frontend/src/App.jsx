@@ -17,11 +17,15 @@ import Interview from "./pages/Interview";
 import InterviewFlashcard from "./pages/InterviewFlashcard";
 import InterviewQuiz from "./pages/InterviewQuiz";
 import InterviewStar from "./pages/InterviewStar";
+import Advice from "./pages/Advice";
+import AdviceCategory from "./pages/AdviceCategory";
+import AdviceDetail from "./pages/AdviceDetail";
 import ScholarshipList from "./pages/ScholarshipList";
 import ScholarshipDetail from "./pages/ScholarshipDetail";
 import ScholarshipForm from "./pages/ScholarshipForm";
 import AdminUsers from "./pages/AdminUsers";
 import AdminInterview from "./pages/AdminInterview";
+import AdminAdvice from "./pages/AdminAdvice";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 
@@ -62,12 +66,16 @@ function AppRoutes() {
       <Route path="/interview/flashcard" element={<PrivateRoute><InterviewFlashcard /></PrivateRoute>} />
       <Route path="/interview/quiz" element={<PrivateRoute><InterviewQuiz /></PrivateRoute>} />
       <Route path="/interview/star" element={<PrivateRoute><InterviewStar /></PrivateRoute>} />
+      <Route path="/advice" element={<PrivateRoute><Advice /></PrivateRoute>} />
+      <Route path="/advice/detail/:id" element={<PrivateRoute><AdviceDetail /></PrivateRoute>} />
+      <Route path="/advice/:category" element={<PrivateRoute><AdviceCategory /></PrivateRoute>} />
       <Route path="/scholarship" element={<PrivateRoute><ScholarshipList /></PrivateRoute>} />
       <Route path="/scholarship/new" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
       <Route path="/scholarship/:id" element={<PrivateRoute><ScholarshipDetail /></PrivateRoute>} />
       <Route path="/scholarship/:id/edit" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/interview" element={<AdminRoute><AdminInterview /></AdminRoute>} />
+      <Route path="/admin/advice" element={<AdminRoute><AdminAdvice /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

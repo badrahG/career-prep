@@ -12,7 +12,57 @@ export default function Dashboard() {
   var isAdmin = user?.role === "admin";
 
   useEffect(function () {
-    API.get("/auth/dashboard-stats").then(function (res) { setStats(res.data); }).catch(function () {});
+    // Load backend stats
+    API.get("/auth/dashboard-stats").then(function (res) {
+      var backendStats = res.data;
+
+      // Calculate real studied_questions from localStorage
+      var studiedQuestions = 0;
+      try {
+        var saved = localStorage.getItem("interview_studied");
+        if (saved) {
+          var arr = JSON.parse(saved);
+          if (Array.isArray(arr)) studiedQuestions = arr.length;
+        }
+      } catch (e) {}
+
+      // Calculate real checklist_count from localStorage
+      // We count how many scholarships have ANY checked items
+      var checklistCount = 0;
+      try {
+        for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (key && key.startsWith("checklist_")) {
+            var val = localStorage.getItem(key);
+            if (val) {
+              var items = JSON.parse(val);
+              if (Array.isArray(items) && items.some(function (item) { return item.done; })) {
+                checklistCount++;
+              }
+            }
+          }
+        }
+      } catch (e) {}
+
+      // Recalculate progress with real numbers
+      // 5 total steps: profile, cv, interview studied, checklist, cv count
+      var total = 5;
+      var done = 0;
+      if (backendStats.profile_done) done++;
+      if (backendStats.cv_done) done++;
+      if (studiedQuestions >= 5) done++;
+      if (checklistCount > 0) done++;
+      if (backendStats.cv_count >= 2) done++;
+      var progress = Math.round((done / total) * 100);
+
+      setStats({
+        ...backendStats,
+        studied_questions: studiedQuestions,
+        checklist_count: checklistCount,
+        progress: progress,
+      });
+    }).catch(function () {});
+
     API.get("/cv").then(function (res) { setCvs(res.data); }).catch(function () {});
   }, []);
 
@@ -24,8 +74,9 @@ export default function Dashboard() {
   var checklist = [
     { label: "Профайл бүрэн бөглөх", done: stats.profile_done, link: "/profile" },
     { label: "Эхний CV үүсгэх", done: stats.cv_done, link: "/cv/new" },
-    { label: "Ярилцлагын асуулт судлах", done: stats.studied_questions > 0, link: "/interview" },
-    { label: "Тэтгэлэг хайх", done: false, link: "/scholarship" },
+    { label: "5+ ярилцлагын асуулт судлах", done: stats.studied_questions >= 5, link: "/interview/flashcard", hint: stats.studied_questions + "/5 судалсан" },
+    { label: "Тэтгэлгийн checklist үүсгэх", done: stats.checklist_count > 0, link: "/scholarship", hint: stats.checklist_count > 0 ? stats.checklist_count + " checklist" : null },
+    { label: "2 дахь CV үүсгэх", done: stats.cv_count >= 2, link: "/cv/new", hint: stats.cv_count + "/2" },
   ];
 
   return (
@@ -45,6 +96,7 @@ export default function Dashboard() {
             <Link to="/dashboard" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Нүүр</Link>
             <Link to="/cv" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">CV</Link>
             <Link to="/interview" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Ярилцлага</Link>
+            <Link to="/advice" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Зөвлөмж</Link>
             <Link to="/scholarship" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Тэтгэлэг</Link>
             {isAdmin && <Link to="/admin/users" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Админ</Link>}
           </div>
@@ -141,7 +193,10 @@ export default function Dashboard() {
                       <div className={"w-6 h-6 rounded flex items-center justify-center text-xs font-semibold flex-shrink-0 " + (item.done ? "bg-green-600 text-white" : "border border-slate-300 text-slate-400")}>
                         {item.done ? "✓" : i + 1}
                       </div>
-                      <span className={"text-sm flex-1 " + (item.done ? "text-slate-400 line-through" : "text-slate-700")}>{item.label}</span>
+                      <div className="flex-1">
+                        <p className={"text-sm " + (item.done ? "text-slate-400 line-through" : "text-slate-700")}>{item.label}</p>
+                        {item.hint && <p className="text-xs text-slate-500 mt-0.5">{item.hint}</p>}
+                      </div>
                       {!item.done && (
                         <span className="text-xs text-[#1e3a8a] font-medium opacity-0 group-hover:opacity-100 transition">Хийх →</span>
                       )}
@@ -160,6 +215,7 @@ export default function Dashboard() {
               {[
                 { label: "Шинэ CV үүсгэх", link: "/cv/new" },
                 { label: "Ярилцлагад бэлтгэх", link: "/interview" },
+                { label: "Зөвлөмж унших", link: "/advice" },
                 { label: "Тэтгэлэг хайх", link: "/scholarship" },
                 { label: "Профайл засах", link: "/profile" },
               ].map(function (a, i) {
@@ -206,10 +262,10 @@ export default function Dashboard() {
           <h2 className="text-base font-semibold text-slate-900 mb-4">Модулиуд</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: "CV үүсгэх", desc: "Мэргэжлийн CV үүсгэж, PDF татаж авах", link: "/cv" },
+              { title: "CV үүсгэх", desc: "Мэргэжлийн CV үүсгэж, татаж авах", link: "/cv" },
               { title: "Ярилцлагын бэлтгэл", desc: "Flashcard, Quiz, STAR дадлага", link: "/interview" },
-              { title: "Тэтгэлэг", desc: "Дотоодын тэтгэлэг, internship хайх", link: "/scholarship" },
               { title: "Карьерын зөвлөмж", desc: "CV бичих, ярилцлагын зөвлөмж", link: "/advice" },
+              { title: "Тэтгэлэг", desc: "Дотоодын тэтгэлэг, internship хайх", link: "/scholarship" },
             ].map(function (m, i) {
               return (
                 <Link key={i} to={m.link} className="bg-white border border-slate-200 rounded p-5 hover:border-[#1e3a8a] transition group">

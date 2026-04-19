@@ -72,9 +72,16 @@ export default function Interview() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+      </div>
+
       {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
+      <nav className="bg-white border-b border-slate-200 relative z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to="/dashboard" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
@@ -86,6 +93,7 @@ export default function Interview() {
             <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
             <Link to="/cv" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">CV</Link>
             <Link to="/interview" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Ярилцлага</Link>
+             <Link to="/advice" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Зөвлөмж</Link>
             <Link to="/scholarship" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Тэтгэлэг</Link>
           </div>
           <Link to="/dashboard" className="text-sm text-slate-600 hover:text-slate-900 font-medium md:hidden">← Буцах</Link>
@@ -93,7 +101,7 @@ export default function Interview() {
       </nav>
 
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-white border-b border-slate-200 relative z-10">
         <div className="max-w-6xl mx-auto px-6 py-3 text-xs text-slate-500 flex items-center justify-between">
           <div>
             <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
@@ -104,7 +112,7 @@ export default function Interview() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
         {/* Hero header */}
         <div className="mb-8 pb-6 border-b border-slate-200">
           <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Ярилцлагын бэлтгэл</p>

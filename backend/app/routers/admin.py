@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func
 from typing import List, Optional
@@ -24,6 +24,8 @@ def list_users(
     search: Optional[str] = None,
     role: Optional[str] = None,
     is_active: Optional[bool] = None,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
     admin: User = Depends(require_admin),
 ):
@@ -44,7 +46,7 @@ def list_users(
     if is_active is not None:
         query = query.filter(User.is_active == is_active)
 
-    users = query.order_by(User.created_at.desc()).all()
+    users = query.order_by(User.created_at.desc()).offset(skip).limit(limit).all()
 
     # Attach cv_count for each user
     result = []

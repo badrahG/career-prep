@@ -26,6 +26,7 @@ import ScholarshipForm from "./pages/ScholarshipForm";
 import AdminUsers from "./pages/AdminUsers";
 import AdminInterview from "./pages/AdminInterview";
 import AdminAdvice from "./pages/AdminAdvice";
+import AdminScholarship from "./pages/AdminScholarship";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 
@@ -76,6 +77,7 @@ function AppRoutes() {
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/interview" element={<AdminRoute><AdminInterview /></AdminRoute>} />
       <Route path="/admin/advice" element={<AdminRoute><AdminAdvice /></AdminRoute>} />
+      <Route path="/admin/scholarship" element={<AdminRoute><AdminScholarship /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

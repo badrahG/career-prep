@@ -39,7 +39,7 @@ export default function AdviceCategory() {
 
   if (!meta) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600 text-sm">Буруу категори.</p>
         <Link to="/advice" className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">← Зөвлөмжүүд</Link>
       </div>
@@ -47,7 +47,14 @@ export default function AdviceCategory() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+      </div>
+
       <nav className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to="/dashboard" className="flex items-center gap-2.5">

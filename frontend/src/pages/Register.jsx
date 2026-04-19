@@ -61,16 +61,23 @@ export default function Register() {
   var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition bg-white";
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+      </div>
+
       {/* Top bar */}
-      <div className="bg-[#1e3a8a] text-white text-xs">
+      <div className="bg-[#1e3a8a] text-white text-xs relative z-10">
         <div className="max-w-7xl mx-auto px-6 py-2">
           Залуучуудын ажилд орох бэлтгэлийг дэмжих платформ
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-[#1e3a8a] flex items-center justify-center rounded">
@@ -88,11 +95,11 @@ export default function Register() {
       </nav>
 
       {/* Main */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
+      <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10">
         <div className="w-full max-w-md">
           {submitted ? (
             /* Success screen after registration */
-            <div className="bg-white border border-slate-200 rounded p-8 md:p-10 shadow-sm text-center">
+            <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg p-8 md:p-10 shadow-lg text-center">
               <div className="w-16 h-16 mx-auto mb-5 bg-emerald-100 rounded-full flex items-center justify-center">
                 <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -126,7 +133,7 @@ export default function Register() {
               </div>
             </div>
           ) : (
-            <div className="bg-white border border-slate-200 rounded p-8 md:p-10 shadow-sm">
+            <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg p-8 md:p-10 shadow-lg">
               <div className="mb-8">
                 <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Бүртгүүлэх</p>
                 <h1 className="text-2xl font-bold text-slate-900">Шинээр бүртгүүлэх</h1>

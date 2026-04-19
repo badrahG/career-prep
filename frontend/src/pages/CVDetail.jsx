@@ -1,345 +1,431 @@
-import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
+import toast from "react-hot-toast";
 
 export default function CVDetail() {
   var params = useParams();
+  var navigate = useNavigate();
   var id = params.id;
+
   var [cv, setCv] = useState(null);
   var [loading, setLoading] = useState(true);
+  var [downloading, setDownloading] = useState(false);
+  var [notFound, setNotFound] = useState(false);
+  var printRef = useRef(null);
 
-  useEffect(function() {
+  useEffect(function () {
     API.get("/cv/" + id)
-      .then(function(res) { setCv(res.data); })
-      .catch(function() { setCv(null); })
-      .finally(function() { setLoading(false); });
+      .then(function (res) { setCv(res.data); })
+      .catch(function () { setNotFound(true); })
+      .finally(function () { setLoading(false); });
   }, [id]);
 
-  if (loading) return <div className="min-h-screen bg-slate-100 flex items-center justify-center text-slate-400 text-sm">Ачааллаж байна...</div>;
-  if (!cv) return <div className="min-h-screen bg-slate-100 flex items-center justify-center text-slate-500 text-sm">CV олдсонгүй</div>;
+  async function handleDelete() {
+    if (!window.confirm("Энэ CV-г устгах уу?")) return;
+    try {
+      await API.delete("/cv/" + id);
+      toast.success("CV устгагдлаа");
+      navigate("/cv");
+    } catch (err) {
+      toast.error("Устгахад алдаа");
+    }
+  }
 
-  var p = {};
-  try { p = JSON.parse(cv.personal_info || "{}"); } catch(e) { p = {}; }
+  async function handleDownloadPDF() {
+    if (!printRef.current) { toast.error("CV агуулга ачаалагдаагүй"); return; }
+    if (downloading) return;
+    setDownloading(true);
+    var tid = toast.loading("PDF бэлтгэж байна...");
+    try {
+      var jsPDFModule = await import("jspdf");
+      var html2canvasModule = await import("html2canvas");
+      var jsPDF = jsPDFModule.default || jsPDFModule.jsPDF;
+      var html2canvas = html2canvasModule.default || html2canvasModule;
 
-  var fullName = ((p.lastName || "") + " " + (p.firstName || "")).trim() || "Нэр оруулаагүй";
-  var softSkills = p.personalSkills || [];
-  var techList = p.techSkills || [];
-  var profList = p.profSkills || [];
-  var artList = p.artSkills || [];
-  var sportList = p.sportSkills || [];
-  var langs = p.languages || [];
-  var certsList = p.certs || [];
-  var internList = p.internships || [];
-  var awardsList = p.awards || [];
-  var photoUrl = p.photoUrl || "";
+      var canvas = await html2canvas(printRef.current, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      var pdfWidth = pdf.internal.pageSize.getWidth();
+      var pdfHeight = pdf.internal.pageSize.getHeight();
+      var imgWidth = pdfWidth;
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      var imgData = canvas.toDataURL("image/png");
+      if (imgHeight <= pdfHeight) {
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      } else {
+        var heightLeft = imgHeight;
+        var position = 0;
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+      }
+      var safeName = (cv.name || "CV").replace(/[^\w\u0400-\u04FF-]/g, "_");
+      pdf.save("CV_" + safeName + ".pdf");
+      toast.success("PDF татагдлаа!", { id: tid });
+    } catch (err) {
+      console.error(err);
+      toast.dismiss(tid);
+      window.print();
+    } finally {
+      setDownloading(false);
+    }
+  }
 
-  var phones = p.phone || "";
-  if (p.phone2) phones = phones + ", " + p.phone2;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+        <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg shadow-lg p-12">
+          <p className="text-slate-400 text-sm">Ачааллаж байна...</p>
+        </div>
+      </div>
+    );
+  }
+  if (notFound || !cv) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-6">
+        <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg shadow-lg p-12 text-center">
+          <p className="text-slate-600 text-sm mb-4">CV олдсонгүй.</p>
+          <Link to="/cv" className="inline-block bg-[#1e3a8a] text-white px-5 py-2.5 rounded text-sm font-semibold hover:bg-[#1e40af] transition">← CV жагсаалт</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Parse personal_info
+  var info = {};
+  try { info = cv.personal_info ? JSON.parse(cv.personal_info) : {}; } catch (e) { info = {}; }
+
+  var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
+  var educations = Array.isArray(cv.educations) ? cv.educations : [];
+  var experiences = Array.isArray(cv.experiences) ? cv.experiences : [];
+  var skills = Array.isArray(cv.skills) ? cv.skills : [];
+
+  // Info-оос ирэх list-уудыг авах
+  var personalSkills = info.personalSkills || [];
+  var techSkills = info.techSkills || [];
+  var profSkills = info.profSkills || [];
+  var artSkills = info.artSkills || [];
+  var sportSkills = info.sportSkills || [];
+  var languages = info.languages || [];
+  var certs = info.certs || [];
+  var internships = info.internships || [];
+  var awards = info.awards || [];
 
   return (
-    <div className="min-h-screen bg-slate-200 print-bg-white">
-      {/* Top nav (hidden on print) */}
-      <div className="sticky top-0 z-10 bg-white border-b border-slate-200 no-print">
-        <div className="max-w-4xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/cv" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Top bar */}
+      <div className="bg-[#1e3a8a] text-white text-xs relative z-10">
+        <div className="max-w-7xl mx-auto px-6 py-2">
+          Залуучуудын ажилд орох бэлтгэлийг дэмжих платформ
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-30">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+          <Link to="/dashboard" className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-[#1e3a8a] flex items-center justify-center rounded">
+              <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
+            <div>
+              <div className="text-base font-bold text-slate-900 leading-none">CareerPrep</div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">Career Platform</div>
+            </div>
           </Link>
-          <div className="flex gap-2 items-center">
-            <Link to="/cv" className="text-sm text-slate-600 hover:text-slate-900 font-medium px-3 py-2">← Буцах</Link>
-            <Link to={"/cv/" + id + "/edit"} className="text-sm border border-slate-300 text-slate-700 hover:bg-slate-50 font-medium px-4 py-2 rounded transition">Засах</Link>
-            <button onClick={function() { window.print(); }} className="bg-[#1e3a8a] text-white px-5 py-2 rounded text-sm font-semibold hover:bg-[#1e40af] transition">
-              PDF хэвлэх
-            </button>
-          </div>
+          <Link to="/cv" className="text-sm text-slate-600 hover:text-[#1e3a8a] font-medium transition">← CV жагсаалт</Link>
         </div>
-      </div>
+      </nav>
 
-      <div className="cv-container max-w-[210mm] mx-auto py-6 px-4 print-no-padding">
-        <div className="bg-white shadow-sm print-no-shadow cv-page border border-slate-200">
-          <div className="cv-content px-10 py-8">
+      {/* Main */}
+      <div className="flex-1 px-4 py-8 relative z-10">
+        <div className="max-w-5xl mx-auto">
 
-            <div className="flex gap-5 mb-3">
-              <div className="w-[90px] h-[110px] bg-slate-100 rounded border border-slate-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {photoUrl ? (
-                  <img src={photoUrl} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-3xl text-slate-300">?</span>
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
-                  <h1 className="text-[22px] font-bold text-gray-900">{fullName}</h1>
-                  <div className="text-right space-y-0.5">
-                    {phones && <div className="flex items-center gap-1.5 justify-end text-[11px] text-gray-700"><span className="text-[#1e3a8a]">&#9742;</span> {phones}</div>}
-                    {p.email && <div className="flex items-center gap-1.5 justify-end text-[11px] text-gray-700"><span className="text-[#1e3a8a]">&#9993;</span> {p.email}</div>}
-                    {p.address && <div className="flex items-center gap-1.5 justify-end text-[11px] text-gray-700"><span className="text-[#1e3a8a]">&#9906;</span> {p.address}</div>}
-                    {p.linkedin && <div className="flex items-center gap-1.5 justify-end text-[11px] text-gray-700"><span className="text-[#1e3a8a]">&#9741;</span> {p.linkedin}</div>}
-                  </div>
+          {/* Header card */}
+          <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg px-8 py-6 shadow-lg mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">CV дэлгэрэнгүй</p>
+              <h1 className="text-2xl font-bold text-slate-900">{cv.name}</h1>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={handleDownloadPDF}
+                disabled={downloading}
+                className="bg-[#1e3a8a] text-white px-5 py-2.5 rounded text-sm font-semibold hover:bg-[#1e40af] disabled:opacity-60 transition"
+              >
+                {downloading ? "Бэлтгэж байна..." : "⬇ PDF татах"}
+              </button>
+              <Link to={"/cv/" + cv.id + "/edit"} className="px-5 py-2.5 border border-slate-300 rounded text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">Засах</Link>
+              <button onClick={handleDelete} className="px-5 py-2.5 border border-red-300 rounded text-sm font-semibold text-red-600 hover:bg-red-50 transition">Устгах</button>
+            </div>
+          </div>
+
+          {/* PRINTABLE CV */}
+          <div
+            ref={printRef}
+            className="bg-white shadow-lg mx-auto"
+            style={{
+              width: "210mm",
+              minHeight: "297mm",
+              maxWidth: "100%",
+              color: "#1f2937",
+              padding: "36px 44px",
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            {/* ========== HEADER (photo + name + contacts) ========== */}
+            <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
+              {info.photoUrl && (
+                <img
+                  src={info.photoUrl}
+                  alt=""
+                  style={{ width: "130px", height: "160px", objectFit: "cover", borderRadius: "2px", flexShrink: 0 }}
+                />
+              )}
+              <div style={{ flex: 1, display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "24px" }}>
+                <h1 style={{ fontSize: "32px", fontWeight: "bold", color: "#1e3a8a", lineHeight: 1.1 }}>
+                  {fullName || "Нэр оруулаагүй"}
+                </h1>
+                <div style={{ fontSize: "12px", color: "#475569", textAlign: "right", lineHeight: 1.8 }}>
+                  {info.phone && <div>☎ {info.phone}{info.phone2 ? ", " + info.phone2 : ""}</div>}
+                  {info.email && <div>✉ {info.email}</div>}
+                  {info.address && <div>📍 {info.address}</div>}
+                  {info.linkedin && <div>🔗 {info.linkedin}</div>}
                 </div>
               </div>
             </div>
 
-            {p.about && (
-              <p className="text-[11px] text-gray-600 leading-relaxed mb-2 border-b border-gray-300 pb-3">{p.about}</p>
+            {/* About */}
+            {info.about && (
+              <p style={{ fontSize: "12px", lineHeight: 1.6, color: "#475569", marginBottom: "20px", whiteSpace: "pre-line" }}>
+                {info.about}
+              </p>
             )}
 
-            {(p.gender || p.birthDate || p.marital || p.regNo || p.license || p.salaryExpect) && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Ерөнхий мэдээлэл</h2>
-                <div className="grid grid-cols-3 gap-y-1.5 gap-x-4 text-[11px]">
-                  {p.birthDate && <div><span className="text-gray-500">Төрсөн огноо: </span><span className="font-medium text-gray-800">{p.birthDate}</span></div>}
-                  {p.gender && <div><span className="text-gray-500">Хүйс: </span><span className="font-medium text-gray-800">{p.gender}</span></div>}
-                  {p.marital && <div><span className="text-gray-500">Гэрлэлтийн байдал: </span><span className="font-medium text-gray-800">{p.marital}</span></div>}
-                  {p.regNo && <div><span className="text-gray-500">Регистрийн дугаар: </span><span className="font-medium text-gray-800">{p.regNo}</span></div>}
-                  {p.license && p.license !== "Байхгүй" && <div><span className="text-gray-500">Жолооны үнэмлэх: </span><span className="font-medium text-gray-800">{p.license}</span></div>}
+            {/* Ерөнхий мэдээлэл */}
+            {(info.birthDate || info.gender || info.marital || info.regNo || info.license || info.salaryExpect) && (
+              <Section title="Ерөнхий мэдээлэл">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px 24px", fontSize: "12px" }}>
+                  {info.birthDate && <Field label="Төрсөн огноо" value={info.birthDate} />}
+                  {info.gender && <Field label="Хүйс" value={info.gender} />}
+                  {info.marital && <Field label="Гэрлэлтийн байдал" value={info.marital} />}
+                  {info.regNo && <Field label="Регистрийн дугаар" value={info.regNo} />}
+                  {info.license && <Field label="Жолооны үнэмлэх" value={info.license} />}
+                  {info.salaryExpect && <Field label="Цалингийн хүлээлт" value={info.salaryExpect} />}
                 </div>
-                {p.salaryExpect && <p className="text-[11px] text-gray-500 mt-1.5">Цалингийн хүлээлт: <span className="font-medium text-gray-800">{p.salaryExpect}</span></p>}
-              </div>
+              </Section>
             )}
 
-            {cv.educations && cv.educations.length > 0 && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Боловсрол</h2>
-                {cv.educations.map(function(edu) {
+            {/* Боловсрол */}
+            {educations.length > 0 && (
+              <Section title="Боловсрол">
+                {educations.map(function (edu, i) {
+                  var period = edu.start_year ? edu.start_year + " - " + (edu.end_year || "Суралцаж байгаа") : "";
                   return (
-                    <div key={edu.id} className="mb-2.5">
-                      <div className="flex justify-between items-start">
-                        <p className="text-[13px] font-bold text-gray-900">{edu.school}</p>
-                        <p className="text-[11px] text-gray-500 whitespace-nowrap ml-4">{edu.start_year} - {edu.end_year || "Суралцаж байгаа"}</p>
+                    <div key={i} style={{ marginBottom: i < educations.length - 1 ? "10px" : "0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+                        <p style={{ fontSize: "13px", fontWeight: "bold", color: "#0f172a" }}>
+                          {edu.school}
+                        </p>
+                        <p style={{ fontSize: "11px", color: "#64748b", whiteSpace: "nowrap" }}>{period}</p>
                       </div>
-                      <p className="text-[11px] text-gray-600">Бакалавр | {edu.major} {edu.gpa ? "| " + edu.gpa + " голч" : ""} | Монгол</p>
-                      <div className="border-b border-gray-100 mt-2"></div>
+                      <p style={{ fontSize: "12px", color: "#475569", marginTop: "2px" }}>
+                        {[edu.level || edu.degree, edu.major, edu.gpa ? edu.gpa + " голч" : "", edu.country].filter(Boolean).join(" | ")}
+                      </p>
                     </div>
                   );
                 })}
-              </div>
+              </Section>
             )}
 
-            {cv.experiences && cv.experiences.length > 0 && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Ажлын туршлага</h2>
-                {cv.experiences.map(function(exp) {
+            {/* Ажлын туршлага */}
+            {experiences.length > 0 && (
+              <Section title="Ажлын туршлага">
+                {experiences.map(function (exp, i) {
+                  var period = exp.start_date ? exp.start_date + " - " + (exp.end_date || "Одоо") : "";
                   return (
-                    <div key={exp.id} className="mb-2.5">
-                      <div className="flex justify-between items-start">
+                    <div key={i} style={{ marginBottom: i < experiences.length - 1 ? "10px" : "0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
                         <div>
-                          <p className="text-[13px] font-bold text-gray-900">{exp.company}</p>
-                          <p className="text-[11px] text-gray-600">{exp.position}</p>
+                          <p style={{ fontSize: "13px", fontWeight: "bold", color: "#0f172a" }}>{exp.position}</p>
+                          <p style={{ fontSize: "12px", color: "#1e3a8a", marginTop: "1px" }}>{exp.company}</p>
                         </div>
-                        <p className="text-[11px] text-gray-500 whitespace-nowrap ml-4">{exp.start_date} - {exp.end_date || "Одоо"}</p>
+                        <p style={{ fontSize: "11px", color: "#64748b", whiteSpace: "nowrap" }}>{period}</p>
                       </div>
-                      {exp.description && <p className="text-[11px] text-gray-500 mt-1">{exp.description}</p>}
-                      <div className="border-b border-gray-100 mt-2"></div>
+                      {exp.description && (
+                        <p style={{ fontSize: "12px", color: "#475569", marginTop: "4px", whiteSpace: "pre-line" }}>{exp.description}</p>
+                      )}
                     </div>
                   );
                 })}
-              </div>
+              </Section>
             )}
 
-            {certsList.length > 0 && certsList.some(function(c) { return c.name; }) && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Сургалт, сертификат</h2>
-                {certsList.filter(function(c) { return c.name; }).map(function(c, i) {
+            {/* Дадлага */}
+            {internships.length > 0 && (
+              <Section title="Дадлага">
+                {internships.map(function (n, i) {
+                  var period = n.start_date ? n.start_date + " - " + (n.end_date || "") : "";
                   return (
-                    <div key={i} className="mb-2">
-                      <div className="flex justify-between items-start">
+                    <div key={i} style={{ marginBottom: i < internships.length - 1 ? "10px" : "0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
                         <div>
-                          <p className="text-[13px] font-bold text-gray-900">{c.name}</p>
-                          <p className="text-[11px] text-gray-500">{c.organization}</p>
+                          <p style={{ fontSize: "13px", fontWeight: "bold", color: "#0f172a" }}>{n.title}</p>
+                          <p style={{ fontSize: "12px", color: "#1e3a8a", marginTop: "1px" }}>{n.company}</p>
                         </div>
-                        <p className="text-[11px] text-gray-500 whitespace-nowrap ml-4">{c.start_date} - {c.end_date}</p>
+                        <p style={{ fontSize: "11px", color: "#64748b", whiteSpace: "nowrap" }}>{period}</p>
                       </div>
-                      <div className="border-b border-gray-100 mt-2"></div>
+                      {n.description && <p style={{ fontSize: "12px", color: "#475569", marginTop: "4px", whiteSpace: "pre-line" }}>{n.description}</p>}
                     </div>
                   );
                 })}
-              </div>
+              </Section>
             )}
 
-            {awardsList.length > 0 && awardsList.some(function(a) { return a.name; }) && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Шагнал урамшуулал</h2>
-                {awardsList.filter(function(a) { return a.name; }).map(function(a, i) {
+            {/* Сургалт, сертификат */}
+            {certs.length > 0 && (
+              <Section title="Сургалт, сертификат">
+                {certs.map(function (c, i) {
+                  var period = c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : "";
                   return (
-                    <div key={i} className="flex justify-between mb-1.5">
-                      <p className="text-[13px] font-bold text-gray-900">{a.name}</p>
-                      <p className="text-[11px] text-gray-500">{a.year}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {(softSkills.length > 0 || techList.length > 0 || langs.length > 0 || profList.length > 0 || artList.length > 0 || sportList.length > 0) && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Ур чадвар</h2>
-
-                {softSkills.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-[11px] font-bold text-gray-800 mb-1.5">Хувийн ур чадвар:</p>
-                    <div className="grid grid-cols-3 gap-x-3 gap-y-0.5">
-                      {softSkills.map(function(s, i) {
-                        return <p key={i} className="text-[11px] text-gray-600">{"• " + s}</p>;
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {langs.length > 0 && langs.some(function(l) { return l.name; }) && (
-                  <div className="mb-3">
-                    <p className="text-[11px] font-bold text-gray-800 mb-1.5">Гадаад хэлний мэдлэг:</p>
-                    {langs.filter(function(l) { return l.name; }).map(function(l, i) {
-                      return <p key={i} className="text-[11px] text-gray-600 ml-2">{l.name} ({l.level})</p>;
-                    })}
-                  </div>
-                )}
-
-                {techList.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-[11px] font-bold text-gray-800 mb-1.5">Компьютерын программын мэдлэг:</p>
-                    <div className="grid grid-cols-3 gap-x-4 gap-y-0.5">
-                      {techList.map(function(s, i) {
-                        return <p key={i} className="text-[11px] text-gray-600">{s} (70%)</p>;
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {artList.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-[11px] font-bold text-gray-800 mb-1.5">Урлагийн ур чадвар:</p>
-                    <p className="text-[11px] text-gray-600 ml-2">{artList.join(", ")}</p>
-                  </div>
-                )}
-
-                {sportList.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-[11px] font-bold text-gray-800 mb-1.5">Спортын ур чадвар:</p>
-                    <p className="text-[11px] text-gray-600 ml-2">{sportList.join(", ")}</p>
-                  </div>
-                )}
-
-                {profList.length > 0 && (
-                  <div className="mb-3">
-                    <p className="text-[11px] font-bold text-gray-800 mb-1.5">Мэргэжлийн ур чадвар:</p>
-                    <div className="grid grid-cols-3 gap-x-3 gap-y-0.5">
-                      {profList.map(function(s, i) {
-                        return <p key={i} className="text-[11px] text-gray-600">{"• " + s}</p>;
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {internList.length > 0 && internList.some(function(n) { return n.company; }) && (
-              <div className="cv-section">
-                <h2 className="cv-heading">Дадлага</h2>
-                {internList.filter(function(n) { return n.company; }).map(function(n, i) {
-                  return (
-                    <div key={i} className="mb-2">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-[13px] font-bold text-gray-900">{n.title}</p>
-                          <p className="text-[11px] text-gray-500">{n.company}</p>
-                        </div>
-                        <p className="text-[11px] text-gray-500 whitespace-nowrap ml-4">{n.start_date} - {n.end_date}</p>
+                    <div key={i} style={{ marginBottom: i < certs.length - 1 ? "8px" : "0" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
+                        <p style={{ fontSize: "13px", fontWeight: "bold", color: "#0f172a" }}>{c.name}</p>
+                        <p style={{ fontSize: "11px", color: "#64748b", whiteSpace: "nowrap" }}>{period}</p>
                       </div>
-                      {n.description && <p className="text-[11px] text-gray-500 mt-1">{n.description}</p>}
+                      {c.organization && <p style={{ fontSize: "12px", color: "#475569" }}>{c.organization}</p>}
                     </div>
                   );
                 })}
-              </div>
+              </Section>
             )}
 
+            {/* Шагнал */}
+            {awards.length > 0 && (
+              <Section title="Шагнал урамшуулал">
+                {awards.map(function (a, i) {
+                  return (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", paddingTop: "4px", paddingBottom: "4px", borderBottom: i < awards.length - 1 ? "1px solid #e2e8f0" : "none" }}>
+                      <p style={{ fontSize: "12px", fontWeight: "600", color: "#0f172a" }}>{a.name}</p>
+                      {a.year && <p style={{ fontSize: "11px", color: "#64748b" }}>{a.year}</p>}
+                    </div>
+                  );
+                })}
+              </Section>
+            )}
+
+            {/* Ур чадвар (all sub-sections) */}
+            {(personalSkills.length > 0 || techSkills.length > 0 || profSkills.length > 0 || artSkills.length > 0 || sportSkills.length > 0 || languages.length > 0) && (
+              <Section title="Ур чадвар">
+                {personalSkills.length > 0 && <SkillGroup title="Хувийн ур чадвар:" items={personalSkills} bullets />}
+                {languages.length > 0 && (
+                  <SkillGroup title="Гадаад хэлний мэдлэг:" items={languages.map(function (l) { return l.name + (l.level ? " (" + l.level + ")" : ""); })} />
+                )}
+                {techSkills.length > 0 && <SkillGroup title="Компьютерын программын мэдлэг:" items={techSkills.map(function (s) { return s + " (70%)"; })} columns={3} />}
+                {profSkills.length > 0 && <SkillGroup title="Мэргэжлийн ур чадвар:" items={profSkills} bullets />}
+                {artSkills.length > 0 && <SkillGroup title="Урлагийн ур чадвар:" items={[artSkills.join(", ")]} />}
+                {sportSkills.length > 0 && <SkillGroup title="Спортын ур чадвар:" items={[sportSkills.join(", ")]} />}
+              </Section>
+            )}
+
+            {/* Skills from skills array (fallback — if backend нь skill-үүдийг массивт хадгалсан бол) */}
+            {skills.length > 0 && personalSkills.length === 0 && techSkills.length === 0 && (
+              <Section title="Ур чадвар">
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {skills.map(function (s, i) {
+                    return (
+                      <span key={i} style={{
+                        fontSize: "11px",
+                        backgroundColor: "#eff6ff",
+                        color: "#1e3a8a",
+                        border: "1px solid #dbeafe",
+                        padding: "3px 8px",
+                        borderRadius: "3px",
+                      }}>
+                        {s.skill_name}{s.level ? " · " + s.level : ""}
+                      </span>
+                    );
+                  })}
+                </div>
+              </Section>
+            )}
           </div>
-          <div className="px-10 pb-6 flex justify-between items-center border-t border-gray-200 pt-3 mt-8">
-            <p className="text-[10px] text-gray-400">CareerPrep | {new Date().toLocaleDateString("mn-MN")}</p>
-            <p className="text-[10px] text-gray-400">careerprep.mn</p>
-          </div>
+
+          <p className="text-center text-xs text-slate-500 mt-6 mb-4">
+            PDF татахын өмнө мэдээллээ шалгана уу.
+          </p>
         </div>
       </div>
+    </div>
+  );
+}
 
-  <style dangerouslySetInnerHTML={{ __html: `
-  .cv-heading {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1e3a8a;
-    margin-bottom: 6px;
-    padding-bottom: 4px;
-    border-bottom: 2px solid #1e3a8a;
+// ============ Helper components ============
 
-    /* heading доор ганцаараа үлдэхгүй */
-    page-break-after: avoid;
-  }
+function Section({ title, children }) {
+  return (
+    <div style={{ marginBottom: "18px" }}>
+      <h2 style={{
+        fontSize: "15px",
+        fontWeight: "bold",
+        color: "#1e3a8a",
+        marginBottom: "8px",
+        paddingBottom: "4px",
+        borderBottom: "2px solid #1e3a8a",
+      }}>
+        {title}
+      </h2>
+      {children}
+    </div>
+  );
+}
 
-  /*  SECTION-ийг таслахыг зөвшөөрнө */
-  .cv-section {
-    margin-top: 16px;
-    break-inside: auto;
-    page-break-inside: auto;
-  }
+function Field({ label, value }) {
+  return (
+    <div>
+      <span style={{ color: "#64748b" }}>{label}: </span>
+      <span style={{ fontWeight: "600", color: "#0f172a" }}>{value}</span>
+    </div>
+  );
+}
 
-  /*  ITEM бүр тасрахгүй */
-  .cv-item {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  .no-print { display: block; }
-  .print-bg-white { background: #e2e8f0; }
-
-  @media print {
-    html, body {
-      background: white !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
-    .no-print { display: none !important; }
-    .print-bg-white { background: white !important; }
-
-    .cv-container {
-      padding: 0 !important;
-      max-width: none !important;
-    }
-
-    .cv-page {
-      box-shadow: none !important;
-      border: none !important;
-    }
-
-    .cv-content {
-      padding: 20px 30px !important;
-    }
-
-    /* section тасарч болно */
-    .cv-section {
-      break-inside: auto;
-      page-break-inside: auto;
-    }
-
-    /* item тасрахгүй */
-    .cv-item {
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-
-    /* A4 тохиргоо */
-    @page {
-      margin: 15mm;
-      size: A4;
-    }
-
-    * {
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-  }
-` }} />
+function SkillGroup({ title, items, bullets, columns }) {
+  var cols = columns || 3;
+  return (
+    <div style={{ marginBottom: "10px" }}>
+      <p style={{ fontSize: "12px", fontWeight: "bold", color: "#0f172a", marginBottom: "4px" }}>{title}</p>
+      {bullets ? (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(" + cols + ", 1fr)",
+          gap: "2px 16px",
+          fontSize: "12px",
+          color: "#334155",
+        }}>
+          {items.map(function (s, i) { return <div key={i}>• {s}</div>; })}
+        </div>
+      ) : (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(" + cols + ", 1fr)",
+          gap: "2px 16px",
+          fontSize: "12px",
+          color: "#475569",
+        }}>
+          {items.map(function (s, i) { return <div key={i}>{s}</div>; })}
+        </div>
+      )}
     </div>
   );
 }

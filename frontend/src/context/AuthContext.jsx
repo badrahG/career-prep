@@ -35,6 +35,9 @@ export function AuthProvider({ children }) {
     const res = await API.post("/auth/login", { email, password });
     const newToken = res.data.access_token;
     localStorage.setItem("token", newToken);
+    if (res.data.refresh_token) {
+      localStorage.setItem("refreshToken", res.data.refresh_token);
+    }
     setToken(newToken);
     await fetchUser(newToken);
     return res.data;
@@ -47,6 +50,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
     setToken(null);
     setUser(null);
   };

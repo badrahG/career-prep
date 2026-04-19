@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Header, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request, Response
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from typing import Optional
@@ -12,10 +12,11 @@ from app.models.email_token import EmailToken, TokenType
 from app.schemas.user import (
     UserCreate, UserLogin, UserResponse, Token, PasswordChange,
     ForgotPasswordRequest, ResetPasswordRequest, VerifyEmailRequest,
-    ResendVerificationRequest,
+    ResendVerificationRequest, ProfileUpdate,
 )
-from app.services.auth import hash_password, verify_password, create_access_token, SECRET_KEY, ALGORITHM, get_current_user
+from app.services.auth import hash_password, verify_password, create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM, get_current_user
 from app.services.email_service import send_verification_email, send_password_reset_email
+from app.services.rate_limit import limiter
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
@@ -35,12 +36,6 @@ def _create_token(db: Session, user: User, token_type: TokenType, hours: int) ->
     return token_str
 
 
-class ProfileUpdate(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    phone: Optional[str] = None
-
-
 @router.put("/profile", response_model=UserResponse)
 def update_profile(data: ProfileUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if data.first_name:
@@ -55,7 +50,8 @@ def update_profile(data: ProfileUpdate, db: Session = Depends(get_db), current_u
 
 
 @router.post("/register", response_model=UserResponse)
-def register(user_data: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, response: Response, user_data: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == user_data.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="И-мэйл хаяг бүртгэлтэй байна")
@@ -74,7 +70,6 @@ def register(user_data: UserCreate, background_tasks: BackgroundTasks, db: Sessi
     db.commit()
     db.refresh(new_user)
 
-    # Generate verification token and send email in background
     token = _create_token(db, new_user, TokenType.verify_email, hours=24)
     background_tasks.add_task(send_verification_email, new_user.email, new_user.first_name, token)
 
@@ -82,7 +77,8 @@ def register(user_data: UserCreate, background_tasks: BackgroundTasks, db: Sessi
 
 
 @router.post("/login", response_model=Token)
-def login(user_data: UserLogin, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, response: Response, user_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
     if not user or not verify_password(user_data.password, user.password):
         raise HTTPException(status_code=401, detail="И-мэйл эсвэл нууц үг буруу байна")
@@ -96,8 +92,9 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
             detail="И-мэйл хаягаа баталгаажуулна уу. Баталгаажуулах линк и-мэйл хаягруу илгээсэн болно."
         )
 
-    token = create_access_token(data={"sub": user.id})
-    return {"access_token": token, "token_type": "bearer"}
+    access_token = create_access_token(data={"sub": user.id})
+    refresh_token = create_refresh_token(user.id)
+    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 
 @router.get("/me", response_model=UserResponse)
@@ -105,31 +102,63 @@ def get_me(current_user: User = Depends(get_current_user)):
     return current_user
 
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+@router.post("/refresh", response_model=Token)
+def refresh_token(data: RefreshRequest, db: Session = Depends(get_db)):
+    try:
+        payload = jwt.decode(data.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Token буруу байна")
+        sub = payload.get("sub")
+        if sub is None:
+            raise HTTPException(status_code=401, detail="Token буруу байна")
+        user_id = int(sub)
+    except (JWTError, ValueError):
+        raise HTTPException(status_code=401, detail="Token хүчингүй эсвэл хугацаа дууссан")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.is_active:
+        raise HTTPException(status_code=401, detail="Хэрэглэгч олдсонгүй")
+
+    new_access = create_access_token(data={"sub": user.id})
+    new_refresh = create_refresh_token(user.id)
+    return {"access_token": new_access, "refresh_token": new_refresh, "token_type": "bearer"}
+
+
 @router.get("/dashboard-stats")
 def get_dashboard_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     from app.models.cv import CV
+    from app.models.progress import UserQuizResult, UserFlashcardProgress
+
     cv_count = db.query(CV).filter(CV.user_id == current_user.id).count()
+    studied_questions = db.query(UserFlashcardProgress).filter(UserFlashcardProgress.user_id == current_user.id).count()
+    quiz_count = db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).count()
 
     profile_done = 1 if current_user.phone else 0
     cv_done = 1 if cv_count > 0 else 0
+    quiz_done = 1 if quiz_count > 0 else 0
+    flashcard_done = 1 if studied_questions >= 10 else 0
 
     total = 5
-    done = profile_done + min(cv_count, 2)
+    done = profile_done + min(cv_count, 2) + quiz_done + flashcard_done
     progress = int((done / total) * 100)
 
     return {
         "cv_count": cv_count,
-        "progress": progress,
-        "studied_questions": 0,
-        "checklist_count": 0,
+        "progress": min(progress, 100),
+        "studied_questions": studied_questions,
+        "quiz_count": quiz_count,
         "profile_done": profile_done == 1,
         "cv_done": cv_done == 1,
+        "quiz_done": quiz_done == 1,
     }
 
 
 @router.post("/change-password")
 def change_password(data: PasswordChange, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """FR1.2: Change password with old password verification"""
     if not verify_password(data.old_password, current_user.password):
         raise HTTPException(status_code=400, detail="Хуучин нууц үг буруу байна")
 
@@ -146,7 +175,6 @@ def change_password(data: PasswordChange, db: Session = Depends(get_db), current
 
 @router.delete("/me")
 def delete_my_account(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """FR1.3: User deletes own account."""
     db.delete(current_user)
     db.commit()
     return {"message": "Бүртгэл устгагдлаа"}
@@ -156,7 +184,6 @@ def delete_my_account(db: Session = Depends(get_db), current_user: User = Depend
 
 @router.post("/verify-email")
 def verify_email(data: VerifyEmailRequest, db: Session = Depends(get_db)):
-    """Verify email using token from verification link"""
     token_row = db.query(EmailToken).filter(
         EmailToken.token == data.token,
         EmailToken.token_type == TokenType.verify_email,
@@ -188,10 +215,9 @@ def verify_email(data: VerifyEmailRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/resend-verification")
-def resend_verification(data: ResendVerificationRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    """Resend verification email"""
+@limiter.limit("3/minute")
+def resend_verification(request: Request, response: Response, data: ResendVerificationRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
-    # Don't reveal whether email exists (security)
     if user and not user.is_verified:
         token = _create_token(db, user, TokenType.verify_email, hours=24)
         background_tasks.add_task(send_verification_email, user.email, user.first_name, token)
@@ -201,10 +227,9 @@ def resend_verification(data: ResendVerificationRequest, background_tasks: Backg
 # ------- Password reset -------
 
 @router.post("/forgot-password")
-def forgot_password(data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    """Request a password reset link"""
+@limiter.limit("3/minute")
+def forgot_password(request: Request, response: Response, data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
-    # Always return success (don't leak whether email exists)
     if user and user.is_active:
         token = _create_token(db, user, TokenType.reset_password, hours=1)
         background_tasks.add_task(send_password_reset_email, user.email, user.first_name, token)
@@ -212,8 +237,8 @@ def forgot_password(data: ForgotPasswordRequest, background_tasks: BackgroundTas
 
 
 @router.post("/reset-password")
-def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
-    """Use reset token to set a new password"""
+@limiter.limit("5/minute")
+def reset_password(request: Request, response: Response, data: ResetPasswordRequest, db: Session = Depends(get_db)):
     if len(data.new_password) < 8:
         raise HTTPException(status_code=400, detail="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой")
 
@@ -242,7 +267,6 @@ def reset_password(data: ResetPasswordRequest, db: Session = Depends(get_db)):
     user.password = hash_password(data.new_password)
     token_row.used_at = now
 
-    # Invalidate all other unused reset tokens for this user
     db.query(EmailToken).filter(
         EmailToken.user_id == user.id,
         EmailToken.token_type == TokenType.reset_password,

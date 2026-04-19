@@ -9,7 +9,7 @@ export default function Dashboard() {
   var [cvs, setCvs] = useState([]);
   var [menuOpen, setMenuOpen] = useState(false);
 
-  var isAdmin = user?.role === "admin";
+ var isAdmin = user?.role === "admin";
 
   useEffect(function () {
     // Load backend stats
@@ -80,10 +80,16 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+      </div>
 
       {/* Top nav */}
-      <nav className="bg-white border-b border-slate-200">
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-30 relative">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to="/dashboard" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
@@ -131,7 +137,7 @@ export default function Dashboard() {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
 
         {/* Page header */}
         <div className="mb-8 pb-6 border-b border-slate-200">
@@ -162,7 +168,7 @@ export default function Dashboard() {
             { label: "Checklist", value: stats.checklist_count },
           ].map(function (s, i) {
             return (
-              <div key={i} className="bg-white border border-slate-200 rounded p-5">
+              <div key={i} className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-5 shadow-sm">
                 <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">{s.label}</p>
                 <p className="text-3xl font-bold text-slate-900">{s.value}</p>
               </div>
@@ -173,7 +179,7 @@ export default function Dashboard() {
         {/* Checklist + Quick actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           <div className="lg:col-span-2">
-            <div className="bg-white border border-slate-200 rounded">
+            <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-sm">
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
                 <h2 className="text-base font-semibold text-slate-900">Бэлтгэлийн алхамууд</h2>
                 <span className="text-sm font-semibold text-[#1e3a8a]">{stats.progress}%</span>
@@ -207,7 +213,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded">
+          <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-sm">
             <div className="px-6 py-4 border-b border-slate-200">
               <h2 className="text-base font-semibold text-slate-900">Хурдан үйлдлүүд</h2>
             </div>
@@ -240,7 +246,7 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {cvs.slice(0, 3).map(function (cv) {
                 return (
-                  <Link key={cv.id} to={"/cv/" + cv.id} className="bg-white border border-slate-200 rounded p-4 hover:border-[#1e3a8a] transition group">
+                  <Link key={cv.id} to={"/cv/" + cv.id} className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-4 hover:border-[#1e3a8a] transition group shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-slate-100 border border-slate-200 rounded flex items-center justify-center flex-shrink-0">
                         <span className="text-slate-700 font-bold text-xs">CV</span>
@@ -268,7 +274,7 @@ export default function Dashboard() {
               { title: "Тэтгэлэг", desc: "Дотоодын тэтгэлэг, internship хайх", link: "/scholarship" },
             ].map(function (m, i) {
               return (
-                <Link key={i} to={m.link} className="bg-white border border-slate-200 rounded p-5 hover:border-[#1e3a8a] transition group">
+                <Link key={i} to={m.link} className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-5 hover:border-[#1e3a8a] transition group shadow-sm">
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-1 bg-[#1e3a8a]"></div>
                     <span className="text-slate-300 group-hover:text-[#1e3a8a] transition">→</span>
@@ -284,7 +290,7 @@ export default function Dashboard() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-12">
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-slate-200 mt-12 relative z-10">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-2">
           <p className="text-xs text-slate-500">© 2026 CareerPrep. Бүх эрх хуулиар хамгаалагдсан.</p>
           <div className="flex gap-4 text-xs text-slate-500">

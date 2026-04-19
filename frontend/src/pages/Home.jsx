@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
 
 export default function Home() {
@@ -110,8 +110,15 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="bg-gradient-to-br from-slate-50 to-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-16 md:py-24">
+      <section className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 border-b border-slate-200 overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 py-16 md:py-24 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 text-[#1e3a8a] px-3 py-1.5 rounded text-xs font-semibold mb-6">
@@ -235,8 +242,9 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="features" className="py-16 md:py-20 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-72 h-72 bg-gradient-to-br from-blue-400/5 to-transparent rounded-full blur-3xl"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-12">
             <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Боломжууд</p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">Бүх шаардлагатай зүйл нэг газар</h2>
@@ -265,8 +273,10 @@ export default function Home() {
       </section>
 
       {/* CV Templates preview (FR шаардлага: зочин хэрэглэгч CV загварыг харах) */}
-      <section id="templates" className="py-16 md:py-20 bg-slate-50 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="templates" className="py-16 md:py-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 border-t border-slate-200 relative overflow-hidden">
+        <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-gradient-to-tr from-purple-400/10 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 right-0 w-64 h-64 bg-gradient-to-bl from-blue-400/10 to-transparent rounded-full blur-2xl"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-12">
             <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">CV Загварууд</p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">3 мэргэжлийн загвар</h2>
@@ -397,8 +407,9 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="py-16 md:py-20 bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="how" className="py-16 md:py-20 bg-gradient-to-b from-white to-slate-50 border-t border-slate-200 relative overflow-hidden">
+        <div className="absolute top-1/3 -right-32 w-80 h-80 bg-gradient-to-bl from-emerald-400/8 to-transparent rounded-full blur-3xl"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center mb-12">
             <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Хэрхэн ажилладаг</p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">4 алхамд ажилд ойртоно</h2>
@@ -431,8 +442,10 @@ export default function Home() {
       </section>
 
       {/* Why choose us */}
-      <section className="py-16 md:py-20 bg-slate-50 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-blue-50/50 via-slate-50 to-purple-50/30 border-t border-slate-200 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-400/10 to-transparent rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-gradient-to-tl from-purple-400/10 to-transparent rounded-full blur-3xl"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Яагаад CareerPrep</p>
@@ -483,8 +496,9 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 md:py-20 bg-white border-t border-slate-200">
-        <div className="max-w-3xl mx-auto px-6">
+      <section className="py-16 md:py-20 bg-gradient-to-b from-slate-50 to-white border-t border-slate-200 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-br from-blue-400/5 to-transparent rounded-full blur-3xl"></div>
+        <div className="max-w-3xl mx-auto px-6 relative z-10">
           <div className="text-center mb-12">
             <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Түгээмэл асуулт</p>
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Танд асуулт байна уу?</h2>
@@ -515,8 +529,9 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 md:py-20 bg-[#1e3a8a] text-white">
-        <div className="max-w-4xl mx-auto px-6 text-center">
+      <section className="py-16 md:py-20 bg-gradient-to-br from-[#1e3a8a] via-[#1e40af] to-[#2563eb] text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent)] pointer-events-none"></div>
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Өнөөдрөөс ажилдаа бэлдэж эхлэе
           </h2>

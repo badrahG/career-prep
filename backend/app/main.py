@@ -2,12 +2,20 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+import os
+from pathlib import Path
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from app.database import engine, Base
+from app.services.rate_limit import limiter
 
 # Import all models
 from app.models.user import User  # noqa
@@ -16,35 +24,12 @@ from app.models.scholarship import Scholarship  # noqa
 from app.models.email_token import EmailToken  # noqa
 from app.models.interview import InterviewQuestion  # noqa
 from app.models.advice import Advice  # noqa
+from app.models.progress import UserQuizResult, UserFlashcardProgress  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.seed import seed_data
 
 Base.metadata.create_all(bind=engine)
-
-app = FastAPI(title="Career Platform API", version="1.0.0")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    print(f"АЛДАА: {exc}")
-    return JSONResponse(status_code=500, content={"detail": str(exc)})
-
-
-app.include_router(auth.router)
-app.include_router(cv.router)
-app.include_router(interview.router)
-app.include_router(scholarship.router)
-app.include_router(admin.router)
-app.include_router(advice.router)
 
 
 def run_migrations():
@@ -67,14 +52,78 @@ def run_migrations():
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS correct_option VARCHAR(1)"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS explanation TEXT"))
 
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS user_quiz_results (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                total INTEGER NOT NULL,
+                correct INTEGER NOT NULL,
+                percentage FLOAT NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_uqr_user ON user_quiz_results(user_id)"))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS user_flashcard_progress (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                question_id INTEGER NOT NULL REFERENCES interview_questions(id) ON DELETE CASCADE,
+                viewed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_ufp_user ON user_flashcard_progress(user_id)"))
+        conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS idx_ufp_user_q ON user_flashcard_progress(user_id, question_id)"))
+
         conn.commit()
     print("✓ Migrations applied")
 
 
-@app.on_event("startup")
-def startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     run_migrations()
     seed_data()
+    yield
+
+
+app = FastAPI(title="Career Platform API", version="1.0.0", lifespan=lifespan)
+
+# ============ Rate limiting ============
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
+# ============ CORS ============
+_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
+allowed_origins = [o.strip() for o in _origins_env.split(",")]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, RateLimitExceeded):
+        raise exc
+    print(f"АЛДАА: {exc}")
+    return JSONResponse(status_code=500, content={"detail": "Серверийн дотоод алдаа гарлаа"})
+
+
+app.include_router(auth.router)
+app.include_router(cv.router)
+app.include_router(interview.router)
+app.include_router(scholarship.router)
+app.include_router(admin.router)
+app.include_router(advice.router)
+
+UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
+UPLOAD_DIR.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
 
 @app.get("/")

@@ -35,7 +35,7 @@ export default function ResetPassword() {
   // If no token at all, show error
   if (!token) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4 p-6">
         <div className="bg-white border border-red-200 rounded p-8 max-w-md text-center">
           <h1 className="text-xl font-bold text-slate-900 mb-2">Линк буруу байна</h1>
           <p className="text-sm text-slate-600 mb-5">Нууц үг сэргээх линк буруу эсвэл бүрэн бус байна.</p>

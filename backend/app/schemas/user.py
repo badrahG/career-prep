@@ -49,6 +49,7 @@ class UserAdminResponse(BaseModel):
 
 class Token(BaseModel):
     access_token: str
+    refresh_token: Optional[str] = None
     token_type: str
 
 
@@ -78,3 +79,9 @@ class VerifyEmailRequest(BaseModel):
 
 class ResendVerificationRequest(BaseModel):
     email: EmailStr
+
+
+class ProfileUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None

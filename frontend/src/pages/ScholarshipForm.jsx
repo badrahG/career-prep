@@ -84,7 +84,7 @@ export default function ScholarshipForm() {
   }
   if (notFound) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600 text-sm">Тэтгэлэг олдсонгүй.</p>
         <Link to="/scholarship" className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">← Жагсаалт руу буцах</Link>
       </div>

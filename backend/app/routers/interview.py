@@ -7,11 +7,12 @@ import random
 from app.database import get_db
 from app.models.interview import InterviewQuestion
 from app.models.user import User
+from app.models.progress import UserQuizResult, UserFlashcardProgress
 from app.schemas.interview import (
     QuestionCreate, QuestionResponse, CategoryStats,
     QuizQuestionPublic, QuizSubmission, QuizResult, QuizResultItem,
 )
-from app.services.auth import get_current_user
+from app.services.auth import get_current_user, get_optional_user
 
 router = APIRouter(prefix="/api/interview", tags=["Interview"])
 
@@ -28,6 +29,8 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 def get_questions(
     category: Optional[str] = None,
     search: Optional[str] = None,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
 ):
     """List all questions for flashcard mode"""
@@ -45,7 +48,7 @@ def get_questions(
             )
         )
 
-    return query.order_by(InterviewQuestion.id).all()
+    return query.order_by(InterviewQuestion.id).offset(skip).limit(limit).all()
 
 
 @router.get("/stats", response_model=CategoryStats)
@@ -96,7 +99,11 @@ def get_quiz_questions(
 
 
 @router.post("/quiz/submit", response_model=QuizResult)
-def submit_quiz(submission: QuizSubmission, db: Session = Depends(get_db)):
+def submit_quiz(
+    submission: QuizSubmission,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_optional_user),
+):
     """
     Grade quiz submission and return per-question results with correct answers.
     """
@@ -140,6 +147,15 @@ def submit_quiz(submission: QuizSubmission, db: Session = Depends(get_db)):
     else:
         advice = "Түлхэц хэрэгтэй байна. Эхлээд Flashcard горимд бүх асуултыг судлаад, дараа нь Quiz-г дахин туршаарай."
 
+    if current_user and total > 0:
+        db.add(UserQuizResult(
+            user_id=current_user.id,
+            total=total,
+            correct=correct_count,
+            percentage=percentage,
+        ))
+        db.commit()
+
     return QuizResult(
         total=total,
         correct=correct_count,
@@ -147,6 +163,21 @@ def submit_quiz(submission: QuizSubmission, db: Session = Depends(get_db)):
         advice=advice,
         results=results,
     )
+
+
+# ---------- Flashcard progress ----------
+
+@router.post("/questions/{qid}/viewed")
+def mark_question_viewed(qid: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Mark a flashcard question as viewed by the current user (upsert)."""
+    existing = db.query(UserFlashcardProgress).filter(
+        UserFlashcardProgress.user_id == current_user.id,
+        UserFlashcardProgress.question_id == qid,
+    ).first()
+    if not existing:
+        db.add(UserFlashcardProgress(user_id=current_user.id, question_id=qid))
+        db.commit()
+    return {"ok": True}
 
 
 # ---------- STAR / Behavioral endpoints ----------

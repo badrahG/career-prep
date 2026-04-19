@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-import base64
+from pathlib import Path
+import uuid
+import aiofiles
 import os
+
 from app.database import get_db
 from app.models.user import User
 from app.models.cv import CV, Education, WorkExperience, Skill
@@ -12,13 +14,31 @@ from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/api/cv", tags=["CV"])
 
+ALLOWED_IMAGE_TYPES = {"jpg", "jpeg", "png", "webp"}
+MAX_PHOTO_BYTES = 5 * 1024 * 1024  # 5 MB
+UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
+API_BASE = os.getenv("API_BASE_URL", "http://localhost:8001")
+
+
 @router.post("/upload-photo")
-async def upload_photo(file: UploadFile = File(...)):
+async def upload_photo(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+):
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail="Зөвхөн jpg, jpeg, png, webp форматтай зураг оруулна уу")
+
     contents = await file.read()
-    b64 = base64.b64encode(contents).decode("utf-8")
-    ext = file.filename.split(".")[-1].lower()
-    data_url = f"data:image/{ext};base64,{b64}"
-    return {"photo_url": data_url}
+    if len(contents) > MAX_PHOTO_BYTES:
+        raise HTTPException(status_code=400, detail="Зургийн хэмжээ 5MB-аас хэтрэхгүй байх ёстой")
+
+    filename = f"{user.id}_{uuid.uuid4().hex}.{ext}"
+    dest = UPLOAD_DIR / filename
+    async with aiofiles.open(dest, "wb") as f:
+        await f.write(contents)
+
+    return {"photo_url": f"{API_BASE}/uploads/{filename}"}
 
 @router.post("", response_model=CVResponse)
 def create_cv(data: CVCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):

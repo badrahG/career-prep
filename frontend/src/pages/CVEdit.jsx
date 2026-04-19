@@ -316,11 +316,11 @@ export default function CVEdit() {
   var progressPct = Math.round((step / totalSteps) * 100);
 
   if (loading) {
-    return <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-400 text-sm">Ачааллаж байна...</div>;
+    return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center text-slate-400 text-sm">Ачааллаж байна...</div>;
   }
   if (notFound) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600 text-sm">CV олдсонгүй эсвэл нэвтрэх эрхгүй байна.</p>
         <Link to="/cv" className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">← CV жагсаалт руу буцах</Link>
       </div>

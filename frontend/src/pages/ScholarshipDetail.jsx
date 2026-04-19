@@ -88,7 +88,7 @@ export default function ScholarshipDetail() {
   }
   if (notFound || !item) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4">
         <p className="text-slate-600 text-sm">Тэтгэлэг олдсонгүй.</p>
         <Link to="/scholarship" className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">← Жагсаалт руу буцах</Link>
       </div>
@@ -114,6 +114,7 @@ export default function ScholarshipDetail() {
             <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
             <Link to="/cv" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">CV</Link>
             <Link to="/interview" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Ярилцлага</Link>
+            <Link to="/advice" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Зөвлөмж</Link>
             <Link to="/scholarship" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Тэтгэлэг</Link>
           </div>
           <Link to="/scholarship" className="text-sm text-slate-600 hover:text-slate-900 font-medium">← Буцах</Link>

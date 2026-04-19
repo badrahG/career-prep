@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func
 from typing import List, Optional
@@ -7,7 +7,7 @@ from app.database import get_db
 from app.models.advice import Advice
 from app.models.user import User
 from app.schemas.advice import AdviceCreate, AdviceResponse, AdviceStats
-from app.services.auth import get_current_user
+from app.services.auth import get_current_user, get_optional_user
 
 router = APIRouter(prefix="/api/advice", tags=["Advice"])
 
@@ -28,12 +28,16 @@ def list_advice(
     category: Optional[str] = None,
     search: Optional[str] = None,
     include_unpublished: bool = False,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
     """List advice, optionally filtered by category or search"""
     query = db.query(Advice)
 
-    if not include_unpublished:
+    is_admin = current_user is not None and current_user.role == "admin"
+    if not include_unpublished or not is_admin:
         query = query.filter(Advice.is_published == True)
 
     if category and category != "all":
@@ -51,7 +55,7 @@ def list_advice(
             )
         )
 
-    return query.order_by(Advice.sort_order.asc(), Advice.id.desc()).all()
+    return query.order_by(Advice.sort_order.asc(), Advice.id.desc()).offset(skip).limit(limit).all()
 
 
 @router.get("/stats", response_model=AdviceStats)
@@ -71,9 +75,16 @@ def advice_stats(db: Session = Depends(get_db)):
 
 
 @router.get("/{advice_id}", response_model=AdviceResponse)
-def get_advice(advice_id: int, db: Session = Depends(get_db)):
+def get_advice(
+    advice_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
     advice = db.query(Advice).filter(Advice.id == advice_id).first()
     if not advice:
+        raise HTTPException(status_code=404, detail="Зөвлөмж олдсонгүй")
+    is_admin = current_user is not None and current_user.role == "admin"
+    if not advice.is_published and not is_admin:
         raise HTTPException(status_code=404, detail="Зөвлөмж олдсонгүй")
     return advice
 

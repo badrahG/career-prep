@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from datetime import date
+import json
 
 from app.database import get_db
 from app.models.scholarship import Scholarship
+from app.models.scholarship_checklist import UserScholarshipChecklist
 from app.models.user import User
 from app.services.auth import get_current_user
 from pydantic import BaseModel
@@ -98,3 +100,43 @@ def delete_scholarship(sid: int, db: Session = Depends(get_db), admin: User = De
     db.delete(s)
     db.commit()
     return {"message": "Устгагдлаа"}
+
+
+class ChecklistItem(BaseModel):
+    label: str
+    done: bool
+
+
+class ChecklistUpdate(BaseModel):
+    items: List[ChecklistItem]
+
+
+@router.get("/{sid}/checklist")
+def get_checklist(sid: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    record = db.query(UserScholarshipChecklist).filter(
+        UserScholarshipChecklist.user_id == current_user.id,
+        UserScholarshipChecklist.scholarship_id == sid,
+    ).first()
+    if not record:
+        return {"items": None}
+    return {"items": json.loads(record.items)}
+
+
+@router.put("/{sid}/checklist")
+def save_checklist(sid: int, data: ChecklistUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    items_json = json.dumps([item.model_dump() for item in data.items], ensure_ascii=False)
+    record = db.query(UserScholarshipChecklist).filter(
+        UserScholarshipChecklist.user_id == current_user.id,
+        UserScholarshipChecklist.scholarship_id == sid,
+    ).first()
+    if record:
+        record.items = items_json
+    else:
+        record = UserScholarshipChecklist(
+            user_id=current_user.id,
+            scholarship_id=sid,
+            items=items_json,
+        )
+        db.add(record)
+    db.commit()
+    return {"ok": True}

@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import OrgLogo from "../components/OrgLogo";
+import { CardSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 export default function ScholarshipList() {
   var [items, setItems] = useState([]);
@@ -117,9 +119,13 @@ export default function ScholarshipList() {
         </div>
 
         {loading ? (
-          <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
+          <CardSkeleton count={6} />
         ) : filtered.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded p-12 text-center text-sm text-slate-500">Тэтгэлэг олдсонгүй.</div>
+          <EmptyState
+            illustration="search"
+            title="Тэтгэлэг олдсонгүй"
+            description="Хайлтын нөхцөл эсвэл шүүлтүүрээ өөрчилж үзнэ үү."
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(function (s) {

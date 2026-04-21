@@ -1,0 +1,9 @@
+# CareerPrep - Автомат backup тохиргоо
+# Ашиглах: crontab -e командаар доорх мөрийг нэмнэ
+
+# /path/to/ гэсэн хэсгийг backup.sh байгаа үнэн замаар сольж тохируулна уу
+
+# Өдөр бүр өглөөний 02:00 цагт backup хийх
+0 2 * * * /bin/bash /path/to/career-platform/backend/scripts/backup.sh >> /var/log/career_platform_backup.log 2>&1
+
+# Хэрэв 7 хоног бус өөр хадгалах хугацаа хүсвэл backup.sh дотор RETENTION_DAYS утгыг өөрчилнө

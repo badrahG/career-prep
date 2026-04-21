@@ -2,68 +2,31 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import API from "../services/api";
+import { StatsSkeleton } from "../components/Skeleton";
 
 export default function Dashboard() {
   var { user, logout } = useAuth();
-  var [stats, setStats] = useState({ cv_count: 0, progress: 0, studied_questions: 0, checklist_count: 0, profile_done: false, cv_done: false });
+  var [stats, setStats] = useState({ cv_count: 0, progress: 0, studied_questions: 0, checklist_count: 0, quiz_count: 0, quiz_avg: 0, profile_done: false, cv_done: false });
+  var [statsLoading, setStatsLoading] = useState(true);
   var [cvs, setCvs] = useState([]);
   var [menuOpen, setMenuOpen] = useState(false);
+  var [activity, setActivity] = useState([]);
+  var [activityLoading, setActivityLoading] = useState(true);
 
  var isAdmin = user?.role === "admin";
 
   useEffect(function () {
-    // Load backend stats
-    API.get("/auth/dashboard-stats").then(function (res) {
-      var backendStats = res.data;
-
-      // Calculate real studied_questions from localStorage
-      var studiedQuestions = 0;
-      try {
-        var saved = localStorage.getItem("interview_studied");
-        if (saved) {
-          var arr = JSON.parse(saved);
-          if (Array.isArray(arr)) studiedQuestions = arr.length;
-        }
-      } catch (e) {}
-
-      // Calculate real checklist_count from localStorage
-      // We count how many scholarships have ANY checked items
-      var checklistCount = 0;
-      try {
-        for (var i = 0; i < localStorage.length; i++) {
-          var key = localStorage.key(i);
-          if (key && key.startsWith("checklist_")) {
-            var val = localStorage.getItem(key);
-            if (val) {
-              var items = JSON.parse(val);
-              if (Array.isArray(items) && items.some(function (item) { return item.done; })) {
-                checklistCount++;
-              }
-            }
-          }
-        }
-      } catch (e) {}
-
-      // Recalculate progress with real numbers
-      // 5 total steps: profile, cv, interview studied, checklist, cv count
-      var total = 5;
-      var done = 0;
-      if (backendStats.profile_done) done++;
-      if (backendStats.cv_done) done++;
-      if (studiedQuestions >= 5) done++;
-      if (checklistCount > 0) done++;
-      if (backendStats.cv_count >= 2) done++;
-      var progress = Math.round((done / total) * 100);
-
-      setStats({
-        ...backendStats,
-        studied_questions: studiedQuestions,
-        checklist_count: checklistCount,
-        progress: progress,
-      });
-    }).catch(function () {});
+    API.get("/auth/dashboard-stats")
+      .then(function (res) { setStats(res.data); })
+      .catch(function () {})
+      .finally(function () { setStatsLoading(false); });
 
     API.get("/cv").then(function (res) { setCvs(res.data); }).catch(function () {});
+
+    API.get("/auth/activity")
+      .then(function (res) { setActivity(res.data); })
+      .catch(function () {})
+      .finally(function () { setActivityLoading(false); });
   }, []);
 
   var firstName = user?.first_name || "Хэрэглэгч";
@@ -160,21 +123,25 @@ export default function Dashboard() {
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: "Үүсгэсэн CV", value: stats.cv_count },
-            { label: "Ерөнхий явц", value: stats.progress + "%" },
-            { label: "Судалсан асуулт", value: stats.studied_questions },
-            { label: "Checklist", value: stats.checklist_count },
-          ].map(function (s, i) {
-            return (
-              <div key={i} className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-5 shadow-sm">
-                <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">{s.label}</p>
-                <p className="text-3xl font-bold text-slate-900">{s.value}</p>
-              </div>
-            );
-          })}
-        </div>
+        {statsLoading ? (
+          <div className="mb-8"><StatsSkeleton /></div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[
+              { label: "Үүсгэсэн CV", value: stats.cv_count },
+              { label: "Ерөнхий явц", value: stats.progress + "%" },
+              { label: "Судалсан асуулт", value: stats.studied_questions },
+              { label: "Quiz дундаж", value: stats.quiz_count > 0 ? stats.quiz_avg + "%" : "—" },
+            ].map(function (s, i) {
+              return (
+                <div key={i} className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl p-5 shadow-sm">
+                  <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">{s.label}</p>
+                  <p className="text-3xl font-bold text-slate-900">{s.value}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Checklist + Quick actions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
@@ -262,6 +229,57 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Activity Timeline */}
+        <div className="mb-8">
+          <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-xl shadow-sm">
+            <div className="px-6 py-4 border-b border-slate-200">
+              <h2 className="text-base font-semibold text-slate-900">Сүүлийн үйлдлүүд</h2>
+            </div>
+            {activityLoading ? (
+              <div className="px-6 py-8 flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-[#1e3a8a] border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : activity.length === 0 ? (
+              <div className="px-6 py-8 text-center text-sm text-slate-400">Одоохондоо үйлдэл байхгүй байна.</div>
+            ) : (
+              <div className="px-6 py-4">
+                <div className="relative">
+                  <div className="absolute left-3.5 top-0 bottom-0 w-px bg-slate-100"></div>
+                  <div className="space-y-4">
+                    {activity.map(function (item, i) {
+                      var iconMap = {
+                        cv: { bg: "bg-blue-100", text: "text-blue-600", icon: "📄" },
+                        quiz: { bg: "bg-purple-100", text: "text-purple-600", icon: "🎯" },
+                        flashcard: { bg: "bg-emerald-100", text: "text-emerald-600", icon: "🃏" },
+                        checklist: { bg: "bg-amber-100", text: "text-amber-600", icon: "✅" },
+                        login: { bg: "bg-slate-100", text: "text-slate-500", icon: "🔑" },
+                        profile_update: { bg: "bg-slate-100", text: "text-slate-500", icon: "👤" },
+                      };
+                      var style = iconMap[item.type] || { bg: "bg-slate-100", text: "text-slate-500", icon: "•" };
+                      var date = item.created_at ? new Date(item.created_at) : null;
+                      var dateStr = date
+                        ? date.toLocaleDateString("mn-MN", { month: "short", day: "numeric" }) + " " + date.toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" })
+                        : "";
+                      return (
+                        <div key={i} className="flex items-start gap-4 relative">
+                          <div className={"w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 z-10 text-sm " + style.bg}>
+                            <span>{style.icon}</span>
+                          </div>
+                          <div className="flex-1 pt-0.5">
+                            <p className="text-sm font-medium text-slate-800">{item.label}</p>
+                            {item.detail && <p className="text-xs text-slate-500 mt-0.5">{item.detail}</p>}
+                          </div>
+                          <span className="text-xs text-slate-400 whitespace-nowrap pt-0.5">{dateStr}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Modules */}
         <div>

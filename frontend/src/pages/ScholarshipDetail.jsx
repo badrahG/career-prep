@@ -14,9 +14,8 @@ export default function ScholarshipDetail() {
   var [item, setItem] = useState(null);
   var [loading, setLoading] = useState(true);
   var [notFound, setNotFound] = useState(false);
-
-  // Checklist state — stored in localStorage per scholarship
   var [checklist, setChecklist] = useState([]);
+  var [checklistLoading, setChecklistLoading] = useState(false);
 
   useEffect(function () {
     API.get("/scholarship/" + id)
@@ -26,15 +25,18 @@ export default function ScholarshipDetail() {
   }, [id]);
 
   useEffect(function () {
-    // Load checklist from localStorage
-    if (!id) return;
-    var saved = localStorage.getItem("checklist_" + id);
-    if (saved) {
-      try { setChecklist(JSON.parse(saved)); } catch (e) { setChecklist(getDefaultChecklist()); }
-    } else {
+    if (!id || !user) {
       setChecklist(getDefaultChecklist());
+      return;
     }
-  }, [id]);
+    setChecklistLoading(true);
+    API.get("/scholarship/" + id + "/checklist")
+      .then(function (res) {
+        setChecklist(res.data.items || getDefaultChecklist());
+      })
+      .catch(function () { setChecklist(getDefaultChecklist()); })
+      .finally(function () { setChecklistLoading(false); });
+  }, [id, user?.id]);
 
   function getDefaultChecklist() {
     return [
@@ -47,19 +49,24 @@ export default function ScholarshipDetail() {
     ];
   }
 
+  function saveChecklist(items) {
+    if (!user) return;
+    API.put("/scholarship/" + id + "/checklist", { items: items }).catch(function () {});
+  }
+
   function toggleItem(i) {
     var updated = checklist.map(function (c, idx) {
       return idx === i ? { ...c, done: !c.done } : c;
     });
     setChecklist(updated);
-    localStorage.setItem("checklist_" + id, JSON.stringify(updated));
+    saveChecklist(updated);
   }
 
   function resetChecklist() {
     if (!window.confirm("Checklist-ыг анх байсан хэвийн байдалд нь оруулах уу?")) return;
     var defaults = getDefaultChecklist();
     setChecklist(defaults);
-    localStorage.setItem("checklist_" + id, JSON.stringify(defaults));
+    saveChecklist(defaults);
     toast.success("Checklist шинэчлэгдлээ");
   }
 
@@ -100,7 +107,14 @@ export default function ScholarshipDetail() {
   var checklistProgress = checklist.length > 0 ? Math.round((doneCount / checklist.length) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+      </div>
+
       {/* Nav */}
       <nav className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
@@ -354,9 +368,9 @@ export default function ScholarshipDetail() {
               <div className="px-6 py-4 border-b border-slate-200">
                 <div className="flex items-center justify-between">
                   <h2 className="text-base font-semibold text-slate-900">Миний checklist</h2>
-                  <span className="text-xs text-[#1e3a8a] font-semibold">{doneCount}/{checklist.length}</span>
+                  {!checklistLoading && <span className="text-xs text-[#1e3a8a] font-semibold">{doneCount}/{checklist.length}</span>}
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">Бэлдэх алхмуудаа тэмдэглэнэ үү.</p>
+                <p className="text-xs text-slate-500 mt-0.5">{user ? "Бэлдэх алхмуудаа тэмдэглэнэ үү." : "Checklist хадгалахын тулд нэвтэрнэ үү."}</p>
               </div>
               <div className="px-6 pt-4">
                 <div className="w-full bg-slate-100 rounded-full h-1.5">

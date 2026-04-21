@@ -13,9 +13,11 @@ from sqlalchemy import text
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.database import engine, Base
 from app.services.rate_limit import limiter
+from app.services.csrf import validate_csrf_token
 
 # Import all models
 from app.models.user import User  # noqa
@@ -25,6 +27,8 @@ from app.models.email_token import EmailToken  # noqa
 from app.models.interview import InterviewQuestion  # noqa
 from app.models.advice import Advice  # noqa
 from app.models.progress import UserQuizResult, UserFlashcardProgress  # noqa
+from app.models.audit_log import AuditLog  # noqa
+from app.models.scholarship_checklist import UserScholarshipChecklist  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.seed import seed_data
@@ -75,6 +79,31 @@ def run_migrations():
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_ufp_user ON user_flashcard_progress(user_id)"))
         conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS idx_ufp_user_q ON user_flashcard_progress(user_id, question_id)"))
 
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                action VARCHAR(100) NOT NULL,
+                ip_address VARCHAR(45),
+                details TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_al_user ON audit_logs(user_id)"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_al_created ON audit_logs(created_at DESC)"))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS user_scholarship_checklists (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                scholarship_id INTEGER NOT NULL REFERENCES scholarships(id) ON DELETE CASCADE,
+                items TEXT NOT NULL,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                CONSTRAINT uq_user_scholarship UNIQUE(user_id, scholarship_id)
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_usc_user ON user_scholarship_checklists(user_id)"))
+
         conn.commit()
     print("✓ Migrations applied")
 
@@ -87,6 +116,36 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Career Platform API", version="1.0.0", lifespan=lifespan)
+
+# ============ CSRF Middleware ============
+_CSRF_SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
+_CSRF_EXEMPT_PATHS = {
+    "/api/auth/login",
+    "/api/auth/register",
+    "/api/auth/verify-email",
+    "/api/auth/resend-verification",
+    "/api/auth/forgot-password",
+    "/api/auth/reset-password",
+    "/api/auth/refresh",
+    "/api/auth/csrf-token",
+}
+
+
+class CSRFMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.method not in _CSRF_SAFE_METHODS and request.url.path not in _CSRF_EXEMPT_PATHS:
+            auth_header = request.headers.get("Authorization", "")
+            if auth_header.startswith("Bearer "):
+                csrf_token = request.headers.get("X-CSRF-Token", "")
+                if not csrf_token or not validate_csrf_token(csrf_token):
+                    return JSONResponse(
+                        status_code=403,
+                        content={"detail": "CSRF token буруу эсвэл байхгүй байна"},
+                    )
+        return await call_next(request)
+
+
+app.add_middleware(CSRFMiddleware)
 
 # ============ Rate limiting ============
 app.state.limiter = limiter

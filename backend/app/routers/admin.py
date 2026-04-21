@@ -153,3 +153,37 @@ def admin_stats(db: Session = Depends(get_db), admin: User = Depends(require_adm
         "total_admins": total_admins,
         "total_cvs": total_cvs,
     }
+
+
+@router.get("/audit-logs")
+def list_audit_logs(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
+    action: Optional[str] = None,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    from app.models.audit_log import AuditLog
+
+    query = db.query(AuditLog)
+    if action:
+        query = query.filter(AuditLog.action == action)
+
+    logs = query.order_by(AuditLog.created_at.desc()).offset(skip).limit(limit).all()
+
+    result = []
+    for log in logs:
+        user_info = None
+        if log.user_id:
+            u = db.query(User).filter(User.id == log.user_id).first()
+            if u:
+                user_info = {"id": u.id, "name": f"{u.last_name} {u.first_name}", "email": u.email}
+        result.append({
+            "id": log.id,
+            "user": user_info,
+            "action": log.action,
+            "ip_address": log.ip_address,
+            "details": log.details,
+            "created_at": log.created_at.isoformat() if log.created_at else None,
+        })
+    return result

@@ -75,3 +75,43 @@ If SMTP credentials are absent, email functions print to console instead of send
 
 ### CV Export
 PDF export uses `html2canvas` + `jsPDF` (root `package.json` dependencies), rendered client-side.
+
+## Deployment
+
+### Quick start with Docker (backend + PostgreSQL)
+
+```bash
+# 1. Copy and fill in the env file
+cp backend/.env.example backend/.env
+# Edit backend/.env: set SECRET_KEY, SMTP_USER/PASSWORD, ALLOWED_ORIGINS
+
+# 2. Start backend + database
+docker compose up -d --build
+
+# 3. Build frontend for production
+cd frontend
+npm install
+npm run build
+# Deploy the dist/ folder to Vercel, Netlify, or any static host
+```
+
+### Environment variables (backend/.env)
+
+| Variable | Required | Description |
+|---|---|---|
+| `SECRET_KEY` | **Yes** | JWT signing key — generate with `python -c "import secrets; print(secrets.token_hex(32))"` |
+| `DATABASE_URL` | Yes | PostgreSQL DSN — Docker Compose sets this automatically |
+| `ALLOWED_ORIGINS` | Yes | Comma-separated frontend origins, e.g. `https://careerprep.mn` |
+| `API_BASE_URL` | Yes | Public URL of this backend, e.g. `https://api.careerprep.mn` |
+| `SMTP_USER` | No | Gmail address; leave empty to log emails to console |
+| `SMTP_PASSWORD` | No | Gmail App Password (not your account password) |
+| `FRONTEND_URL` | No | Used in email links, defaults to `http://localhost:5173` |
+
+### Production checklist
+
+- [ ] Generate a new `SECRET_KEY` (never use the default)
+- [ ] Set `ALLOWED_ORIGINS` to your real frontend domain
+- [ ] Set `API_BASE_URL` to your real backend domain
+- [ ] Configure SMTP credentials for email verification / password reset
+- [ ] Run behind a reverse proxy (nginx/Caddy) with TLS
+- [ ] Persist `backend/uploads/` volume for user-uploaded files

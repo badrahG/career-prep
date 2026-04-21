@@ -3,15 +3,27 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import { ListSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
+
+var ACTION_LABELS = {
+  login: "Нэвтэрсэн",
+  password_change: "Нууц үг солисон",
+  profile_update: "Профайл шинэчилсэн",
+  account_delete: "Бүртгэл устгасан",
+};
 
 export default function AdminUsers() {
   var { user: me } = useAuth();
+  var [activeTab, setActiveTab] = useState("users");
   var [users, setUsers] = useState([]);
   var [stats, setStats] = useState(null);
   var [loading, setLoading] = useState(true);
   var [search, setSearch] = useState("");
   var [roleFilter, setRoleFilter] = useState("all");
   var [statusFilter, setStatusFilter] = useState("all");
+  var [logs, setLogs] = useState([]);
+  var [logsLoading, setLogsLoading] = useState(false);
 
   function loadUsers() {
     setLoading(true);
@@ -32,9 +44,21 @@ export default function AdminUsers() {
       .catch(function () {});
   }
 
+  function loadLogs() {
+    setLogsLoading(true);
+    API.get("/admin/audit-logs", { params: { limit: 100 } })
+      .then(function (res) { setLogs(res.data); })
+      .catch(function () { toast.error("Лог ачаалахад алдаа"); })
+      .finally(function () { setLogsLoading(false); });
+  }
+
   useEffect(function () {
     loadStats();
   }, []);
+
+  useEffect(function () {
+    if (activeTab === "logs") loadLogs();
+  }, [activeTab]);
 
   useEffect(function () {
     var timer = setTimeout(function () { loadUsers(); }, 300);
@@ -120,9 +144,23 @@ export default function AdminUsers() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200">
+        <div className="mb-6 pb-4 border-b border-slate-200">
           <h1 className="text-2xl font-bold text-slate-900">Хэрэглэгчдийн удирдлага</h1>
           <p className="text-sm text-slate-600 mt-1">Бүх хэрэглэгчдийг харах, эрх өөрчлөх, түр хаах, устгах.</p>
+          <div className="flex gap-1 mt-4">
+            <button
+              onClick={function () { setActiveTab("users"); }}
+              className={"px-4 py-2 text-sm font-medium rounded-t border-b-2 transition " + (activeTab === "users" ? "border-[#1e3a8a] text-[#1e3a8a] bg-[#1e3a8a]/5" : "border-transparent text-slate-500 hover:text-slate-800")}
+            >
+              Хэрэглэгчид
+            </button>
+            <button
+              onClick={function () { setActiveTab("logs"); }}
+              className={"px-4 py-2 text-sm font-medium rounded-t border-b-2 transition " + (activeTab === "logs" ? "border-[#1e3a8a] text-[#1e3a8a] bg-[#1e3a8a]/5" : "border-transparent text-slate-500 hover:text-slate-800")}
+            >
+              Хандалтын лог
+            </button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -148,6 +186,7 @@ export default function AdminUsers() {
         )}
 
         {/* Search + filters */}
+        {activeTab === "users" && (
         <div className="bg-white border border-slate-200 rounded p-4 mb-6">
           <div className="flex flex-col md:flex-row gap-3">
             <input
@@ -168,14 +207,15 @@ export default function AdminUsers() {
             </select>
           </div>
         </div>
+        )}
 
         {/* Users table */}
-        <div className="bg-white border border-slate-200 rounded overflow-hidden">
-          {loading ? (
-            <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
-          ) : users.length === 0 ? (
-            <div className="text-center py-20 text-sm text-slate-500">Хэрэглэгч олдсонгүй.</div>
-          ) : (
+        {activeTab === "users" && (loading ? (
+          <ListSkeleton count={8} />
+        ) : users.length === 0 ? (
+          <EmptyState illustration="inbox" title="Хэрэглэгч олдсонгүй" description="Хайлтын нөхцөл өөрчилж үзнэ үү." />
+        ) : (
+          <div className="bg-white border border-slate-200 rounded overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-200">
@@ -263,10 +303,74 @@ export default function AdminUsers() {
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          </div>
+        ))}
 
-        <p className="text-xs text-slate-400 mt-3">Нийт {users.length} хэрэглэгч харагдаж байна.</p>
+        {activeTab === "users" && (
+          <p className="text-xs text-slate-400 mt-3">Нийт {users.length} хэрэглэгч харагдаж байна.</p>
+        )}
+
+        {/* Audit Logs Tab */}
+        {activeTab === "logs" && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-slate-600">Сүүлийн 100 хандалтын бүртгэл</p>
+              <button onClick={loadLogs} className="text-xs px-3 py-1.5 border border-slate-300 rounded hover:bg-slate-50 transition">Шинэчлэх</button>
+            </div>
+            {logsLoading ? (
+              <ListSkeleton count={6} />
+            ) : logs.length === 0 ? (
+              <EmptyState illustration="inbox" title="Лог байхгүй" description="Одоогоор хандалтын бүртгэл алга байна." />
+            ) : (
+              <div className="bg-white border border-slate-200 rounded overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-50 border-b border-slate-200">
+                      <tr>
+                        <th className="text-left text-xs font-semibold text-slate-600 uppercase tracking-wide px-4 py-3">Огноо / Цаг</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 uppercase tracking-wide px-4 py-3">Хэрэглэгч</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 uppercase tracking-wide px-4 py-3">Үйлдэл</th>
+                        <th className="text-left text-xs font-semibold text-slate-600 uppercase tracking-wide px-4 py-3 hidden md:table-cell">IP хаяг</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {logs.map(function (log) {
+                        return (
+                          <tr key={log.id} className="hover:bg-slate-50 transition">
+                            <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
+                              {new Date(log.created_at).toLocaleString("mn-MN")}
+                            </td>
+                            <td className="px-4 py-3">
+                              {log.user ? (
+                                <div>
+                                  <p className="text-sm font-medium text-slate-900">{log.user.name}</p>
+                                  <p className="text-xs text-slate-500">{log.user.email}</p>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-slate-400 italic">Устгагдсан хэрэглэгч</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={"text-xs px-2 py-0.5 rounded font-medium border " + (
+                                log.action === "login" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                log.action === "password_change" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                                log.action === "account_delete" ? "bg-red-50 text-red-700 border-red-200" :
+                                "bg-slate-50 text-slate-700 border-slate-200"
+                              )}>
+                                {ACTION_LABELS[log.action] || log.action}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-xs text-slate-500 hidden md:table-cell font-mono">{log.ip_address || "—"}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

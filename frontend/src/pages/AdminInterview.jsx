@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import { ListSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 export default function AdminInterview() {
   var [questions, setQuestions] = useState([]);
@@ -134,7 +136,14 @@ export default function AdminInterview() {
   var labelCls = "block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide";
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
+      </div>
+
       {/* Nav */}
       <nav className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
@@ -195,12 +204,12 @@ export default function AdminInterview() {
         </div>
 
         {/* List */}
-        <div className="bg-white border border-slate-200 rounded overflow-hidden">
-          {loading ? (
-            <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
-          ) : questions.length === 0 ? (
-            <div className="text-center py-20 text-sm text-slate-500">Асуулт олдсонгүй.</div>
-          ) : (
+        {loading ? (
+          <ListSkeleton count={8} />
+        ) : questions.length === 0 ? (
+          <EmptyState illustration="interview" title="Асуулт олдсонгүй" description="Шинэ асуулт нэмэхийн тулд дээрх товч дарна уу." />
+        ) : (
+          <div className="bg-white border border-slate-200 rounded overflow-hidden">
             <div className="divide-y divide-slate-200">
               {questions.map(function (q) {
                 return (
@@ -258,8 +267,8 @@ export default function AdminInterview() {
                 );
               })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <p className="text-xs text-slate-400 mt-3">Нийт {questions.length} асуулт харагдаж байна.</p>
       </div>

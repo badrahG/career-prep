@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import { ListSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 export default function AdminAdvice() {
   var [searchParams] = useSearchParams();
@@ -232,12 +234,12 @@ export default function AdminAdvice() {
         </div>
 
         {/* List */}
-        <div className="bg-white border border-slate-200 rounded overflow-hidden">
-          {loading ? (
-            <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
-          ) : articles.length === 0 ? (
-            <div className="text-center py-20 text-sm text-slate-500">Зөвлөмж олдсонгүй.</div>
-          ) : (
+        {loading ? (
+          <ListSkeleton count={6} />
+        ) : articles.length === 0 ? (
+          <EmptyState illustration="advice" title="Зөвлөмж олдсонгүй" description="Шинэ зөвлөмж нэмэхийн тулд дээрх товч дарна уу." />
+        ) : (
+          <div className="bg-white border border-slate-200 rounded overflow-hidden">
             <div className="divide-y divide-slate-200">
               {articles.map(function (a) {
                 return (
@@ -291,8 +293,8 @@ export default function AdminAdvice() {
                 );
               })}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         <p className="text-xs text-slate-400 mt-3">Нийт {articles.length} зөвлөмж харагдаж байна.</p>
       </div>

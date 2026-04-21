@@ -17,8 +17,26 @@ from app.schemas.user import (
 from app.services.auth import hash_password, verify_password, create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM, get_current_user
 from app.services.email_service import send_verification_email, send_password_reset_email
 from app.services.rate_limit import limiter
+from app.services.csrf import generate_csrf_token
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+
+def write_audit_log(db: Session, user_id: Optional[int], action: str, request: Request, details: str = None):
+    from app.models.audit_log import AuditLog
+    try:
+        ip = request.client.host if request.client else "unknown"
+        log = AuditLog(user_id=user_id, action=action, ip_address=ip, details=details)
+        db.add(log)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Audit log алдаа: {e}")
+
+
+@router.get("/csrf-token")
+def get_csrf_token():
+    return {"csrf_token": generate_csrf_token()}
 
 
 def _create_token(db: Session, user: User, token_type: TokenType, hours: int) -> str:
@@ -37,7 +55,7 @@ def _create_token(db: Session, user: User, token_type: TokenType, hours: int) ->
 
 
 @router.put("/profile", response_model=UserResponse)
-def update_profile(data: ProfileUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def update_profile(request: Request, data: ProfileUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if data.first_name:
         current_user.first_name = data.first_name
     if data.last_name:
@@ -46,6 +64,7 @@ def update_profile(data: ProfileUpdate, db: Session = Depends(get_db), current_u
         current_user.phone = data.phone
     db.commit()
     db.refresh(current_user)
+    write_audit_log(db, current_user.id, "profile_update", request)
     return current_user
 
 
@@ -94,6 +113,7 @@ def login(request: Request, response: Response, user_data: UserLogin, db: Sessio
 
     access_token = create_access_token(data={"sub": user.id})
     refresh_token = create_refresh_token(user.id)
+    write_audit_log(db, user.id, "login", request, details=user.email)
     return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
 
@@ -130,20 +150,36 @@ def refresh_token(data: RefreshRequest, db: Session = Depends(get_db)):
 
 @router.get("/dashboard-stats")
 def get_dashboard_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    import json as _json
     from app.models.cv import CV
     from app.models.progress import UserQuizResult, UserFlashcardProgress
+    from app.models.scholarship_checklist import UserScholarshipChecklist
 
     cv_count = db.query(CV).filter(CV.user_id == current_user.id).count()
     studied_questions = db.query(UserFlashcardProgress).filter(UserFlashcardProgress.user_id == current_user.id).count()
-    quiz_count = db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).count()
 
-    profile_done = 1 if current_user.phone else 0
-    cv_done = 1 if cv_count > 0 else 0
-    quiz_done = 1 if quiz_count > 0 else 0
-    flashcard_done = 1 if studied_questions >= 10 else 0
+    quiz_results = db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).all()
+    quiz_count = len(quiz_results)
+    quiz_avg = round(sum(r.percentage for r in quiz_results) / quiz_count) if quiz_count > 0 else 0
+
+    checklist_rows = db.query(UserScholarshipChecklist).filter(UserScholarshipChecklist.user_id == current_user.id).all()
+    checklist_count = 0
+    for row in checklist_rows:
+        try:
+            items = _json.loads(row.items)
+            if any(item.get("done") for item in items):
+                checklist_count += 1
+        except Exception:
+            pass
+
+    profile_done = bool(current_user.phone)
+    cv_done = cv_count > 0
+    flashcard_done = studied_questions >= 5
+    checklist_done = checklist_count > 0
+    cv_two_done = cv_count >= 2
 
     total = 5
-    done = profile_done + min(cv_count, 2) + quiz_done + flashcard_done
+    done = sum([profile_done, cv_done, flashcard_done, checklist_done, cv_two_done])
     progress = int((done / total) * 100)
 
     return {
@@ -151,14 +187,64 @@ def get_dashboard_stats(db: Session = Depends(get_db), current_user: User = Depe
         "progress": min(progress, 100),
         "studied_questions": studied_questions,
         "quiz_count": quiz_count,
-        "profile_done": profile_done == 1,
-        "cv_done": cv_done == 1,
-        "quiz_done": quiz_done == 1,
+        "quiz_avg": quiz_avg,
+        "checklist_count": checklist_count,
+        "profile_done": profile_done,
+        "cv_done": cv_done,
+        "quiz_done": bool(quiz_count),
     }
 
 
+@router.get("/activity")
+def get_activity(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    from app.models.cv import CV
+    from app.models.progress import UserQuizResult, UserFlashcardProgress
+    from app.models.scholarship_checklist import UserScholarshipChecklist
+    from app.models.audit_log import AuditLog
+    from sqlalchemy import func as sqlfunc, cast, Date
+
+    events = []
+
+    for cv in db.query(CV).filter(CV.user_id == current_user.id).all():
+        events.append({"type": "cv", "label": "CV үүсгэсэн", "detail": cv.name, "ts": cv.created_at})
+
+    for qr in db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).all():
+        events.append({"type": "quiz", "label": "Quiz дүүргэсэн", "detail": f"{qr.correct}/{qr.total} ({int(qr.percentage)}%)", "ts": qr.created_at})
+
+    flashcard_days = (
+        db.query(cast(UserFlashcardProgress.viewed_at, Date), sqlfunc.count(UserFlashcardProgress.id))
+        .filter(UserFlashcardProgress.user_id == current_user.id)
+        .group_by(cast(UserFlashcardProgress.viewed_at, Date))
+        .all()
+    )
+    for day, cnt in flashcard_days:
+        from datetime import datetime, timezone
+        ts = datetime.combine(day, datetime.min.time()).replace(tzinfo=timezone.utc)
+        events.append({"type": "flashcard", "label": "Flashcard судалсан", "detail": f"{cnt} асуулт", "ts": ts})
+
+    for cl in db.query(UserScholarshipChecklist).filter(UserScholarshipChecklist.user_id == current_user.id).all():
+        events.append({"type": "checklist", "label": "Тэтгэлгийн checklist", "detail": "Шинэчилсэн", "ts": cl.updated_at})
+
+    for log in (
+        db.query(AuditLog)
+        .filter(AuditLog.user_id == current_user.id, AuditLog.action.in_(["login", "profile_update"]))
+        .order_by(AuditLog.created_at.desc())
+        .limit(5)
+        .all()
+    ):
+        label = "Системд нэвтэрсэн" if log.action == "login" else "Профайл шинэчилсэн"
+        events.append({"type": log.action, "label": label, "detail": None, "ts": log.created_at})
+
+    events.sort(key=lambda e: e["ts"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+
+    return [
+        {"type": e["type"], "label": e["label"], "detail": e["detail"], "created_at": e["ts"].isoformat() if e["ts"] else None}
+        for e in events[:15]
+    ]
+
+
 @router.post("/change-password")
-def change_password(data: PasswordChange, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def change_password(request: Request, data: PasswordChange, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not verify_password(data.old_password, current_user.password):
         raise HTTPException(status_code=400, detail="Хуучин нууц үг буруу байна")
 
@@ -170,11 +256,13 @@ def change_password(data: PasswordChange, db: Session = Depends(get_db), current
 
     current_user.password = hash_password(data.new_password)
     db.commit()
+    write_audit_log(db, current_user.id, "password_change", request)
     return {"message": "Нууц үг амжилттай солигдлоо"}
 
 
 @router.delete("/me")
-def delete_my_account(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def delete_my_account(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    write_audit_log(db, current_user.id, "account_delete", request, details=current_user.email)
     db.delete(current_user)
     db.commit()
     return {"message": "Бүртгэл устгагдлаа"}

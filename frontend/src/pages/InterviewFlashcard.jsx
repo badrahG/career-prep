@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { QuestionSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 export default function InterviewFlashcard() {
+  var { user, loading: authLoading } = useAuth();
   var [questions, setQuestions] = useState([]);
   var [loading, setLoading] = useState(true);
   var [category, setCategory] = useState("all");
@@ -12,16 +16,21 @@ export default function InterviewFlashcard() {
   var [flipped, setFlipped] = useState(false);
   var [studied, setStudied] = useState(new Set());
 
-  // Load studied set from localStorage
+  // Load studied set — backend if logged in, localStorage otherwise
   useEffect(function () {
-    var saved = localStorage.getItem("interview_studied");
-    if (saved) {
-      try {
-        var arr = JSON.parse(saved);
-        setStudied(new Set(arr));
-      } catch (e) {}
+    if (authLoading) return;
+    if (user) {
+      API.get("/interview/progress")
+        .then(function (res) { setStudied(new Set(res.data.studied_ids)); })
+        .catch(function () {
+          var saved = localStorage.getItem("interview_studied");
+          if (saved) { setStudied(new Set(JSON.parse(saved))); }
+        });
+    } else {
+      var saved = localStorage.getItem("interview_studied");
+      if (saved) { setStudied(new Set(JSON.parse(saved))); }
     }
-  }, []);
+  }, [authLoading, user?.id]);
 
   // Fetch questions whenever filters change
   useEffect(function () {
@@ -86,7 +95,11 @@ export default function InterviewFlashcard() {
     var newSet = new Set(studied);
     newSet.add(id);
     setStudied(newSet);
-    localStorage.setItem("interview_studied", JSON.stringify(Array.from(newSet)));
+    if (user) {
+      API.post("/interview/questions/" + id + "/viewed").catch(function () {});
+    } else {
+      localStorage.setItem("interview_studied", JSON.stringify(Array.from(newSet)));
+    }
   }
 
   function goNext() {
@@ -108,7 +121,11 @@ export default function InterviewFlashcard() {
   function resetProgress() {
     if (!window.confirm("Судалсан картуудын түүхийг цэвэрлэх үү?")) return;
     setStudied(new Set());
-    localStorage.removeItem("interview_studied");
+    if (user) {
+      API.delete("/interview/progress").catch(function () {});
+    } else {
+      localStorage.removeItem("interview_studied");
+    }
     toast.success("Түүх цэвэрлэгдлээ");
   }
 
@@ -227,11 +244,13 @@ export default function InterviewFlashcard() {
 
         {/* Card area */}
         {loading ? (
-          <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
+          <QuestionSkeleton />
         ) : questions.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded p-12 text-center text-sm text-slate-500">
-            Асуулт олдсонгүй. Шүүлтүүрээ өөрчилж үзнэ үү.
-          </div>
+          <EmptyState
+            illustration="interview"
+            title="Асуулт олдсонгүй"
+            description="Шүүлтүүрийг өөрчилж үзнэ үү."
+          />
         ) : currentQuestion ? (
           <>
             {/* Flashcard */}

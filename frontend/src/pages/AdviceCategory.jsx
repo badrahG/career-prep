@@ -3,6 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import { ListSkeleton } from "../components/Skeleton";
+import EmptyState from "../components/EmptyState";
 
 export default function AdviceCategory() {
   var params = useParams();
@@ -105,11 +107,13 @@ export default function AdviceCategory() {
         </div>
 
         {loading ? (
-          <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
+          <ListSkeleton count={4} />
         ) : articles.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded p-12 text-center text-sm text-slate-500">
-            Зөвлөмж олдсонгүй.
-          </div>
+          <EmptyState
+            illustration="advice"
+            title="Зөвлөмж олдсонгүй"
+            description="Хайлтын үгээ өөрчилж үзнэ үү."
+          />
         ) : (
           <div className="space-y-3">
             {articles.map(function (a, i) {

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import API from "../services/api";
+import API, { refreshCsrfToken, clearCsrfToken } from "../services/api";
 
 const AuthContext = createContext();
 
@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
         headers: { Authorization: `Bearer ${t}` },
       });
       setUser(res.data);
+      await refreshCsrfToken();
     } catch {
       localStorage.removeItem("token");
       setToken(null);
@@ -51,6 +52,7 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
+    clearCsrfToken();
     setToken(null);
     setUser(null);
   };

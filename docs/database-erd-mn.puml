@@ -1,0 +1,231 @@
+@startuml
+hide circle
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 13
+skinparam roundcorner 10
+
+skinparam entity {
+    BackgroundColor #F6B26B
+    BorderColor #8A5A2B
+    FontColor #111111
+}
+
+title CareerPrep системийн өгөгдлийн сангийн ерөнхий схем
+
+entity "Хэрэглэгч\n(users)" as users {
+  * id : integer
+  --
+  first_name : varchar(100)
+  last_name : varchar(100)
+  email : varchar(255)
+  password : varchar(255)
+  phone : varchar(20)
+  role : enum
+  is_active : boolean
+  is_verified : boolean
+  verified_at : datetime
+  failed_login_attempts : integer
+  locked_until : datetime
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "CV\n(cvs)" as cvs {
+  * id : integer
+  --
+  user_id : integer
+  name : varchar(200)
+  template_type : varchar(50)
+  personal_info : text
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "CV загвар\n(cv_templates)" as cv_templates {
+  * id : integer
+  --
+  key : varchar(50)
+  name : varchar(100)
+  description : text
+  preview_url : varchar(500)
+  is_active : boolean
+  sort_order : integer
+  created_at : datetime
+}
+
+entity "Боловсрол\n(educations)" as educations {
+  * id : integer
+  --
+  cv_id : integer
+  school : varchar(200)
+  major : varchar(200)
+  start_year : integer
+  end_year : integer
+  gpa : float
+}
+
+entity "Ажлын туршлага\n(work_experiences)" as work_experiences {
+  * id : integer
+  --
+  cv_id : integer
+  company : varchar(200)
+  position : varchar(200)
+  start_date : varchar(20)
+  end_date : varchar(20)
+  description : text
+}
+
+entity "Ур чадвар\n(skills)" as skills {
+  * id : integer
+  --
+  cv_id : integer
+  skill_name : varchar(100)
+  skill_type : varchar(50)
+  level : varchar(50)
+}
+
+entity "Ярилцлагын асуулт\n(interview_questions)" as interview_questions {
+  * id : integer
+  --
+  question_mn : text
+  category : enum
+  sample_answer : text
+  advice : text
+  difficulty : varchar(20)
+  tags : varchar(255)
+  is_quiz : boolean
+  option_a : text
+  option_b : text
+  option_c : text
+  option_d : text
+  correct_option : varchar(1)
+  explanation : text
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "Хэрэглэгчийн quiz үр дүн\n(user_quiz_results)" as user_quiz_results {
+  * id : integer
+  --
+  user_id : integer
+  total : integer
+  correct : integer
+  percentage : float
+  created_at : datetime
+}
+
+entity "Flashcard явц\n(user_flashcard_progress)" as user_flashcard_progress {
+  * id : integer
+  --
+  user_id : integer
+  question_id : integer
+  viewed_at : datetime
+}
+
+entity "Тэтгэлэг\n(scholarships)" as scholarships {
+  * id : integer
+  --
+  name : varchar(300)
+  organization : varchar(300)
+  target : varchar(100)
+  requirements : text
+  deadline : date
+  website_url : varchar(500)
+  description : text
+  image_url : varchar(500)
+  gpa : varchar(50)
+  duration : varchar(200)
+}
+
+entity "Тэтгэлгийн checklist\n(user_scholarship_checklists)" as user_scholarship_checklists {
+  * id : integer
+  --
+  user_id : integer
+  scholarship_id : integer
+  items : text
+  updated_at : datetime
+}
+
+entity "Тэтгэлгийн bookmark\n(scholarship_bookmarks)" as scholarship_bookmarks {
+  * id : integer
+  --
+  user_id : integer
+  scholarship_id : integer
+  created_at : datetime
+}
+
+entity "Зөвлөгөө\n(advices)" as advices {
+  * id : integer
+  --
+  category : enum
+  title : varchar(255)
+  summary : text
+  content : text
+  youtube_url : varchar(500)
+  external_links : text
+  sort_order : integer
+  is_published : boolean
+  created_at : datetime
+  updated_at : datetime
+}
+
+entity "И-мэйл токен\n(email_tokens)" as email_tokens {
+  * id : integer
+  --
+  user_id : integer
+  token : varchar(255)
+  token_type : enum
+  expires_at : datetime
+  used_at : datetime
+  created_at : datetime
+}
+
+entity "Refresh token\n(refresh_tokens)" as refresh_tokens {
+  * id : integer
+  --
+  user_id : integer
+  token_hash : varchar(64)
+  expires_at : datetime
+  revoked_at : datetime
+  created_at : datetime
+}
+
+entity "Аудит лог\n(audit_logs)" as audit_logs {
+  * id : integer
+  --
+  user_id : integer
+  action : varchar(100)
+  ip_address : varchar(45)
+  details : text
+  created_at : datetime
+}
+
+users ||--o{ cvs
+cvs ||--o{ educations
+cvs ||--o{ work_experiences
+cvs ||--o{ skills
+
+users ||--o{ user_quiz_results
+users ||--o{ user_flashcard_progress
+interview_questions ||--o{ user_flashcard_progress
+
+users ||--o{ email_tokens
+users ||--o{ refresh_tokens
+users |o--o{ audit_logs
+
+users ||--o{ user_scholarship_checklists
+scholarships ||--o{ user_scholarship_checklists
+
+users ||--o{ scholarship_bookmarks
+scholarships ||--o{ scholarship_bookmarks
+
+note bottom
+CV, quiz, flashcard, bookmark, refresh token зэрэг
+техникийн нэршлүүдийг хэвээр үлдээж,
+тайлбарлах хэсгийг монголоор харуулсан.
+end note
+
+@enduml

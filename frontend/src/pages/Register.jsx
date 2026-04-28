@@ -60,6 +60,23 @@ export default function Register() {
 
   var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition bg-white";
 
+  function getPasswordStrength(pw) {
+    if (!pw) return { score: 0, label: "", color: "" };
+    var score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (score <= 1) return { score: 1, label: "Маш сул", color: "bg-red-500" };
+    if (score === 2) return { score: 2, label: "Сул", color: "bg-orange-400" };
+    if (score === 3) return { score: 3, label: "Дунд", color: "bg-yellow-400" };
+    if (score === 4) return { score: 4, label: "Хүчтэй", color: "bg-emerald-500" };
+    return { score: 5, label: "Маш хүчтэй", color: "bg-emerald-600" };
+  }
+
+  var strength = getPasswordStrength(form.password);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col relative overflow-hidden">
       {/* Decorative background elements */}
@@ -191,6 +208,21 @@ export default function Register() {
                     placeholder="8+ тэмдэгт"
                     className={inputCls}
                   />
+                  {form.password && (
+                    <div className="mt-2">
+                      <div className="flex gap-1 mb-1">
+                        {[1, 2, 3, 4, 5].map(function (i) {
+                          return (
+                            <div
+                              key={i}
+                              className={"h-1 flex-1 rounded-full transition-all duration-300 " + (i <= strength.score ? strength.color : "bg-slate-200")}
+                            />
+                          );
+                        })}
+                      </div>
+                      <p className="text-xs text-slate-500">{strength.label}</p>
+                    </div>
+                  )}
                 </div>
 
                 <div>

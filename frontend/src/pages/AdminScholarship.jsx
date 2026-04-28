@@ -24,6 +24,7 @@ export default function AdminScholarship() {
   var [showModal, setShowModal] = useState(false);
   var [editingId, setEditingId] = useState(null);
   var [form, setForm] = useState(emptyForm());
+  var [selected, setSelected] = useState([]);
 
   function load() {
     setLoading(true);
@@ -104,9 +105,48 @@ export default function AdminScholarship() {
       await API.delete("/scholarship/" + s.id);
       toast.success("Устгагдлаа");
       setScholarships(scholarships.filter(function (x) { return x.id !== s.id; }));
+      setSelected(selected.filter(function (id) { return id !== s.id; }));
     } catch (err) {
       toast.error(err.response?.data?.detail || "Алдаа");
     }
+  }
+
+  function toggleSelect(id) {
+    setSelected(function (prev) {
+      return prev.includes(id) ? prev.filter(function (x) { return x !== id; }) : [...prev, id];
+    });
+  }
+
+  function toggleAll() {
+    setSelected(selected.length === scholarships.length ? [] : scholarships.map(function (s) { return s.id; }));
+  }
+
+  async function handleBulkDelete() {
+    if (selected.length === 0) return;
+    if (!window.confirm(selected.length + " тэтгэлгийг устгах уу?")) return;
+    try {
+      await Promise.all(selected.map(function (id) { return API.delete("/scholarship/" + id); }));
+      toast.success(selected.length + " тэтгэлэг устгагдлаа");
+      setScholarships(scholarships.filter(function (s) { return !selected.includes(s.id); }));
+      setSelected([]);
+    } catch (err) {
+      toast.error("Устгахад алдаа гарлаа");
+    }
+  }
+
+  function exportCSV() {
+    var rows = [["ID", "Нэр", "Байгууллага", "Зорилтот бүлэг", "Дуусах хугацаа", "GPA", "Вэбсайт"]];
+    scholarships.forEach(function (s) {
+      rows.push([s.id, s.name, s.organization || "", s.target || "", s.deadline || "", s.gpa || "", s.website_url || ""]);
+    });
+    var csv = rows.map(function (r) { return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+    var blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "scholarships_" + new Date().toISOString().slice(0, 10) + ".csv";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition";
@@ -156,10 +196,36 @@ export default function AdminScholarship() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200">
-          <h1 className="text-2xl font-bold text-slate-900">Тэтгэлгийн удирдлага</h1>
-          <p className="text-sm text-slate-600 mt-1">Тэтгэлгүүдийг нэмэж, засаж, устгана уу.</p>
+        <div className="mb-6 pb-6 border-b border-slate-200 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Тэтгэлгийн удирдлага</h1>
+            <p className="text-sm text-slate-600 mt-1">Тэтгэлгүүдийг нэмэж, засаж, устгана уу.</p>
+          </div>
+          <button
+            onClick={exportCSV}
+            className="text-sm border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 transition font-medium flex-shrink-0"
+          >
+            CSV татах
+          </button>
         </div>
+
+        {selected.length > 0 && (
+          <div className="mb-4 flex items-center gap-3 bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 rounded px-4 py-2.5">
+            <span className="text-sm font-semibold text-[#1e3a8a]">{selected.length} сонгосон</span>
+            <button
+              onClick={handleBulkDelete}
+              className="text-sm border border-red-300 text-red-600 hover:bg-red-50 px-3 py-1 rounded font-medium transition"
+            >
+              Устгах
+            </button>
+            <button
+              onClick={function () { setSelected([]); }}
+              className="text-sm text-slate-500 hover:text-slate-700 ml-auto"
+            >
+              Цуцлах
+            </button>
+          </div>
+        )}
 
         {/* List */}
         <div className="bg-white border border-slate-200 rounded overflow-hidden">
@@ -172,10 +238,27 @@ export default function AdminScholarship() {
             </div>
           ) : (
             <div className="divide-y divide-slate-200">
+              <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={selected.length === scholarships.length && scholarships.length > 0}
+                  onChange={toggleAll}
+                  className="w-4 h-4 accent-[#1e3a8a]"
+                />
+                <span className="text-xs text-slate-500 font-medium">Бүгдийг сонгох</span>
+              </div>
               {scholarships.map(function (s) {
+                var isSelected = selected.includes(s.id);
                 return (
-                  <div key={s.id} className="p-5 hover:bg-slate-50 transition">
-                    <div className="flex items-start justify-between gap-4">
+                  <div key={s.id} className={"p-5 hover:bg-slate-50 transition " + (isSelected ? "bg-[#1e3a8a]/5" : "")}>
+                    <div className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={function () { toggleSelect(s.id); }}
+                        className="w-4 h-4 mt-1 accent-[#1e3a8a] flex-shrink-0"
+                      />
+                    <div className="flex-1 flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
                           {s.target && (
@@ -223,6 +306,7 @@ export default function AdminScholarship() {
                           Устгах
                         </button>
                       </div>
+                    </div>
                     </div>
                   </div>
                 );

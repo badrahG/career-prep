@@ -10,7 +10,12 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 
-SECRET_KEY = os.getenv("SECRET_KEY", "9f2e9e3c1c4a57d0e3b6b4f87a23dcffb7918df5c8143bab03c7c9f648be39d1")
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError(
+        "SECRET_KEY environment variable is not set. "
+        "Generate: python -c \"import secrets; print(secrets.token_hex(32))\""
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
@@ -51,8 +56,7 @@ def get_current_user(
         if sub is None:
             raise HTTPException(status_code=401, detail="Token буруу байна")
         user_id = int(sub)
-    except (JWTError, ValueError) as e:
-        print(f"JWT ERROR: {e}")
+    except (JWTError, ValueError):
         raise HTTPException(status_code=401, detail="Token буруу байна")
 
     user = db.query(User).filter(User.id == user_id).first()

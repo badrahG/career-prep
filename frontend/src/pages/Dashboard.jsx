@@ -109,6 +109,25 @@ export default function Dashboard() {
           <p className="text-sm text-slate-600 mt-1">Ажилд орох бэлтгэлийнхээ явцыг эндээс хянана уу.</p>
         </div>
 
+        {/* Onboarding welcome banner — shown to brand-new users */}
+        {!statsLoading && stats.cv_count === 0 && stats.studied_questions === 0 && !isAdmin && (
+          <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e40af] text-white rounded-xl p-5 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wide opacity-80 mb-1">Тавтай морилно уу!</p>
+              <h2 className="text-lg font-bold">CareerPrep-д бүртгүүлсэнд баярлалаа, {firstName}!</h2>
+              <p className="text-sm opacity-80 mt-1">Эхлэхийн тулд CV үүсгэж, ярилцлагын бэлтгэлээ эхлүүлнэ үү.</p>
+            </div>
+            <div className="flex gap-2 flex-shrink-0">
+              <a href="/cv/new" className="bg-white text-[#1e3a8a] px-4 py-2 rounded text-sm font-semibold hover:bg-blue-50 transition whitespace-nowrap">
+                CV үүсгэх →
+              </a>
+              <a href="/interview" className="border border-white/40 text-white px-4 py-2 rounded text-sm font-medium hover:bg-white/10 transition whitespace-nowrap">
+                Ярилцлага
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Admin quick link banner */}
         {isAdmin && (
           <div className="bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 rounded p-4 mb-8 flex items-center justify-between">

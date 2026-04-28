@@ -15,7 +15,7 @@ from app.schemas.user import (
     ResendVerificationRequest, ProfileUpdate,
 )
 from app.services.auth import hash_password, verify_password, create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM, get_current_user
-from app.services.email_service import send_verification_email, send_password_reset_email
+from app.services.email_service import send_verification_email, send_password_reset_email, send_welcome_email
 from app.services.rate_limit import limiter
 from app.services.csrf import generate_csrf_token
 
@@ -95,11 +95,28 @@ def register(request: Request, response: Response, user_data: UserCreate, backgr
     return new_user
 
 
+_MAX_FAILED = 5
+_LOCKOUT_MINUTES = 15
+
+
 @router.post("/login", response_model=Token)
 @limiter.limit("10/minute")
 def login(request: Request, response: Response, user_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
+
+    if user and user.locked_until:
+        now = datetime.now(timezone.utc)
+        locked = user.locked_until if user.locked_until.tzinfo else user.locked_until.replace(tzinfo=timezone.utc)
+        if locked > now:
+            remaining = int((locked - now).total_seconds() / 60) + 1
+            raise HTTPException(status_code=429, detail=f"Хэт олон удаа буруу оруулсан. {remaining} минутын дараа дахин оролдоно уу.")
+
     if not user or not verify_password(user_data.password, user.password):
+        if user:
+            user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+            if user.failed_login_attempts >= _MAX_FAILED:
+                user.locked_until = datetime.now(timezone.utc) + timedelta(minutes=_LOCKOUT_MINUTES)
+            db.commit()
         raise HTTPException(status_code=401, detail="И-мэйл эсвэл нууц үг буруу байна")
 
     if not user.is_active:
@@ -110,6 +127,10 @@ def login(request: Request, response: Response, user_data: UserLogin, db: Sessio
             status_code=403,
             detail="И-мэйл хаягаа баталгаажуулна уу. Баталгаажуулах линк и-мэйл хаягруу илгээсэн болно."
         )
+
+    user.failed_login_attempts = 0
+    user.locked_until = None
+    db.commit()
 
     access_token = create_access_token(data={"sub": user.id})
     refresh_token = create_refresh_token(user.id)
@@ -299,7 +320,26 @@ def verify_email(data: VerifyEmailRequest, db: Session = Depends(get_db)):
     token_row.used_at = now
     db.commit()
 
+    send_welcome_email(user.email, user.first_name)
+
     return {"message": "И-мэйл хаяг амжилттай баталгаажлаа! Одоо нэвтэрч болно."}
+
+
+_EMAIL_COOLDOWN_SECONDS = 120
+
+
+def _check_email_cooldown(db: Session, user: User, token_type: TokenType):
+    cutoff = datetime.now(timezone.utc) - timedelta(seconds=_EMAIL_COOLDOWN_SECONDS)
+    recent = db.query(EmailToken).filter(
+        EmailToken.user_id == user.id,
+        EmailToken.token_type == token_type,
+        EmailToken.created_at >= cutoff,
+    ).first()
+    if recent:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Хэт олон хүсэлт. {_EMAIL_COOLDOWN_SECONDS // 60} минутын дараа дахин оролдоно уу."
+        )
 
 
 @router.post("/resend-verification")
@@ -307,6 +347,7 @@ def verify_email(data: VerifyEmailRequest, db: Session = Depends(get_db)):
 def resend_verification(request: Request, response: Response, data: ResendVerificationRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
     if user and not user.is_verified:
+        _check_email_cooldown(db, user, TokenType.verify_email)
         token = _create_token(db, user, TokenType.verify_email, hours=24)
         background_tasks.add_task(send_verification_email, user.email, user.first_name, token)
     return {"message": "Хэрэв тухайн и-мэйл бүртгэлтэй бол баталгаажуулах линк илгээгдсэн."}
@@ -319,6 +360,7 @@ def resend_verification(request: Request, response: Response, data: ResendVerifi
 def forgot_password(request: Request, response: Response, data: ForgotPasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
     if user and user.is_active:
+        _check_email_cooldown(db, user, TokenType.reset_password)
         token = _create_token(db, user, TokenType.reset_password, hours=1)
         background_tasks.add_task(send_password_reset_email, user.email, user.first_name, token)
     return {"message": "Хэрэв тухайн и-мэйл бүртгэлтэй бол нууц үг сэргээх линк илгээгдсэн."}

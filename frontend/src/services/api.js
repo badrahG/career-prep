@@ -4,13 +4,13 @@ const API = axios.create({
   baseURL: "http://localhost:8001/api",
 });
 
-let csrfToken = localStorage.getItem("csrfToken") || null;
+let csrfToken = sessionStorage.getItem("csrfToken") || null;
 
 export async function refreshCsrfToken() {
   try {
     const res = await axios.get("http://localhost:8001/api/auth/csrf-token");
     csrfToken = res.data.csrf_token;
-    localStorage.setItem("csrfToken", csrfToken);
+    sessionStorage.setItem("csrfToken", csrfToken);
   } catch {
     // dev орчинд тайван алдагдуулна
   }
@@ -18,17 +18,18 @@ export async function refreshCsrfToken() {
 
 export function clearCsrfToken() {
   csrfToken = null;
-  localStorage.removeItem("csrfToken");
+  sessionStorage.removeItem("csrfToken");
 }
 
 const MUTATING = new Set(["post", "put", "delete", "patch"]);
 
-API.interceptors.request.use((config) => {
+API.interceptors.request.use(async (config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers["Authorization"] = "Bearer " + token;
-    if (MUTATING.has(config.method?.toLowerCase()) && csrfToken) {
-      config.headers["X-CSRF-Token"] = csrfToken;
+    if (MUTATING.has(config.method?.toLowerCase())) {
+      if (!csrfToken) await refreshCsrfToken();
+      if (csrfToken) config.headers["X-CSRF-Token"] = csrfToken;
     }
   }
   return config;

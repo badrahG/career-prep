@@ -5,7 +5,10 @@
       "Bash(venv/Scripts/python -m pytest tests/ -v --tb=short)",
       "Bash(venv/Scripts/python -m pytest tests/test_interview.py::test_submit_quiz -v --tb=long)",
       "Bash(npm run *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Read(//c/career-platform/**)",
+      "Bash(python *)",
+      "Bash(node *)"
     ]
   }
 }

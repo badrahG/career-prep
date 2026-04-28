@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: career_platform
       POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo123
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-odoo123}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,7 +21,7 @@ services:
       - ./backend/.env
     environment:
       # Overrides DATABASE_URL from .env to point at the db service
-      DATABASE_URL: postgresql://odoo:odoo123@db:5432/career_platform
+      DATABASE_URL: postgresql://odoo:${DB_PASSWORD:-odoo123}@db:5432/career_platform
     depends_on:
       db:
         condition: service_healthy

@@ -41,10 +41,9 @@ def _send(to_email: str, subject: str, html_body: str) -> bool:
             server.starttls(context=context)
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_USER, to_email, msg.as_string())
-        print(f"✓ Email sent to {to_email}: {subject}")
         return True
     except Exception as e:
-        print(f"✗ Email send failed to {to_email}: {e}")
+        print(f"✗ Email send failed ({type(e).__name__})")
         return False
 
 
@@ -114,6 +113,31 @@ def send_verification_email(to_email: str, first_name: str, token: str) -> bool:
       <p style="font-size:12px;color:#64748b;">Энэ линк <strong>24 цагийн</strong> дараа хүчингүй болно.</p>
     """
     return _send(to_email, "CareerPrep — И-мэйл баталгаажуулалт", _wrap_template("И-мэйл хаягаа баталгаажуулна уу", content))
+
+
+def send_welcome_email(to_email: str, first_name: str) -> bool:
+    """Welcome email after successful email verification"""
+    content = f"""
+      <p>Сайн байна уу, {first_name}!</p>
+      <p>Таны и-мэйл хаяг амжилттай баталгаажлаа. CareerPrep-д тавтай морилно уу!</p>
+      <p>Одоо та дараах боломжуудыг ашиглаж болно:</p>
+      <ul style="color:#475569;font-size:14px;line-height:2;">
+        <li>Мэргэжлийн <strong>CV</strong> үүсгэх</li>
+        <li>Ярилцлагын асуулт <strong>судлах</strong></li>
+        <li>Карьерын <strong>зөвлөмж</strong> унших</li>
+        <li>Тэтгэлэг & Internship <strong>хайх</strong></li>
+      </ul>
+      <table cellpadding="0" cellspacing="0" style="margin:24px 0;">
+        <tr>
+          <td style="background:#1e3a8a;border-radius:4px;">
+            <a href="{FRONTEND_URL}/dashboard" style="display:inline-block;padding:12px 28px;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;">
+              Дашбоард руу очих →
+            </a>
+          </td>
+        </tr>
+      </table>
+    """
+    return _send(to_email, "CareerPrep-д тавтай морилно уу!", _wrap_template(f"Тавтай морилно уу, {first_name}!", content))
 
 
 def send_password_reset_email(to_email: str, first_name: str, token: str) -> bool:

@@ -23,6 +23,7 @@ import AdviceDetail from "./pages/AdviceDetail";
 import ScholarshipList from "./pages/ScholarshipList";
 import ScholarshipDetail from "./pages/ScholarshipDetail";
 import ScholarshipForm from "./pages/ScholarshipForm";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminInterview from "./pages/AdminInterview";
 import AdminAdvice from "./pages/AdminAdvice";
@@ -74,6 +75,7 @@ function AppRoutes() {
       <Route path="/scholarship/new" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
       <Route path="/scholarship/:id" element={<PrivateRoute><ScholarshipDetail /></PrivateRoute>} />
       <Route path="/scholarship/:id/edit" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
+      <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/interview" element={<AdminRoute><AdminInterview /></AdminRoute>} />
       <Route path="/admin/advice" element={<AdminRoute><AdminAdvice /></AdminRoute>} />

@@ -4,7 +4,7 @@ import time
 import secrets
 import os
 
-_SECRET = os.getenv("SECRET_KEY", "career-platform-secret-key-2024")
+_SECRET = os.getenv("SECRET_KEY", "")
 
 
 def generate_csrf_token() -> str:

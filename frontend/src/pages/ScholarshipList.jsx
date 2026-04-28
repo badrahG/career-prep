@@ -12,6 +12,7 @@ export default function ScholarshipList() {
   var [loading, setLoading] = useState(true);
   var [search, setSearch] = useState("");
   var [filter, setFilter] = useState("all");
+  var [activeOnly, setActiveOnly] = useState(false);
   var { user } = useAuth();
   var isAdmin = user?.role === "admin";
 
@@ -34,7 +35,8 @@ export default function ScholarshipList() {
   var filtered = items.filter(function (s) {
     var matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || (s.organization || "").toLowerCase().includes(search.toLowerCase());
     var matchFilter = filter === "all" || s.target === filter;
-    return matchSearch && matchFilter;
+    var matchActive = !activeOnly || !s.deadline || new Date(s.deadline) >= new Date();
+    return matchSearch && matchFilter && matchActive;
   });
 
   function daysLeft(deadline) {
@@ -102,7 +104,7 @@ export default function ScholarshipList() {
               placeholder="Нэр эсвэл байгууллагаар хайх..."
               className="flex-1 px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition"
             />
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               {["all", "Бакалавр", "Магистр", "Internship"].map(function (f) {
                 return (
                   <button
@@ -114,6 +116,13 @@ export default function ScholarshipList() {
                   </button>
                 );
               })}
+              <button
+                onClick={function () { setActiveOnly(!activeOnly); }}
+                className={"px-4 py-2 rounded text-sm font-medium transition whitespace-nowrap flex items-center gap-1.5 " + (activeOnly ? "bg-emerald-600 text-white" : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50")}
+              >
+                <span className={"w-2 h-2 rounded-full flex-shrink-0 " + (activeOnly ? "bg-white" : "bg-emerald-500")}></span>
+                Хугацаа дуусаагүй
+              </button>
             </div>
           </div>
         </div>

@@ -20,6 +20,16 @@ UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8001")
 
 
+def _verify_image_magic(data: bytes, ext: str) -> bool:
+    if ext in ("jpg", "jpeg"):
+        return len(data) >= 3 and data[:3] == b"\xff\xd8\xff"
+    if ext == "png":
+        return len(data) >= 8 and data[:8] == b"\x89PNG\r\n\x1a\n"
+    if ext == "webp":
+        return len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP"
+    return False
+
+
 @router.post("/upload-photo")
 async def upload_photo(
     file: UploadFile = File(...),
@@ -32,6 +42,8 @@ async def upload_photo(
     contents = await file.read()
     if len(contents) > MAX_PHOTO_BYTES:
         raise HTTPException(status_code=400, detail="Зургийн хэмжээ 5MB-аас хэтрэхгүй байх ёстой")
+    if not _verify_image_magic(contents, ext):
+        raise HTTPException(status_code=400, detail="Файлын агуулга зурагтай тохирохгүй байна")
 
     filename = f"{user.id}_{uuid.uuid4().hex}.{ext}"
     dest = UPLOAD_DIR / filename

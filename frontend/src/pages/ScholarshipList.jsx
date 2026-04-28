@@ -13,12 +13,19 @@ export default function ScholarshipList() {
   var [search, setSearch] = useState("");
   var [filter, setFilter] = useState("all");
   var [activeOnly, setActiveOnly] = useState(false);
+  var [bookmarkedOnly, setBookmarkedOnly] = useState(false);
+  var [bookmarks, setBookmarks] = useState(new Set());
   var { user } = useAuth();
   var isAdmin = user?.role === "admin";
 
   useEffect(function () {
     API.get("/scholarship").then(function (res) { setItems(res.data); }).catch(function () { toast.error("Ачаалахад алдаа"); }).finally(function () { setLoading(false); });
-  }, []);
+    if (user) {
+      API.get("/scholarship/bookmarks").then(function (res) {
+        setBookmarks(new Set(res.data.ids));
+      }).catch(function () {});
+    }
+  }, [user]);
 
   function handleDelete(e, id) {
     e.preventDefault();
@@ -32,11 +39,26 @@ export default function ScholarshipList() {
 
   function stop(e) { e.stopPropagation(); }
 
+  async function toggleBookmark(e, id) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) { toast.error("Нэвтэрнэ үү"); return; }
+    try {
+      var res = await API.post("/scholarship/" + id + "/bookmark");
+      setBookmarks(function (prev) {
+        var next = new Set(prev);
+        if (res.data.bookmarked) { next.add(id); } else { next.delete(id); }
+        return next;
+      });
+    } catch { toast.error("Алдаа гарлаа"); }
+  }
+
   var filtered = items.filter(function (s) {
     var matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) || (s.organization || "").toLowerCase().includes(search.toLowerCase());
     var matchFilter = filter === "all" || s.target === filter;
     var matchActive = !activeOnly || !s.deadline || new Date(s.deadline) >= new Date();
-    return matchSearch && matchFilter && matchActive;
+    var matchBookmark = !bookmarkedOnly || bookmarks.has(s.id);
+    return matchSearch && matchFilter && matchActive && matchBookmark;
   });
 
   function daysLeft(deadline) {
@@ -123,6 +145,14 @@ export default function ScholarshipList() {
                 <span className={"w-2 h-2 rounded-full flex-shrink-0 " + (activeOnly ? "bg-white" : "bg-emerald-500")}></span>
                 Хугацаа дуусаагүй
               </button>
+              {user && (
+                <button
+                  onClick={function () { setBookmarkedOnly(!bookmarkedOnly); }}
+                  className={"px-4 py-2 rounded text-sm font-medium transition whitespace-nowrap " + (bookmarkedOnly ? "bg-amber-500 text-white" : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50")}
+                >
+                  ★ Хадгалсан
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -148,7 +178,7 @@ export default function ScholarshipList() {
                 >
                   <div className={"h-1 " + (isExpired ? "bg-slate-300" : "bg-[#1e3a8a]")}></div>
                   <div className="p-5 flex-1 flex flex-col">
-                    {/* Top row: Logo + title + target badge */}
+                    {/* Top row: Logo + title + target badge + bookmark */}
                     <div className="flex items-start gap-3 mb-3">
                       <OrgLogo
                         name={s.organization || s.name}
@@ -162,11 +192,22 @@ export default function ScholarshipList() {
                             <p className="font-semibold text-slate-900 text-sm leading-tight group-hover:text-[#1e3a8a] transition">{s.name}</p>
                             <p className="text-xs text-[#1e3a8a] font-medium mt-1 truncate">{s.organization}</p>
                           </div>
-                          {s.target && (
-                            <span className="text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap bg-slate-50 text-slate-700 border border-slate-200 flex-shrink-0">
-                              {s.target}
-                            </span>
-                          )}
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            {s.target && (
+                              <span className="text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap bg-slate-50 text-slate-700 border border-slate-200">
+                                {s.target}
+                              </span>
+                            )}
+                            {user && (
+                              <button
+                                onClick={function (e) { toggleBookmark(e, s.id); }}
+                                title={bookmarks.has(s.id) ? "Хадгалсан" : "Хадгалах"}
+                                className={"w-7 h-7 flex items-center justify-center rounded text-sm transition " + (bookmarks.has(s.id) ? "text-amber-500 hover:text-amber-400" : "text-slate-300 hover:text-amber-400")}
+                              >
+                                ★
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

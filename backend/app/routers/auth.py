@@ -5,16 +5,18 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 import secrets
+import hashlib
 
 from app.database import get_db
 from app.models.user import User
 from app.models.email_token import EmailToken, TokenType
+from app.models.refresh_token import RefreshToken
 from app.schemas.user import (
     UserCreate, UserLogin, UserResponse, Token, PasswordChange,
     ForgotPasswordRequest, ResetPasswordRequest, VerifyEmailRequest,
     ResendVerificationRequest, ProfileUpdate,
 )
-from app.services.auth import hash_password, verify_password, create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM, get_current_user
+from app.services.auth import hash_password, verify_password, create_access_token, create_refresh_token, SECRET_KEY, ALGORITHM, REFRESH_TOKEN_EXPIRE_DAYS, get_current_user
 from app.services.email_service import send_verification_email, send_password_reset_email, send_welcome_email
 from app.services.rate_limit import limiter
 from app.services.csrf import generate_csrf_token
@@ -130,12 +132,19 @@ def login(request: Request, response: Response, user_data: UserLogin, db: Sessio
 
     user.failed_login_attempts = 0
     user.locked_until = None
-    db.commit()
 
     access_token = create_access_token(data={"sub": user.id})
-    refresh_token = create_refresh_token(user.id)
+    refresh_token_str = create_refresh_token(user.id)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    db.add(RefreshToken(
+        user_id=user.id,
+        token_hash=hashlib.sha256(refresh_token_str.encode()).hexdigest(),
+        expires_at=expires_at,
+    ))
+    db.commit()
+
     write_audit_log(db, user.id, "login", request, details=user.email)
-    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
+    return {"access_token": access_token, "refresh_token": refresh_token_str, "token_type": "bearer"}
 
 
 @router.get("/me", response_model=UserResponse)
@@ -160,13 +169,44 @@ def refresh_token(data: RefreshRequest, db: Session = Depends(get_db)):
     except (JWTError, ValueError):
         raise HTTPException(status_code=401, detail="Token хүчингүй эсвэл хугацаа дууссан")
 
+    token_hash = hashlib.sha256(data.refresh_token.encode()).hexdigest()
+    stored = db.query(RefreshToken).filter(RefreshToken.token_hash == token_hash).first()
+    if not stored or stored.revoked_at is not None:
+        raise HTTPException(status_code=401, detail="Token хүчингүй эсвэл цуцлагдсан")
+    now = datetime.now(timezone.utc)
+    exp = stored.expires_at if stored.expires_at.tzinfo else stored.expires_at.replace(tzinfo=timezone.utc)
+    if exp < now:
+        raise HTTPException(status_code=401, detail="Token хугацаа дууссан")
+
     user = db.query(User).filter(User.id == user_id).first()
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="Хэрэглэгч олдсонгүй")
 
+    stored.revoked_at = now
+
     new_access = create_access_token(data={"sub": user.id})
     new_refresh = create_refresh_token(user.id)
+    new_expires = now + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    db.add(RefreshToken(
+        user_id=user.id,
+        token_hash=hashlib.sha256(new_refresh.encode()).hexdigest(),
+        expires_at=new_expires,
+    ))
+    db.commit()
     return {"access_token": new_access, "refresh_token": new_refresh, "token_type": "bearer"}
+
+
+@router.post("/logout")
+def logout(data: RefreshRequest, db: Session = Depends(get_db)):
+    token_hash = hashlib.sha256(data.refresh_token.encode()).hexdigest()
+    stored = db.query(RefreshToken).filter(
+        RefreshToken.token_hash == token_hash,
+        RefreshToken.revoked_at.is_(None),
+    ).first()
+    if stored:
+        stored.revoked_at = datetime.now(timezone.utc)
+        db.commit()
+    return {"message": "Амжилттай гарлаа"}
 
 
 @router.get("/dashboard-stats")

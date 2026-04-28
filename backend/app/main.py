@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import asyncio
 from pathlib import Path
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -29,6 +30,8 @@ from app.models.advice import Advice  # noqa
 from app.models.progress import UserQuizResult, UserFlashcardProgress  # noqa
 from app.models.audit_log import AuditLog  # noqa
 from app.models.scholarship_checklist import UserScholarshipChecklist  # noqa
+from app.models.scholarship_bookmark import ScholarshipBookmark  # noqa
+from app.models.refresh_token import RefreshToken  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.seed import seed_data
@@ -106,15 +109,74 @@ def run_migrations():
         """))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_usc_user ON user_scholarship_checklists(user_id)"))
 
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS scholarship_bookmarks (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                scholarship_id INTEGER NOT NULL REFERENCES scholarships(id) ON DELETE CASCADE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                CONSTRAINT uq_bookmark UNIQUE(user_id, scholarship_id)
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sb_user ON scholarship_bookmarks(user_id)"))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS refresh_tokens (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                token_hash VARCHAR(64) UNIQUE NOT NULL,
+                expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                revoked_at TIMESTAMP WITH TIME ZONE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_rt_user ON refresh_tokens(user_id)"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_rt_hash ON refresh_tokens(token_hash)"))
+
         conn.commit()
     print("✓ Migrations applied")
+
+
+def _run_deadline_reminders():
+    """Send email reminders for scholarships with deadline exactly 7 days away."""
+    from datetime import date, timedelta
+    from app.database import SessionLocal
+    from app.models.scholarship import Scholarship
+    from app.models.scholarship_bookmark import ScholarshipBookmark
+    from app.models.user import User
+    from app.services.email_service import send_deadline_reminder_email
+
+    target_date = date.today() + timedelta(days=7)
+    db = SessionLocal()
+    try:
+        due = db.query(Scholarship).filter(Scholarship.deadline == target_date).all()
+        for s in due:
+            bookmarks = db.query(ScholarshipBookmark).filter(ScholarshipBookmark.scholarship_id == s.id).all()
+            for bm in bookmarks:
+                user = db.query(User).filter(User.id == bm.user_id, User.is_active == True, User.is_verified == True).first()
+                if user:
+                    send_deadline_reminder_email(user.email, user.first_name, s.name, str(s.deadline), s.website_url)
+        if due:
+            print(f"✓ Deadline reminders sent for {len(due)} scholarship(s)")
+    except Exception as e:
+        print(f"Deadline reminder алдаа: {e}")
+    finally:
+        db.close()
+
+
+async def _deadline_reminder_loop():
+    while True:
+        await asyncio.sleep(24 * 3600)
+        _run_deadline_reminders()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
     seed_data()
+    task = asyncio.create_task(_deadline_reminder_loop())
     yield
+    task.cancel()
 
 
 app = FastAPI(title="Career Platform API", version="1.0.0", lifespan=lifespan)
@@ -130,6 +192,7 @@ _CSRF_EXEMPT_PATHS = {
     "/api/auth/reset-password",
     "/api/auth/refresh",
     "/api/auth/csrf-token",
+    "/api/auth/logout",
 }
 
 

@@ -140,6 +140,33 @@ def send_welcome_email(to_email: str, first_name: str) -> bool:
     return _send(to_email, "CareerPrep-д тавтай морилно уу!", _wrap_template(f"Тавтай морилно уу, {first_name}!", content))
 
 
+def send_deadline_reminder_email(to_email: str, first_name: str, scholarship_name: str, deadline_str: str, website_url: str = None) -> bool:
+    """Reminder email 7 days before scholarship deadline"""
+    register_btn = ""
+    if website_url:
+        register_btn = f"""
+      <table cellpadding="0" cellspacing="0" style="margin:16px 0;">
+        <tr>
+          <td style="background:#1e3a8a;border-radius:4px;">
+            <a href="{website_url}" style="display:inline-block;padding:12px 28px;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;">
+              Бүртгүүлэх →
+            </a>
+          </td>
+        </tr>
+      </table>"""
+    content = f"""
+      <p>Сайн байна уу, {first_name}!</p>
+      <p>Та bookmark хийсэн тэтгэлгийн хугацаа <strong>7 хоногийн дотор</strong> дуусна:</p>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:16px 20px;margin:16px 0;">
+        <p style="margin:0;font-size:16px;font-weight:700;color:#0f172a;">{scholarship_name}</p>
+        <p style="margin:6px 0 0 0;font-size:13px;color:#ef4444;font-weight:600;">Дуусах огноо: {deadline_str}</p>
+      </div>
+      {register_btn}
+      <p style="font-size:12px;color:#64748b;">Тэтгэлгийн дэлгэрэнгүйг харахын тулд <a href="{FRONTEND_URL}/scholarship" style="color:#1e3a8a;">энд дарна уу</a>.</p>
+    """
+    return _send(to_email, f"⏰ Тэтгэлгийн хугацаа дуусахад 7 хоног үлдлээ: {scholarship_name}", _wrap_template("Тэтгэлгийн хугацааны сануулга", content))
+
+
 def send_password_reset_email(to_email: str, first_name: str, token: str) -> bool:
     """Password reset link"""
     link = f"{FRONTEND_URL}/reset-password?token={token}"

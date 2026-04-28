@@ -7,6 +7,7 @@ import json
 from app.database import get_db
 from app.models.scholarship import Scholarship
 from app.models.scholarship_checklist import UserScholarshipChecklist
+from app.models.scholarship_bookmark import ScholarshipBookmark
 from app.models.user import User
 from app.services.auth import get_current_user
 from pydantic import BaseModel
@@ -48,6 +49,30 @@ class ScholarshipResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+@router.get("/bookmarks")
+def get_bookmarks(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    rows = db.query(ScholarshipBookmark).filter(ScholarshipBookmark.user_id == current_user.id).all()
+    return {"ids": [r.scholarship_id for r in rows]}
+
+
+@router.post("/{sid}/bookmark")
+def toggle_bookmark(sid: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    s = db.query(Scholarship).filter(Scholarship.id == sid).first()
+    if not s:
+        raise HTTPException(status_code=404, detail="Тэтгэлэг олдсонгүй")
+    existing = db.query(ScholarshipBookmark).filter(
+        ScholarshipBookmark.user_id == current_user.id,
+        ScholarshipBookmark.scholarship_id == sid,
+    ).first()
+    if existing:
+        db.delete(existing)
+        db.commit()
+        return {"bookmarked": False}
+    db.add(ScholarshipBookmark(user_id=current_user.id, scholarship_id=sid))
+    db.commit()
+    return {"bookmarked": True}
 
 
 @router.get("", response_model=List[ScholarshipResponse])

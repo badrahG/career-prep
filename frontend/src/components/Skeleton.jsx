@@ -142,6 +142,29 @@ export function QuestionSkeleton() {
   );
 }
 
+// Activity timeline skeleton (for Dashboard activity section)
+export function ActivitySkeleton({ count = 5 }) {
+  var widths = ["w-2/3", "w-1/2", "w-3/4", "w-1/2", "w-3/5"];
+  var subWidths = ["w-1/3", "w-1/4", "w-2/5", "w-1/3", "w-1/4"];
+  var items = Array.from({ length: count }, function (_, i) { return i; });
+  return (
+    <div className="px-6 py-4 space-y-4">
+      {items.map(function (i) {
+        return (
+          <div key={i} className="flex items-start gap-4">
+            <Pulse className="w-7 h-7 rounded-full flex-shrink-0" />
+            <div className="flex-1 space-y-1.5 pt-0.5 min-w-0">
+              <Pulse className={"h-3.5 " + widths[i % widths.length]} />
+              <Pulse className={"h-3 " + subWidths[i % subWidths.length]} />
+            </div>
+            <Pulse className="h-3 w-14 flex-shrink-0 mt-0.5" />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // Default export — inline skeleton for general use
 export default function Skeleton({ className }) {
   return <Pulse className={className} />;

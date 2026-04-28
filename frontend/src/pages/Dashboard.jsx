@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import API from "../services/api";
-import { StatsSkeleton } from "../components/Skeleton";
+import { StatsSkeleton, ActivitySkeleton } from "../components/Skeleton";
 
 export default function Dashboard() {
   var { user, logout } = useAuth();
@@ -256,9 +256,7 @@ export default function Dashboard() {
               <h2 className="text-base font-semibold text-slate-900">Сүүлийн үйлдлүүд</h2>
             </div>
             {activityLoading ? (
-              <div className="px-6 py-8 flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-[#1e3a8a] border-t-transparent rounded-full animate-spin"></div>
-              </div>
+              <ActivitySkeleton count={5} />
             ) : activity.length === 0 ? (
               <div className="px-6 py-8 text-center text-sm text-slate-400">Одоохондоо үйлдэл байхгүй байна.</div>
             ) : (

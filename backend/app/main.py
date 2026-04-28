@@ -159,7 +159,7 @@ def _run_deadline_reminders():
         if due:
             print(f"✓ Deadline reminders sent for {len(due)} scholarship(s)")
     except Exception as e:
-        print(f"Deadline reminder алдаа: {e}")
+        print(f"Deadline reminder алдаа [{type(e).__name__}]")
     finally:
         db.close()
 
@@ -246,7 +246,7 @@ app.add_middleware(
 async def global_exception_handler(request: Request, exc: Exception):
     if isinstance(exc, RateLimitExceeded):
         raise exc
-    print(f"АЛДАА: {exc}")
+    print(f"АЛДАА [{type(exc).__name__}] {request.method} {request.url.path}")
     return JSONResponse(status_code=500, content={"detail": "Серверийн дотоод алдаа гарлаа"})
 
 

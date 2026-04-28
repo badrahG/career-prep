@@ -28,7 +28,7 @@ function EduForm(props) {
         <span className="text-sm font-semibold text-slate-900">Боловсрол #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Түвшин <span className="text-red-500">*</span></label>
           <select value={edu.level} onChange={function(e) { onUpdate("level", e.target.value); }} className={inputCls}>
@@ -86,7 +86,7 @@ function ExpForm(props) {
         <span className="text-sm font-semibold text-slate-900">Туршлага #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Чиглэл <span className="text-red-500">*</span></label>
           <select value={exp.category} onChange={function(e) { onUpdate("category", e.target.value); }} className={inputCls}>
@@ -438,7 +438,7 @@ export default function CVEdit() {
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-1">Ерөнхий мэдээлэл</h2>
               <p className="text-sm text-slate-600 mb-6">Хувийн мэдээллээ оруулна уу.</p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Inp label="Овог *" value={info.lastName} onChange={function(v) { upd(setInfo, "lastName", v); }} placeholder="Ганбаатар" />
                 <Inp label="Нэр *" value={info.firstName} onChange={function(v) { upd(setInfo, "firstName", v); }} placeholder="Бадрах" />
                 <Inp label="Төрсөн он" value={info.birthDate} onChange={function(v) { upd(setInfo, "birthDate", v); }} type="date" />
@@ -459,7 +459,7 @@ export default function CVEdit() {
             <div>
               <h2 className="text-xl font-bold text-slate-900 mb-1">Холбоо барих</h2>
               <p className="text-sm text-slate-600 mb-6">Холбогдох мэдээллээ оруулна уу.</p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Inp label="И-мэйл *" value={contact.email} onChange={function(v) { upd(setContact, "email", v); }} placeholder="badrakh@email.com" type="email" />
                 <Inp label="Утас *" value={contact.phone} onChange={function(v) { upd(setContact, "phone", v); }} placeholder="88395886" />
                 <Inp label="Утас 2" value={contact.phone2} onChange={function(v) { upd(setContact, "phone2", v); }} placeholder="96113376" />
@@ -571,7 +571,7 @@ export default function CVEdit() {
                       <span className="text-sm font-semibold text-slate-900">Сургалт #{i + 1}</span>
                       {certs.length > 1 && <button type="button" onClick={function() { setCerts(removeAt(certs, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Inp label="Сургалтын нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" />
                       <Inp label="Сургалтын төв *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Pinecone" />
                       <Inp label="Эхэлсэн" value={c.start_date} onChange={function(v) { updList(certs, setCerts, i, "start_date", v); }} type="date" />
@@ -595,7 +595,7 @@ export default function CVEdit() {
                       <span className="text-sm font-semibold text-slate-900">Дадлага #{i + 1}</span>
                       {interns.length > 1 && <button type="button" onClick={function() { setInterns(removeAt(interns, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Inp label="Байгууллага *" value={n.company} onChange={function(v) { updList(interns, setInterns, i, "company", v); }} placeholder="Компани" />
                       <Inp label="Дадлагын нэр *" value={n.title} onChange={function(v) { updList(interns, setInterns, i, "title", v); }} placeholder="Frontend дадлагажигч" />
                       <Inp label="Эхэлсэн" value={n.start_date} onChange={function(v) { updList(interns, setInterns, i, "start_date", v); }} type="date" />

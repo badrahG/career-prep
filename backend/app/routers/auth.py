@@ -33,7 +33,7 @@ def write_audit_log(db: Session, user_id: Optional[int], action: str, request: R
         db.commit()
     except Exception as e:
         db.rollback()
-        print(f"Audit log алдаа: {e}")
+        print(f"Audit log алдаа [{type(e).__name__}]")
 
 
 @router.get("/csrf-token")
@@ -212,23 +212,42 @@ def logout(data: RefreshRequest, db: Session = Depends(get_db)):
 @router.get("/dashboard-stats")
 def get_dashboard_stats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     import json as _json
+    from sqlalchemy import select, func as sqlfunc
     from app.models.cv import CV
     from app.models.progress import UserQuizResult, UserFlashcardProgress
     from app.models.scholarship_checklist import UserScholarshipChecklist
 
-    cv_count = db.query(CV).filter(CV.user_id == current_user.id).count()
-    studied_questions = db.query(UserFlashcardProgress).filter(UserFlashcardProgress.user_id == current_user.id).count()
+    uid = current_user.id
 
-    quiz_results = db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).all()
-    quiz_count = len(quiz_results)
-    quiz_avg = round(sum(r.percentage for r in quiz_results) / quiz_count) if quiz_count > 0 else 0
+    # Single round-trip: cv_count, studied, quiz_count, quiz_avg
+    row = db.execute(
+        select(
+            sqlfunc.coalesce(
+                select(sqlfunc.count(CV.id)).where(CV.user_id == uid).correlate(None).scalar_subquery(), 0
+            ).label("cv_count"),
+            sqlfunc.coalesce(
+                select(sqlfunc.count(UserFlashcardProgress.id)).where(UserFlashcardProgress.user_id == uid).correlate(None).scalar_subquery(), 0
+            ).label("studied"),
+            sqlfunc.coalesce(
+                select(sqlfunc.count(UserQuizResult.id)).where(UserQuizResult.user_id == uid).correlate(None).scalar_subquery(), 0
+            ).label("quiz_count"),
+            sqlfunc.coalesce(
+                select(sqlfunc.avg(UserQuizResult.percentage)).where(UserQuizResult.user_id == uid).correlate(None).scalar_subquery(), 0
+            ).label("quiz_avg"),
+        )
+    ).one()
 
-    checklist_rows = db.query(UserScholarshipChecklist).filter(UserScholarshipChecklist.user_id == current_user.id).all()
+    cv_count = row.cv_count
+    studied_questions = row.studied
+    quiz_count = row.quiz_count
+    quiz_avg = round(float(row.quiz_avg))
+
+    # Second query: checklist rows (JSON content шалгах шаардлагатай)
+    checklist_rows = db.query(UserScholarshipChecklist).filter(UserScholarshipChecklist.user_id == uid).all()
     checklist_count = 0
-    for row in checklist_rows:
+    for r in checklist_rows:
         try:
-            items = _json.loads(row.items)
-            if any(item.get("done") for item in items):
+            if any(item.get("done") for item in _json.loads(r.items)):
                 checklist_count += 1
         except Exception:
             pass

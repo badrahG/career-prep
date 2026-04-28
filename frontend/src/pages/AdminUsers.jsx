@@ -409,17 +409,17 @@ export default function AdminUsers() {
                                 className="rounded border-slate-300 accent-[#1e3a8a] disabled:opacity-30"
                               />
                             </td>
-                            <td className="px-4 py-3">
-                              <div className="flex items-center gap-3">
+                            <td className="px-4 py-3 max-w-[200px]">
+                              <div className="flex items-center gap-3 min-w-0">
                                 <div className="w-8 h-8 bg-[#1e3a8a] rounded-full flex items-center justify-center flex-shrink-0">
                                   <span className="text-white font-bold text-xs">{(u.first_name || "U").charAt(0).toUpperCase()}</span>
                                 </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-slate-900">
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-slate-900 truncate">
                                     {u.last_name} {u.first_name}
                                     {isMe && <span className="ml-2 text-xs text-slate-400">(Та)</span>}
                                   </p>
-                                  <p className="text-xs text-slate-500 md:hidden">{u.email}</p>
+                                  <p className="text-xs text-slate-500 md:hidden truncate">{u.email}</p>
                                 </div>
                               </div>
                             </td>
@@ -446,7 +446,7 @@ export default function AdminUsers() {
                               {isMe ? (
                                 <span className="text-xs text-slate-400 italic">—</span>
                               ) : (
-                                <div className="flex justify-end gap-1">
+                                <div className="flex justify-end flex-wrap gap-1">
                                   <button onClick={function () { toggleRole(u); }} className="text-xs px-2 py-1 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded font-medium transition whitespace-nowrap">
                                     {u.role === "admin" ? "Хэрэглэгч" : "Админ"}
                                   </button>

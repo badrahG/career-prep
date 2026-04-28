@@ -10,6 +10,9 @@ from sqlalchemy import cast, Date, or_, func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.services.cache import cache_get, cache_set
+
+_TEMPLATES_TTL = 300  # 5 минут
 from app.models.cv import CV
 from app.models.user import User
 from app.schemas.user import UserAdminResponse, UserUpdateAdmin
@@ -360,16 +363,21 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
 
 @router.get("/cv-templates")
 def get_cv_templates(db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    cached = cache_get("cv_templates", _TEMPLATES_TTL)
+    if cached is not None:
+        return cached
     rows = (
         db.query(CV.template_type, func.count(CV.id).label("count"))
         .group_by(CV.template_type)
         .all()
     )
     total = db.query(CV).count()
-    return {
+    result = {
         "total": total,
         "templates": [{"name": r.template_type, "count": r.count} for r in rows],
     }
+    cache_set("cv_templates", result)
+    return result
 
 
 # ── Audit logs ────────────────────────────────────────────────────────────────

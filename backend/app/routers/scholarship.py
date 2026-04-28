@@ -10,7 +10,10 @@ from app.models.scholarship_checklist import UserScholarshipChecklist
 from app.models.scholarship_bookmark import ScholarshipBookmark
 from app.models.user import User
 from app.services.auth import get_current_user
+from app.services.cache import cache_get, cache_set, cache_clear_prefix
 from pydantic import BaseModel
+
+_SCHOLARSHIP_TTL = 300  # 5 минут
 
 router = APIRouter(prefix="/api/scholarship", tags=["Scholarship"])
 
@@ -82,10 +85,16 @@ def get_scholarships(
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
+    cache_key = f"scholarships:{target}:{skip}:{limit}"
+    cached = cache_get(cache_key, _SCHOLARSHIP_TTL)
+    if cached is not None:
+        return cached
     query = db.query(Scholarship)
     if target:
         query = query.filter(Scholarship.target == target)
-    return query.order_by(Scholarship.deadline).offset(skip).limit(limit).all()
+    result = query.order_by(Scholarship.deadline).offset(skip).limit(limit).all()
+    cache_set(cache_key, result)
+    return result
 
 
 @router.get("/{sid}", response_model=ScholarshipResponse)
@@ -102,6 +111,7 @@ def create_scholarship(data: ScholarshipCreate, db: Session = Depends(get_db), a
     db.add(s)
     db.commit()
     db.refresh(s)
+    cache_clear_prefix("scholarships:")
     return s
 
 
@@ -114,6 +124,7 @@ def update_scholarship(sid: int, data: ScholarshipCreate, db: Session = Depends(
         setattr(s, key, val)
     db.commit()
     db.refresh(s)
+    cache_clear_prefix("scholarships:")
     return s
 
 
@@ -124,6 +135,7 @@ def delete_scholarship(sid: int, db: Session = Depends(get_db), admin: User = De
         raise HTTPException(status_code=404, detail="Олдсонгүй")
     db.delete(s)
     db.commit()
+    cache_clear_prefix("scholarships:")
     return {"message": "Устгагдлаа"}
 
 

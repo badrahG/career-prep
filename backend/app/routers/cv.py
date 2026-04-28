@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlalchemy.orm import Session
 from typing import List
 from pathlib import Path
@@ -76,8 +76,13 @@ def create_cv(data: CVCreate, db: Session = Depends(get_db), user: User = Depend
 
 
 @router.get("", response_model=List[CVListResponse])
-def get_my_cvs(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
-    return db.query(CV).filter(CV.user_id == user.id).order_by(CV.created_at.desc()).all()
+def get_my_cvs(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    return db.query(CV).filter(CV.user_id == user.id).order_by(CV.created_at.desc()).offset(skip).limit(limit).all()
 
 
 @router.get("/{cv_id}", response_model=CVResponse)

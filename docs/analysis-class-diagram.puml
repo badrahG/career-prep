@@ -1,0 +1,298 @@
+@startuml
+hide circle
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam linetype ortho
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 12
+skinparam classAttributeIconSize 0
+
+skinparam class {
+  BackgroundColor #7EC8E3
+  BorderColor #2F4F4F
+  FontColor #111111
+  ArrowColor #2F4F4F
+}
+
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #8B7E66
+}
+
+title Career Platform системийн шинжилгээний класс диаграмм
+
+enum UserRole {
+  user
+  admin
+}
+
+enum TemplateType {
+  modern
+  classic
+  minimal
+}
+
+enum QuestionCategory {
+  general
+  technical
+  behavioral
+}
+
+enum AdviceCategory {
+  cv
+  interview
+  job_search
+  career
+}
+
+enum TokenType {
+  verify_email
+  reset_password
+}
+
+class User {
+  -id : int
+  -first_name : string
+  -last_name : string
+  -email : string
+  -password : string
+  -phone : string
+  -role : UserRole
+  -is_active : boolean
+  -is_verified : boolean
+  -verified_at : datetime
+  -failed_login_attempts : int
+  -locked_until : datetime
+  -created_at : datetime
+  -updated_at : datetime
+  --
+  +бүртгүүлэх() : void
+  +нэвтрэх() : Token
+  +профайлШинэчлэх() : void
+  +нууцҮгСолих() : void
+}
+
+class Admin {
+  +хэрэглэгчУдирдах() : void
+  +асуултУдирдах() : void
+  +тэтгэлэгУдирдах() : void
+  +зөвлөгөөУдирдах() : void
+}
+
+class CV {
+  -id : int
+  -user_id : int
+  -name : string
+  -template_type : TemplateType
+  -personal_info : text
+  -created_at : datetime
+  -updated_at : datetime
+  --
+  +үүсгэх() : void
+  +засах() : void
+  +устгах() : void
+}
+
+class Education {
+  -id : int
+  -cv_id : int
+  -school : string
+  -major : string
+  -start_year : int
+  -end_year : int
+  -gpa : float
+}
+
+class WorkExperience {
+  -id : int
+  -cv_id : int
+  -company : string
+  -position : string
+  -start_date : string
+  -end_date : string
+  -description : text
+}
+
+class Skill {
+  -id : int
+  -cv_id : int
+  -skill_name : string
+  -skill_type : string
+  -level : string
+}
+
+class InterviewQuestion {
+  -id : int
+  -question_mn : text
+  -category : QuestionCategory
+  -sample_answer : text
+  -advice : text
+  -difficulty : string
+  -tags : string
+  -is_quiz : boolean
+  -option_a : text
+  -option_b : text
+  -option_c : text
+  -option_d : text
+  -correct_option : string
+  -explanation : text
+  -created_at : datetime
+  -updated_at : datetime
+  --
+  +асуултХарах() : void
+  +quizАсуултБолгох() : void
+}
+
+class UserQuizResult {
+  -id : int
+  -user_id : int
+  -total : int
+  -correct : int
+  -percentage : float
+  -created_at : datetime
+  --
+  +дүнТооцоолох() : float
+}
+
+class UserFlashcardProgress {
+  -id : int
+  -user_id : int
+  -question_id : int
+  -viewed_at : datetime
+  --
+  +үзсэнТэмдэглэх() : void
+  +явцАвах() : list<int>
+}
+
+class Scholarship {
+  -id : int
+  -name : string
+  -organization : string
+  -target : string
+  -requirements : text
+  -deadline : date
+  -website_url : string
+  -description : text
+  -image_url : string
+  -gpa : string
+  -duration : string
+  --
+  +жагсаалтАвах() : list<Scholarship>
+  +дэлгэрэнгүйАвах() : Scholarship
+}
+
+class UserScholarshipChecklist {
+  -id : int
+  -user_id : int
+  -scholarship_id : int
+  -items : text
+  -updated_at : datetime
+  --
+  +checklistХадгалах() : void
+  +checklistАвах() : json
+}
+
+class ScholarshipBookmark {
+  -id : int
+  -user_id : int
+  -scholarship_id : int
+  -created_at : datetime
+  --
+  +хадгалах() : void
+  +цуцлах() : void
+}
+
+class Advice {
+  -id : int
+  -category : AdviceCategory
+  -title : string
+  -summary : text
+  -content : text
+  -youtube_url : string
+  -external_links : text
+  -sort_order : int
+  -is_published : boolean
+  -created_at : datetime
+  -updated_at : datetime
+  --
+  +нийтлэлАвах() : list<Advice>
+  +дэлгэрэнгүйАвах() : Advice
+}
+
+class EmailToken {
+  -id : int
+  -user_id : int
+  -token : string
+  -token_type : TokenType
+  -expires_at : datetime
+  -used_at : datetime
+  -created_at : datetime
+  --
+  +баталгаажуулах() : boolean
+}
+
+class RefreshToken {
+  -id : int
+  -user_id : int
+  -token_hash : string
+  -expires_at : datetime
+  -revoked_at : datetime
+  -created_at : datetime
+  --
+  +сэргээх() : Token
+  +цуцлах() : void
+}
+
+class AuditLog {
+  -id : int
+  -user_id : int
+  -action : string
+  -ip_address : string
+  -details : text
+  -created_at : datetime
+  --
+  +бүртгэх() : void
+}
+
+Admin --|> User
+
+User "1" -- "0..*" CV : эзэмшинэ
+CV "1" -- "1..*" Education : агуулна
+CV "1" -- "0..*" WorkExperience : агуулна
+CV "1" -- "0..*" Skill : агуулна
+
+User "1" -- "0..*" UserQuizResult : авна
+User "1" -- "0..*" UserFlashcardProgress : үүсгэнэ
+InterviewQuestion "1" -- "0..*" UserFlashcardProgress : хамаарна
+
+User "1" -- "0..*" UserScholarshipChecklist : хадгална
+Scholarship "1" -- "0..*" UserScholarshipChecklist : checklist-тэй
+
+User "1" -- "0..*" ScholarshipBookmark : хадгална
+Scholarship "1" -- "0..*" ScholarshipBookmark : bookmark-логдоно
+
+User "1" -- "0..*" EmailToken : авна
+User "1" -- "0..*" RefreshToken : эзэмшинэ
+User "1" -- "0..*" AuditLog : үлдээнэ
+
+note bottom of User
+  Энэ класс нь authentication,
+  profile болон dashboard-ийн
+  төв entity юм.
+end note
+
+note bottom of InterviewQuestion
+  Ярилцлагын модуль нь
+  flashcard, quiz, behavioral
+  горимуудыг нэг entity дээр
+  суурилж хэрэгжүүлсэн.
+end note
+
+note bottom of Scholarship
+  Тэтгэлгийн модуль нь
+  bookmark болон checklist
+  гэсэн 2 хэрэглэгчийн
+  интерактив entity-тай.
+end note
+
+@enduml

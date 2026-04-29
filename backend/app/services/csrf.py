@@ -5,6 +5,8 @@ import secrets
 import os
 
 _SECRET = os.getenv("SECRET_KEY", "")
+if not _SECRET:
+    raise ValueError("SECRET_KEY environment variable is not set")
 
 
 def generate_csrf_token() -> str:

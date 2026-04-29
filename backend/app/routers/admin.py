@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import cast, Date, or_, func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.services.cache import cache_get, cache_set
@@ -303,21 +303,23 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
     recent_users = db.query(User).order_by(User.created_at.desc()).limit(7).all()
 
     # ── Recent audit logs ────────────────────────────────────────────────────
-    recent_logs = db.query(AuditLog).order_by(AuditLog.created_at.desc()).limit(12).all()
-    logs_out = []
-    for log in recent_logs:
-        uname = None
-        if log.user_id:
-            u = db.query(User).filter(User.id == log.user_id).first()
-            if u:
-                uname = f"{u.last_name} {u.first_name}"
-        logs_out.append({
+    recent_logs = (
+        db.query(AuditLog)
+        .options(joinedload(AuditLog.user))
+        .order_by(AuditLog.created_at.desc())
+        .limit(12)
+        .all()
+    )
+    logs_out = [
+        {
             "id": log.id,
-            "user_name": uname,
+            "user_name": f"{log.user.last_name} {log.user.first_name}" if log.user else None,
             "action": log.action,
             "ip_address": log.ip_address,
             "created_at": log.created_at.isoformat() if log.created_at else None,
-        })
+        }
+        for log in recent_logs
+    ]
 
     return {
         "counts": {

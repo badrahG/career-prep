@@ -151,11 +151,11 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Хэрэглэгчид</p>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <KpiCard label="Нийт" value={c?.users} icon="👤" />
-                <KpiCard label="Идэвхтэй" value={c?.active_users} color="text-emerald-700" icon="✅" sub={c ? Math.round(c.active_users / (c.users || 1) * 100) + "%" : ""} />
-                <KpiCard label="Түр хаагдсан" value={c?.suspended_users} color="text-red-600" icon="🚫" />
-                <KpiCard label="Баталгаажаагүй" value={c?.unverified} color="text-amber-600" icon="⏳" />
-                <KpiCard label="Админ" value={c?.admins} color="text-[#1e3a8a]" icon="🛡️" />
+                <KpiCard label="Нийт" value={c?.users}  />
+                <KpiCard label="Идэвхтэй" value={c?.active_users} color="text-emerald-700"  sub={c ? Math.round(c.active_users / (c.users || 1) * 100) + "%" : ""} />
+                <KpiCard label="Түр хаагдсан" value={c?.suspended_users} color="text-red-600"  />
+                <KpiCard label="Баталгаажаагүй" value={c?.unverified} color="text-amber-600"  />
+                <KpiCard label="Админ" value={c?.admins} color="text-[#1e3a8a]"  />
               </div>
             </div>
 
@@ -163,10 +163,10 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Агуулга</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <KpiCard label="CV нийт" value={c?.cvs} color="text-purple-700" icon="📄" sub={c ? (c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : "") : ""} />
-                <KpiCard label="Тэтгэлэг" value={c?.scholarships} color="text-blue-700" icon="🎓" />
-                <KpiCard label="Ярилцлагын асуулт" value={c?.interview_questions} color="text-teal-700" icon="🎯" />
-                <KpiCard label="Зөвлөмж нийтлэл" value={c?.published_advice} color="text-orange-600" icon="💡" sub={c ? "Нийт " + c.advice : ""} />
+                <KpiCard label="CV нийт" value={c?.cvs} color="text-purple-700" sub={c ? (c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : "") : ""} />
+                <KpiCard label="Тэтгэлэг" value={c?.scholarships} color="text-blue-700"  />
+                <KpiCard label="Ярилцлагын асуулт" value={c?.interview_questions} color="text-teal-700"  />
+                <KpiCard label="Зөвлөмж нийтлэл" value={c?.published_advice} color="text-orange-600"  sub={c ? "Нийт " + c.advice : ""} />
               </div>
             </div>
 
@@ -174,9 +174,9 @@ export default function AdminDashboard() {
             <div>
               <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">Идэвхжилт</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <KpiCard label="Quiz дүн нийт" value={c?.quiz_results} color="text-indigo-700" icon="📊" />
-                <KpiCard label="Тэтгэлэг хадгалсан" value={c?.bookmarks} color="text-pink-600" icon="🔖" />
-                <KpiCard label="30 хоногт бүртгэл" color="text-slate-700" icon="📈"
+                <KpiCard label="Quiz дүн нийт" value={c?.quiz_results} color="text-indigo-700" icon="" />
+                <KpiCard label="Тэтгэлэг хадгалсан" value={c?.bookmarks} color="text-pink-600" icon="" />
+                <KpiCard label="30 хоногт бүртгэл" color="text-slate-700" icon=""
                   value={data?.daily_registrations?.reduce(function (s, d) { return s + d.count; }, 0)} />
               </div>
             </div>

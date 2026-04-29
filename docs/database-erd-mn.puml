@@ -13,9 +13,9 @@ skinparam entity {
     FontColor #111111
 }
 
-title CareerPrep системийн өгөгдлийн сангийн ерөнхий схем
+title CareerPrep Database Overview ERD
 
-entity "Хэрэглэгч\n(users)" as users {
+entity "Users\n(users)" as users {
   * id : integer
   --
   first_name : varchar(100)
@@ -44,7 +44,7 @@ entity "CV\n(cvs)" as cvs {
   updated_at : datetime
 }
 
-entity "CV загвар\n(cv_templates)" as cv_templates {
+entity "CV Templates\n(cv_templates)" as cv_templates {
   * id : integer
   --
   key : varchar(50)
@@ -56,7 +56,7 @@ entity "CV загвар\n(cv_templates)" as cv_templates {
   created_at : datetime
 }
 
-entity "Боловсрол\n(educations)" as educations {
+entity "Educations\n(educations)" as educations {
   * id : integer
   --
   cv_id : integer
@@ -67,7 +67,7 @@ entity "Боловсрол\n(educations)" as educations {
   gpa : float
 }
 
-entity "Ажлын туршлага\n(work_experiences)" as work_experiences {
+entity "Work Experiences\n(work_experiences)" as work_experiences {
   * id : integer
   --
   cv_id : integer
@@ -78,7 +78,7 @@ entity "Ажлын туршлага\n(work_experiences)" as work_experiences {
   description : text
 }
 
-entity "Ур чадвар\n(skills)" as skills {
+entity "Skills\n(skills)" as skills {
   * id : integer
   --
   cv_id : integer
@@ -87,7 +87,7 @@ entity "Ур чадвар\n(skills)" as skills {
   level : varchar(50)
 }
 
-entity "Ярилцлагын асуулт\n(interview_questions)" as interview_questions {
+entity "Interview Questions\n(interview_questions)" as interview_questions {
   * id : integer
   --
   question_mn : text
@@ -107,7 +107,7 @@ entity "Ярилцлагын асуулт\n(interview_questions)" as interview_q
   updated_at : datetime
 }
 
-entity "Хэрэглэгчийн quiz үр дүн\n(user_quiz_results)" as user_quiz_results {
+entity "User Quiz Results\n(user_quiz_results)" as user_quiz_results {
   * id : integer
   --
   user_id : integer
@@ -117,7 +117,7 @@ entity "Хэрэглэгчийн quiz үр дүн\n(user_quiz_results)" as user_
   created_at : datetime
 }
 
-entity "Flashcard явц\n(user_flashcard_progress)" as user_flashcard_progress {
+entity "User Flashcard Progress\n(user_flashcard_progress)" as user_flashcard_progress {
   * id : integer
   --
   user_id : integer
@@ -125,7 +125,7 @@ entity "Flashcard явц\n(user_flashcard_progress)" as user_flashcard_progress 
   viewed_at : datetime
 }
 
-entity "Тэтгэлэг\n(scholarships)" as scholarships {
+entity "Scholarships\n(scholarships)" as scholarships {
   * id : integer
   --
   name : varchar(300)
@@ -140,7 +140,7 @@ entity "Тэтгэлэг\n(scholarships)" as scholarships {
   duration : varchar(200)
 }
 
-entity "Тэтгэлгийн checklist\n(user_scholarship_checklists)" as user_scholarship_checklists {
+entity "Scholarship Checklists\n(user_scholarship_checklists)" as user_scholarship_checklists {
   * id : integer
   --
   user_id : integer
@@ -149,7 +149,7 @@ entity "Тэтгэлгийн checklist\n(user_scholarship_checklists)" as user_s
   updated_at : datetime
 }
 
-entity "Тэтгэлгийн bookmark\n(scholarship_bookmarks)" as scholarship_bookmarks {
+entity "Scholarship Bookmarks\n(scholarship_bookmarks)" as scholarship_bookmarks {
   * id : integer
   --
   user_id : integer
@@ -157,7 +157,7 @@ entity "Тэтгэлгийн bookmark\n(scholarship_bookmarks)" as scholarship_b
   created_at : datetime
 }
 
-entity "Зөвлөгөө\n(advices)" as advices {
+entity "Advices\n(advices)" as advices {
   * id : integer
   --
   category : enum
@@ -172,7 +172,7 @@ entity "Зөвлөгөө\n(advices)" as advices {
   updated_at : datetime
 }
 
-entity "И-мэйл токен\n(email_tokens)" as email_tokens {
+entity "Email Tokens\n(email_tokens)" as email_tokens {
   * id : integer
   --
   user_id : integer
@@ -183,7 +183,7 @@ entity "И-мэйл токен\n(email_tokens)" as email_tokens {
   created_at : datetime
 }
 
-entity "Refresh token\n(refresh_tokens)" as refresh_tokens {
+entity "Refresh Tokens\n(refresh_tokens)" as refresh_tokens {
   * id : integer
   --
   user_id : integer
@@ -193,7 +193,7 @@ entity "Refresh token\n(refresh_tokens)" as refresh_tokens {
   created_at : datetime
 }
 
-entity "Аудит лог\n(audit_logs)" as audit_logs {
+entity "Audit Logs\n(audit_logs)" as audit_logs {
   * id : integer
   --
   user_id : integer
@@ -207,6 +207,7 @@ users ||--o{ cvs
 cvs ||--o{ educations
 cvs ||--o{ work_experiences
 cvs ||--o{ skills
+cv_templates .. cvs : template_type/key
 
 users ||--o{ user_quiz_results
 users ||--o{ user_flashcard_progress
@@ -221,11 +222,14 @@ scholarships ||--o{ user_scholarship_checklists
 
 users ||--o{ scholarship_bookmarks
 scholarships ||--o{ scholarship_bookmarks
+users .. advices : reads
+advices .. cvs : CV advice content
+advices .. interview_questions : interview advice content
+advices .. scholarships : career guidance
 
 note bottom
-CV, quiz, flashcard, bookmark, refresh token зэрэг
-техникийн нэршлүүдийг хэвээр үлдээж,
-тайлбарлах хэсгийг монголоор харуулсан.
+Logical dotted links are used for tables that are related at
+application level but do not have a direct foreign key in the database.
 end note
 
 @enduml

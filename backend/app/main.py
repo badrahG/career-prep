@@ -6,9 +6,9 @@ import os
 import asyncio
 from pathlib import Path
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from slowapi import _rate_limit_exceeded_handler
@@ -35,6 +35,7 @@ from app.models.refresh_token import RefreshToken  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.seed import seed_data
+from app.services.auth import get_current_user
 
 Base.metadata.create_all(bind=engine)
 
@@ -204,6 +205,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'"
         return response
 
 
@@ -237,8 +239,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-CSRF-Token"],
 )
 
 
@@ -259,7 +261,15 @@ app.include_router(advice.router)
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
+
+@app.get("/uploads/{file_path:path}")
+async def serve_upload(file_path: str, current_user=Depends(get_current_user)):
+    resolved = (UPLOAD_DIR / file_path).resolve()
+    if not str(resolved).startswith(str(UPLOAD_DIR.resolve())):
+        raise HTTPException(status_code=403, detail="Хандах эрхгүй")
+    if not resolved.exists() or not resolved.is_file():
+        raise HTTPException(status_code=404, detail="Файл олдсонгүй")
+    return FileResponse(resolved)
 
 
 @app.get("/")

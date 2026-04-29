@@ -52,6 +52,8 @@ def get_current_user(
 ) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "access":
+            raise HTTPException(status_code=401, detail="Token буруу байна")
         sub = payload.get("sub")
         if sub is None:
             raise HTTPException(status_code=401, detail="Token буруу байна")
@@ -62,6 +64,8 @@ def get_current_user(
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
         raise HTTPException(status_code=401, detail="Хэрэглэгч олдсонгүй")
+    if not user.is_active:
+        raise HTTPException(status_code=403, detail="Хэрэглэгчийн эрх хаагдсан байна")
     return user
 
 
@@ -72,15 +76,19 @@ def get_optional_user(
     token: Optional[str] = Depends(oauth2_scheme_optional),
     db: Session = Depends(get_db),
 ) -> Optional[User]:
-    """Returns the current user if a valid token is provided, otherwise None."""
     if not token:
         return None
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "access":
+            return None
         sub = payload.get("sub")
         if sub is None:
             return None
         user_id = int(sub)
     except (JWTError, ValueError):
         return None
-    return db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
+    if user and not user.is_active:
+        return None
+    return user

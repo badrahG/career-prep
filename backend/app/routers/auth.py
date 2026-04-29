@@ -24,6 +24,17 @@ from app.services.csrf import generate_csrf_token
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
 
+def _validate_password_strength(password: str) -> None:
+    if len(password) < 8:
+        raise HTTPException(status_code=400, detail="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой")
+    if not any(c.isupper() for c in password):
+        raise HTTPException(status_code=400, detail="Нууц үг хамгийн нэг том үсэг агуулах ёстой")
+    if not any(c.islower() for c in password):
+        raise HTTPException(status_code=400, detail="Нууц үг хамгийн нэг жижиг үсэг агуулах ёстой")
+    if not any(c.isdigit() for c in password):
+        raise HTTPException(status_code=400, detail="Нууц үг хамгийн нэг тоо агуулах ёстой")
+
+
 def write_audit_log(db: Session, user_id: Optional[int], action: str, request: Request, details: str = None):
     from app.models.audit_log import AuditLog
     try:
@@ -77,8 +88,7 @@ def register(request: Request, response: Response, user_data: UserCreate, backgr
     if existing:
         raise HTTPException(status_code=400, detail="И-мэйл хаяг бүртгэлтэй байна")
 
-    if len(user_data.password) < 8:
-        raise HTTPException(status_code=400, detail="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой")
+    _validate_password_strength(user_data.password)
 
     new_user = User(
         first_name=user_data.first_name,
@@ -324,12 +334,12 @@ def get_activity(db: Session = Depends(get_db), current_user: User = Depends(get
 
 
 @router.post("/change-password")
+@limiter.limit("5/minute")
 def change_password(request: Request, data: PasswordChange, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not verify_password(data.old_password, current_user.password):
         raise HTTPException(status_code=400, detail="Хуучин нууц үг буруу байна")
 
-    if len(data.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Шинэ нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой")
+    _validate_password_strength(data.new_password)
 
     if data.old_password == data.new_password:
         raise HTTPException(status_code=400, detail="Шинэ нууц үг хуучнаасаа ялгаатай байх ёстой")
@@ -428,8 +438,7 @@ def forgot_password(request: Request, response: Response, data: ForgotPasswordRe
 @router.post("/reset-password")
 @limiter.limit("5/minute")
 def reset_password(request: Request, response: Response, data: ResetPasswordRequest, db: Session = Depends(get_db)):
-    if len(data.new_password) < 8:
-        raise HTTPException(status_code=400, detail="Нууц үг хамгийн багадаа 8 тэмдэгт байх ёстой")
+    _validate_password_strength(data.new_password)
 
     token_row = db.query(EmailToken).filter(
         EmailToken.token == data.token,

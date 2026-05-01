@@ -144,7 +144,7 @@ export default function CVList() {
                       onClick={function () { openPreview(cv); }}
                       className="flex-1 text-center text-xs py-1.5 bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 rounded font-medium text-[#1e3a8a] hover:bg-[#1e3a8a]/10 transition"
                     >
-                      👁 Харах
+                      Харах
                     </button>
                     <Link to={"/cv/" + cv.id + "/edit"}
                       className="flex-1 text-center text-xs py-1.5 border border-slate-300 rounded font-medium text-slate-700 hover:bg-slate-50 transition">

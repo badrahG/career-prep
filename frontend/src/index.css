@@ -1,1 +1,49 @@
 @import "tailwindcss";
+
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cv-screen-only {
+    display: none !important;
+  }
+
+  .app-toaster {
+    display: none !important;
+  }
+
+  .cv-print-shell {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  .cv-print-root {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .cv-print-document {
+    min-height: auto !important;
+    break-inside: auto;
+    page-break-inside: auto;
+    box-shadow: none !important;
+  }
+
+  .cv-print-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

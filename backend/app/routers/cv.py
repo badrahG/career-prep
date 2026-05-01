@@ -15,7 +15,9 @@ from app.services.auth import get_current_user
 router = APIRouter(prefix="/api/cv", tags=["CV"])
 
 ALLOWED_IMAGE_TYPES = {"jpg", "jpeg", "png", "webp"}
-MAX_PHOTO_BYTES = 5 * 1024 * 1024  # 5 MB
+ALLOWED_CERT_TYPES = {"pdf", "jpg", "jpeg", "png"}
+MAX_PHOTO_BYTES = 5 * 1024 * 1024   # 5 MB
+MAX_CERT_BYTES = 10 * 1024 * 1024   # 10 MB
 UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8001")
 
@@ -51,6 +53,38 @@ async def upload_photo(
         await f.write(contents)
 
     return {"photo_url": f"{API_BASE}/uploads/{filename}"}
+
+
+@router.post("/upload-certificate")
+async def upload_certificate(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+):
+    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
+    if ext not in ALLOWED_CERT_TYPES:
+        raise HTTPException(status_code=400, detail="Зөвхөн PDF, JPG, PNG форматтай файл оруулна уу")
+
+    contents = await file.read()
+    if len(contents) > MAX_CERT_BYTES:
+        raise HTTPException(status_code=400, detail="Файлын хэмжээ 10MB-аас хэтрэхгүй байх ёстой")
+
+    if ext == "pdf":
+        if not (len(contents) >= 4 and contents[:4] == b"%PDF"):
+            raise HTTPException(status_code=400, detail="Файлын агуулга PDF-тэй тохирохгүй байна")
+    elif ext in ("jpg", "jpeg"):
+        if not (len(contents) >= 3 and contents[:3] == b"\xff\xd8\xff"):
+            raise HTTPException(status_code=400, detail="Файлын агуулга зурагтай тохирохгүй байна")
+    elif ext == "png":
+        if not (len(contents) >= 8 and contents[:8] == b"\x89PNG\r\n\x1a\n"):
+            raise HTTPException(status_code=400, detail="Файлын агуулга зурагтай тохирохгүй байна")
+
+    filename = f"cert_{user.id}_{uuid.uuid4().hex}.{ext}"
+    dest = UPLOAD_DIR / filename
+    async with aiofiles.open(dest, "wb") as f:
+        await f.write(contents)
+
+    return {"cert_file_url": f"{API_BASE}/uploads/{filename}"}
+
 
 @router.post("", response_model=CVResponse)
 def create_cv(data: CVCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):

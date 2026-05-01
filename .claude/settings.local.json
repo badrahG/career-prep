@@ -8,7 +8,10 @@
       "Bash(python -c ' *)",
       "Read(//c/career-platform/**)",
       "Bash(python *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(git -C /c/career-platform status --short)",
+      "Bash(git -C /c/career-platform log --oneline -20)",
+      "Bash(git -C /c/career-platform diff frontend/src/pages/CVDetail.jsx)"
     ]
   }
 }

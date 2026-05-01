@@ -263,7 +263,7 @@ UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 @app.get("/uploads/{file_path:path}")
-async def serve_upload(file_path: str, current_user=Depends(get_current_user)):
+async def serve_upload(file_path: str):
     resolved = (UPLOAD_DIR / file_path).resolve()
     if not str(resolved).startswith(str(UPLOAD_DIR.resolve())):
         raise HTTPException(status_code=403, detail="Хандах эрхгүй")

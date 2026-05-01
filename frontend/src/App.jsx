@@ -89,7 +89,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Toaster position="top-right" />
+        <Toaster position="top-right" containerClassName="app-toaster" />
         <AppRoutes />
       </AuthProvider>
     </BrowserRouter>

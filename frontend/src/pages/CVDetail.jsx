@@ -14,6 +14,7 @@ export default function CVDetail() {
   var [downloading, setDownloading] = useState(false);
   var [notFound, setNotFound] = useState(false);
   var printRef = useRef(null);
+  var defaultTitleRef = useRef(typeof document !== "undefined" ? document.title : "CareerPrep");
 
   useEffect(function () {
     API.get("/cv/" + id)
@@ -21,6 +22,33 @@ export default function CVDetail() {
       .catch(function () { setNotFound(true); })
       .finally(function () { setLoading(false); });
   }, [id]);
+
+  useEffect(function () {
+    if (!cv) return;
+
+    function getPrintableName() {
+      var baseName = (cv.name || "CV").trim() || "CV";
+      return "CV_" + baseName.replace(/[\\/:*?\"<>|]/g, "_");
+    }
+
+    function applyPrintTitle() {
+      document.title = getPrintableName();
+    }
+
+    function restoreTitle() {
+      document.title = defaultTitleRef.current;
+    }
+
+    applyPrintTitle();
+    window.addEventListener("beforeprint", applyPrintTitle);
+    window.addEventListener("afterprint", restoreTitle);
+
+    return function () {
+      window.removeEventListener("beforeprint", applyPrintTitle);
+      window.removeEventListener("afterprint", restoreTitle);
+      restoreTitle();
+    };
+  }, [cv]);
 
   async function handleDelete() {
     if (!window.confirm("Энэ CV-г устгах уу?")) return;
@@ -37,43 +65,13 @@ export default function CVDetail() {
     if (!printRef.current) { toast.error("CV агуулга ачаалагдаагүй"); return; }
     if (downloading) return;
     setDownloading(true);
-    var tid = toast.loading("PDF бэлтгэж байна...");
     try {
-      var jsPDFModule = await import("jspdf");
-      var html2canvasModule = await import("html2canvas");
-      var jsPDF = jsPDFModule.default || jsPDFModule.jsPDF;
-      var html2canvas = html2canvasModule.default || html2canvasModule;
-
-      var canvas = await html2canvas(printRef.current, {
-        scale: 2, useCORS: true, backgroundColor: "#ffffff",
-      });
-      var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      var pdfWidth = pdf.internal.pageSize.getWidth();
-      var pdfHeight = pdf.internal.pageSize.getHeight();
-      var imgWidth = pdfWidth;
-      var imgHeight = (canvas.height * imgWidth) / canvas.width;
-      var imgData = canvas.toDataURL("image/png");
-      if (imgHeight <= pdfHeight) {
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-      } else {
-        var heightLeft = imgHeight;
-        var position = 0;
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= pdfHeight;
-        }
-      }
-      var safeName = (cv.name || "CV").replace(/[^\wЀ-ӿ-]/g, "_");
-      pdf.save("CV_" + safeName + ".pdf");
-      toast.success("PDF татагдлаа!", { id: tid });
+      var baseName = (cv.name || "CV").trim() || "CV";
+      document.title = "CV_" + baseName.replace(/[\\/:*?\"<>|]/g, "_");
+      window.print();
     } catch (err) {
       console.error(err);
-      toast.dismiss(tid);
-      window.print();
+      toast.error("PDF бэлтгэх үед алдаа гарлаа");
     } finally {
       setDownloading(false);
     }
@@ -114,7 +112,7 @@ export default function CVDetail() {
       </div>
 
       {/* Nav */}
-      <nav className="bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-30">
+      <nav className="cv-screen-only bg-white/90 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to="/dashboard" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
@@ -128,7 +126,7 @@ export default function CVDetail() {
 
       <div className="max-w-5xl mx-auto px-4 py-6 relative z-10">
         {/* Action bar */}
-        <div className="bg-white border border-slate-200 rounded-lg px-6 py-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="cv-screen-only bg-white border border-slate-200 rounded-lg px-6 py-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-1">CV дэлгэрэнгүй</p>
             <h1 className="text-xl font-bold text-slate-900">{cv.name}</h1>
@@ -147,7 +145,7 @@ export default function CVDetail() {
               ) : "⬇ PDF татах"}
             </button>
             <Link to={"/cv/" + cv.id + "/edit"} className="px-5 py-2.5 border border-slate-300 rounded text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
-              ✏ Засах
+               Засах
             </Link>
             <button onClick={handleDelete} className="px-5 py-2.5 border border-red-300 rounded text-sm font-semibold text-red-600 hover:bg-red-50 transition">
               Устгах
@@ -156,13 +154,13 @@ export default function CVDetail() {
         </div>
 
         {/* CV preview */}
-        <div className="shadow-xl rounded-lg overflow-hidden">
-          <div ref={printRef} style={{ width: "210mm", maxWidth: "100%", margin: "0 auto" }}>
+        <div className="cv-print-shell shadow-xl rounded-lg overflow-hidden">
+          <div ref={printRef} className="cv-print-root" style={{ width: "210mm", maxWidth: "100%", margin: "0 auto" }}>
             <CVPreview cv={cv} info={info} template={template} />
           </div>
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-4">
+        <p className="cv-screen-only text-center text-xs text-slate-400 mt-4">
           PDF татахын өмнө мэдээллээ шалгана уу.
         </p>
       </div>

@@ -158,7 +158,8 @@ export default function CVBuilder() {
   var [selectedArt, setSelectedArt] = useState([]);
   var [selectedSport, setSelectedSport] = useState([]);
   var [langList, setLangList] = useState([{ name: "", level: "" }]);
-  var [certs, setCerts] = useState([{ name: "", organization: "", start_date: "", end_date: "" }]);
+  var [certs, setCerts] = useState([{ name: "", organization: "", start_date: "", end_date: "", file_url: "" }]);
+  var [certUploading, setCertUploading] = useState({});
   var [interns, setInterns] = useState([{ company: "", title: "", description: "", start_date: "", end_date: "" }]);
   var [awards, setAwards] = useState([{ name: "", year: "" }]);
 
@@ -166,6 +167,22 @@ export default function CVBuilder() {
   function toggleSkill(arr, setArr, val) { if (arr.includes(val)) { setArr(removeAt(arr, arr.indexOf(val))); } else { setArr([].concat(arr, [val])); } }
   function upd(setter, field, value) { setter(function(prev) { var n = {}; for (var k in prev) n[k] = prev[k]; n[field] = value; return n; }); }
   function updList(list, setList, i, field, val) { var c = list.slice(); var item = {}; for (var k in c[i]) item[k] = c[i][k]; item[field] = val; c[i] = item; setList(c); }
+
+  async function uploadCertFile(i, file) {
+    if (!file) return;
+    setCertUploading(function(prev) { var n = Object.assign({}, prev); n[i] = true; return n; });
+    try {
+      var form = new FormData();
+      form.append("file", file);
+      var res = await API.post("/cv/upload-certificate", form, { headers: { "Content-Type": "multipart/form-data" } });
+      updList(certs, setCerts, i, "file_url", res.data.cert_file_url);
+      toast.success("Файл амжилттай хуулагдлаа");
+    } catch (e) {
+      toast.error(e?.response?.data?.detail || "Файл хуулахад алдаа гарлаа");
+    } finally {
+      setCertUploading(function(prev) { var n = Object.assign({}, prev); n[i] = false; return n; });
+    }
+  }
 
   function handlePhoto(e) {
     var file = e.target.files[0];
@@ -462,10 +479,26 @@ export default function CVBuilder() {
                       <Inp label="Эхэлсэн" value={c.start_date} onChange={function(v) { updList(certs, setCerts, i, "start_date", v); }} type="date" />
                       <Inp label="Дууссан" value={c.end_date} onChange={function(v) { updList(certs, setCerts, i, "end_date", v); }} type="date" />
                     </div>
+                    <div className="mt-3">
+                      <label className={labelCls}>Гэрчилгээний файл <span className="text-slate-400 font-normal">(PDF, JPG, PNG — 10MB хүртэл)</span></label>
+                      {c.file_url ? (
+                        <div className="flex items-center gap-3">
+                          <a href={c.file_url} target="_blank" rel="noreferrer" className="text-sm text-[#1e3a8a] font-medium hover:underline">Хуулагдсан файл харах</a>
+                          <button type="button" onClick={function() { updList(certs, setCerts, i, "file_url", ""); }} className="text-xs text-red-500 hover:text-red-700">Устгах</button>
+                        </div>
+                      ) : (
+                        <label className="inline-flex items-center gap-2 cursor-pointer">
+                          <span className={"px-4 py-2 text-sm rounded border font-medium transition " + (certUploading[i] ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed" : "bg-white border-[#1e3a8a] text-[#1e3a8a] hover:bg-blue-50")}>
+                            {certUploading[i] ? "Хуулж байна..." : "+ Файл хавсаргах"}
+                          </span>
+                          <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" disabled={!!certUploading[i]} onChange={function(e) { if (e.target.files[0]) uploadCertFile(i, e.target.files[0]); e.target.value = ""; }} />
+                        </label>
+                      )}
+                    </div>
                   </div>
                 );
               })}
-              <button type="button" onClick={function() { setCerts(certs.concat([{ name: "", organization: "", start_date: "", end_date: "" }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Сургалт нэмэх</button>
+              <button type="button" onClick={function() { setCerts(certs.concat([{ name: "", organization: "", start_date: "", end_date: "", file_url: "" }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Сургалт нэмэх</button>
             </div>
           )}
 

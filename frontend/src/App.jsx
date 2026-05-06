@@ -23,6 +23,7 @@ import AdviceDetail from "./pages/AdviceDetail";
 import ScholarshipList from "./pages/ScholarshipList";
 import ScholarshipDetail from "./pages/ScholarshipDetail";
 import ScholarshipForm from "./pages/ScholarshipForm";
+import CVAnalysis from "./pages/CVAnalysis";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUsers from "./pages/AdminUsers";
 import AdminInterview from "./pages/AdminInterview";
@@ -61,6 +62,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route path="/cv" element={<PrivateRoute><CVList /></PrivateRoute>} />
+      <Route path="/cv-analysis" element={<PrivateRoute><CVAnalysis /></PrivateRoute>} />
       <Route path="/cv/new" element={<PrivateRoute><CVBuilder /></PrivateRoute>} />
       <Route path="/cv/:id" element={<PrivateRoute><CVDetail /></PrivateRoute>} />
       <Route path="/cv/:id/edit" element={<PrivateRoute><CVEdit /></PrivateRoute>} />

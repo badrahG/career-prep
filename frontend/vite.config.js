@@ -7,10 +7,11 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['react-hot-toast'],
-          'pdf-vendor': ['html2canvas', 'jspdf'],
+        manualChunks(id) {
+          if (id.includes('react-dom') || id.includes('react-router-dom') || id.includes('/react/')) return 'react-vendor';
+          if (id.includes('react-hot-toast')) return 'ui-vendor';
+          if (id.includes('html2canvas') || id.includes('jspdf')) return 'pdf-vendor';
+          if (id.includes('recharts')) return 'charts-vendor';
         },
       },
     },

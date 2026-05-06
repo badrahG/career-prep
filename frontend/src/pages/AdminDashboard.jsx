@@ -13,7 +13,7 @@ var CATEGORY_MN = {
   career: "Карьер",
   modern: "Modern",
   classic: "Classic",
-  minimal: "Minimal",
+  minimal: "European CV",
 };
 
 var ACTION_MN = {

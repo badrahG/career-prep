@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
 
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +21,6 @@ export default function Login() {
     } catch (err) {
       var msg = err.response?.data?.detail || "Нэвтрэх боломжгүй";
       toast.error(msg);
-      // If the backend says email not verified, show a resend link
       if (msg.indexOf("баталгаажуул") !== -1) {
         setUnverified(true);
       }
@@ -42,67 +40,56 @@ export default function Login() {
     }
   }
 
+  var inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
+  var labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
-
-      {/* Top bar */}
-      <div className="bg-[#1e3a8a] text-white text-xs relative z-10">
-        <div className="max-w-7xl mx-auto px-6 py-2">
-          Залуучуудын ажилд орох бэлтгэлийг дэмжих платформ
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-indigo-50 flex flex-col">
       {/* Nav */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200 sticky top-0 z-30">
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-[#1e3a8a] flex items-center justify-center rounded">
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
               <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
             <div>
-              <div className="text-base font-bold text-slate-900 leading-none">CareerPrep</div>
-              <div className="text-[10px] text-slate-500 uppercase tracking-wider mt-0.5">Career Platform</div>
+              <div className="text-base font-bold text-gray-900 leading-none">CareerPrep</div>
+              <div className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">Career Platform</div>
             </div>
           </Link>
-          <Link to="/register" className="text-sm text-slate-700 hover:text-[#1e3a8a] font-medium">
+          <Link to="/register" className="text-sm text-gray-600 hover:text-violet-600 font-medium transition">
             Бүртгүүлэх →
           </Link>
         </div>
       </nav>
 
       {/* Main */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10">
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
-          <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg p-8 md:p-10 shadow-lg">
+          <div className="bg-white border border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm">
             <div className="mb-8">
-              <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Нэвтрэх</p>
-              <h1 className="text-2xl font-bold text-slate-900">Тавтай морил</h1>
-              <p className="text-sm text-slate-600 mt-2">И-мэйл хаягаараа нэвтэрнэ үү.</p>
+              <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Нэвтрэх</p>
+              <h1 className="text-2xl font-bold text-gray-900">Тавтай морил</h1>
+              <p className="text-sm text-gray-500 mt-2">И-мэйл хаягаараа нэвтэрнэ үү.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">И-мэйл</label>
+                <label className={labelCls}>И-мэйл</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="name@example.com"
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition bg-white"
+                  className={inputCls}
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-semibold text-slate-700">Нууц үг</label>
-                  <Link to="/forgot-password" className="text-xs text-[#1e3a8a] hover:underline font-medium">
+                  <label className="block text-sm font-semibold text-gray-700">Нууц үг</label>
+                  <Link to="/forgot-password" className="text-xs text-violet-600 hover:underline font-medium">
                     Нууц үг мартсан уу?
                   </Link>
                 </div>
@@ -112,20 +99,20 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Нууц үгээ оруулна уу"
-                  className="w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition bg-white"
+                  className={inputCls}
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#1e3a8a] text-white py-2.5 rounded text-sm font-semibold hover:bg-[#1e40af] transition mt-2"
+                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition mt-2"
               >
                 Нэвтрэх →
               </button>
             </form>
 
             {unverified && (
-              <div className="mt-4 bg-amber-50 border border-amber-200 rounded p-4">
+              <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
                 <p className="text-sm font-semibold text-amber-900 mb-1">И-мэйл хаяг баталгаажаагүй байна</p>
                 <p className="text-xs text-amber-800 mb-3">
                   Бүртгүүлэх үед илгээсэн баталгаажуулах линкийг дарна уу. Эсвэл доорх товчоор шинээр илгээж болно.
@@ -134,28 +121,28 @@ export default function Login() {
                   type="button"
                   onClick={handleResend}
                   disabled={resending}
-                  className="text-xs bg-amber-600 text-white px-3 py-1.5 rounded font-semibold hover:bg-amber-700 disabled:opacity-50 transition"
+                  className="text-xs bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-amber-700 disabled:opacity-50 transition"
                 >
                   {resending ? "Илгээж байна..." : "Баталгаажуулах линк дахин илгээх"}
                 </button>
               </div>
             )}
 
-            <div className="mt-6 pt-6 border-t border-slate-200 text-center">
-              <p className="text-sm text-slate-600">
+            <div className="mt-6 pt-6 border-t border-gray-100 text-center">
+              <p className="text-sm text-gray-500">
                 Бүртгэл байхгүй юу?{" "}
-                <Link to="/register" className="text-[#1e3a8a] font-semibold hover:underline">
+                <Link to="/register" className="text-violet-600 font-semibold hover:underline">
                   Бүртгүүлэх
                 </Link>
               </p>
             </div>
           </div>
 
-          <p className="text-center text-xs text-slate-500 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-6">
             Нэвтэрснээр та{" "}
-            <Link to="/terms" className="hover:text-slate-900 underline">Үйлчилгээний нөхцөл</Link>
+            <Link to="/terms" className="hover:text-gray-700 underline">Үйлчилгээний нөхцөл</Link>
             {" "}ба{" "}
-            <Link to="/privacy" className="hover:text-slate-900 underline">Нууцлалын бодлого</Link>
+            <Link to="/privacy" className="hover:text-gray-700 underline">Нууцлалын бодлого</Link>
             -г хүлээн зөвшөөрсөн болно.
           </p>
         </div>

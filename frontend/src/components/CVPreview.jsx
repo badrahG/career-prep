@@ -323,100 +323,127 @@ function MinimalTemplate({ info, educations, experiences, skills }) {
   var { personalSkills, techSkills, profSkills, artSkills, sportSkills, languages, certs, internships, awards } = parseSkillsFromInfo(info);
   var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
   var allSkills = personalSkills.concat(techSkills).concat(profSkills).concat(artSkills).concat(sportSkills);
+  var contactItems = [info.address, info.phone, info.email].filter(Boolean);
+  var skillColumns = [];
+  if (techSkills.length > 0) skillColumns.push({ title: "Technical", items: techSkills });
+  if (profSkills.length > 0) skillColumns.push({ title: "Professional", items: profSkills });
+  if (personalSkills.length > 0) skillColumns.push({ title: "Personal", items: personalSkills });
+  if (skillColumns.length === 0 && allSkills.length > 0) skillColumns.push({ title: "Core", items: allSkills });
+  if (skillColumns.length === 0 && skills.length > 0) {
+    skillColumns.push({ title: "Core", items: skills.map(function (s) { return s.skill_name; }) });
+  }
+  var extraSkills = [];
+  if (artSkills.length > 0) extraSkills = extraSkills.concat(artSkills);
+  if (sportSkills.length > 0) extraSkills = extraSkills.concat(sportSkills);
   return (
-    <div className="cv-print-document" style={{ background: "#fff", fontFamily: "system-ui, -apple-system, Arial, sans-serif", color: "#111", minHeight: "297mm", padding: "40px 48px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
-        <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
-          {info.photoUrl && <img src={info.photoUrl} alt="" style={{ width: "80px", height: "100px", objectFit: "cover", flexShrink: 0, filter: "grayscale(20%)" }} />}
-          <div><h1 style={{ fontSize: "24px", fontWeight: "300", letterSpacing: "1px", margin: 0, color: "#111" }}>{fullName || "Нэр оруулаагүй"}</h1>{info.about && <p style={{ fontSize: "11.5px", color: "#555", marginTop: "6px", lineHeight: 1.6, maxWidth: "360px" }}>{info.about}</p>}</div>
-        </div>
-        <div style={{ textAlign: "right", fontSize: "10.5px", color: "#666", lineHeight: 2 }}>
-          {info.phone && <div>{info.phone}{info.phone2 ? " / " + info.phone2 : ""}</div>}
-          {info.email && <div>{info.email}</div>}
-          {info.address && <div>{info.address}</div>}
-          {info.linkedin && <div>{info.linkedin}</div>}
-        </div>
+    <div className="cv-print-document" style={{ background: "#fff", fontFamily: "'Georgia', 'Times New Roman', serif", color: "#222", minHeight: "297mm", padding: "34px 38px 30px" }}>
+      <div className="cv-print-section" style={{ marginBottom: "20px", textAlign: "center" }}>
+        <h1 style={{ fontSize: "29px", fontWeight: "700", letterSpacing: "0.2px", margin: 0, color: "#171717", lineHeight: 1.05 }}>{fullName || "Нэр оруулаагүй"}</h1>
+        {info.position && <p style={{ fontSize: "13px", color: "#404040", margin: "7px 0 0", fontWeight: "400" }}>{info.position}</p>}
+        {contactItems.length > 0 && <p style={{ fontSize: "10.5px", color: "#525252", margin: "8px 0 0", lineHeight: 1.6 }}>{contactItems.join("  •  ")}</p>}
+        {info.linkedin && <p style={{ fontSize: "10.5px", color: "#525252", margin: "2px 0 0" }}>{info.linkedin}</p>}
       </div>
-      <div style={{ height: "2px", background: "#111", marginBottom: "24px" }}></div>
-      {(info.birthDate || info.gender || info.marital || info.license || info.salaryExpect) && (
-        <MinimalSection title="Ерөнхий мэдээлэл">
-          <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", fontSize: "11px", color: "#444" }}>
-            {info.birthDate && <div><span style={{ color: "#999", marginRight: "4px" }}>Төрсөн:</span>{info.birthDate}</div>}
-            {info.gender && <div><span style={{ color: "#999", marginRight: "4px" }}>Хүйс:</span>{info.gender}</div>}
-            {info.license && <div><span style={{ color: "#999", marginRight: "4px" }}>Жолоо:</span>{info.license}</div>}
-            {info.salaryExpect && <div><span style={{ color: "#999", marginRight: "4px" }}>Цалин:</span>{info.salaryExpect}</div>}
+      {info.about && (
+        <MinimalSection title="PROFILE">
+          <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
+            <div style={{ fontSize: "10px", color: "#666" }}></div>
+            <p style={{ fontSize: "11px", color: "#3d3d3d", margin: 0, lineHeight: 1.7, whiteSpace: "pre-line" }}>{info.about}</p>
           </div>
         </MinimalSection>
       )}
       {educations.length > 0 && (
-        <MinimalSection title="Боловсрол">
+        <MinimalSection title="EDUCATION">
           {educations.map(function (edu, i) {
             return (
-              <div key={i} style={{ display: "flex", justifyContent: "space-between", paddingBottom: "8px", marginBottom: i < educations.length - 1 ? "8px" : 0, borderBottom: i < educations.length - 1 ? "1px solid #eee" : "none" }}>
-                <div><p style={{ fontWeight: "600", fontSize: "12.5px", margin: 0 }}>{edu.school}</p><p style={{ fontSize: "11px", color: "#666", marginTop: "2px" }}>{[edu.level || edu.degree, edu.major, edu.gpa ? edu.gpa + " голч" : ""].filter(Boolean).join("  ·  ")}</p></div>
-                <p style={{ fontSize: "10.5px", color: "#999", whiteSpace: "nowrap", marginLeft: "12px" }}>{edu.start_year ? edu.start_year + " – " + (edu.end_year || "Одоо") : ""}</p>
+              <div key={i} className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr 110px", gap: "14px", marginBottom: i < educations.length - 1 ? "12px" : 0 }}>
+                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{edu.start_year ? edu.start_year + (edu.end_year ? " – " + edu.end_year : " – Одоо") : ""}</div>
+                <div>
+                  <p style={{ fontSize: "12.5px", color: "#222", fontWeight: "700", margin: 0 }}>{edu.school}</p>
+                  <p style={{ fontSize: "10.5px", color: "#666", margin: "2px 0 0" }}>{[edu.level || edu.degree, edu.major].filter(Boolean).join(", ")}</p>
+                  {edu.gpa ? <p style={{ fontSize: "10.5px", color: "#777", margin: "4px 0 0" }}>GPA: {edu.gpa}</p> : null}
+                </div>
+                <div style={{ fontSize: "10px", color: "#5f5f5f", textAlign: "right" }}>{info.address || ""}</div>
               </div>
             );
           })}
         </MinimalSection>
       )}
       {experiences.length > 0 && (
-        <MinimalSection title="Ажлын туршлага">
+        <MinimalSection title="EXPERIENCE">
           {experiences.map(function (exp, i) {
             return (
-              <div key={i} style={{ paddingBottom: "12px", marginBottom: i < experiences.length - 1 ? "12px" : 0, borderBottom: i < experiences.length - 1 ? "1px solid #eee" : "none" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div><span style={{ fontWeight: "600", fontSize: "12.5px" }}>{exp.position}</span>{exp.company && <span style={{ fontSize: "11.5px", color: "#666" }}> — {exp.company}</span>}</div>
-                  <p style={{ fontSize: "10.5px", color: "#999", whiteSpace: "nowrap", marginLeft: "12px" }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || "Одоо") : ""}</p>
+              <div key={i} className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr 110px", gap: "14px", marginBottom: i < experiences.length - 1 ? "14px" : 0 }}>
+                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || "Одоо") : ""}</div>
+                <div>
+                  <p style={{ fontSize: "12.5px", color: "#222", fontWeight: "700", margin: 0 }}>{exp.position}{exp.company ? ", " + exp.company : ""}</p>
+                  {exp.description && <div style={{ fontSize: "10.8px", color: "#4a4a4a", marginTop: "5px", lineHeight: 1.7, whiteSpace: "pre-line" }}>{exp.description}</div>}
                 </div>
-                {exp.description && <p style={{ fontSize: "11px", color: "#555", marginTop: "5px", lineHeight: 1.6, whiteSpace: "pre-line" }}>{exp.description}</p>}
+                <div style={{ fontSize: "10px", color: "#5f5f5f", textAlign: "right" }}>{info.address || ""}</div>
               </div>
             );
           })}
         </MinimalSection>
       )}
-      {internships.length > 0 && (
-        <MinimalSection title="Дадлага">
-          {internships.map(function (n, i) {
-            return (
-              <div key={i} style={{ marginBottom: "10px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ fontWeight: "600", fontSize: "12px" }}>{n.title}{n.company ? <span style={{ fontWeight: "400", color: "#666" }}> — {n.company}</span> : ""}</span><p style={{ fontSize: "10.5px", color: "#999", whiteSpace: "nowrap", marginLeft: "12px" }}>{n.start_date ? n.start_date + " – " + (n.end_date || "") : ""}</p></div>
-                {n.description && <p style={{ fontSize: "11px", color: "#555", marginTop: "4px", whiteSpace: "pre-line" }}>{n.description}</p>}
-              </div>
-            );
-          })}
-        </MinimalSection>
-      )}
-      {certs.length > 0 && (
-        <MinimalSection title="Сургалт, сертификат">
-          {certs.map(function (c, i) {
-            return (
-              <div key={i} style={{ marginBottom: "10px", pageBreakInside: "avoid" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <div>
-                    <span style={{ fontWeight: "600", fontSize: "12px" }}>{c.name}</span>
-                    {c.organization && <span style={{ fontSize: "11px", color: "#666" }}> — {c.organization}</span>}
+      {(skillColumns.length > 0 || extraSkills.length > 0) && (
+        <MinimalSection title="SKILLS">
+          <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
+            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>In decreasing order</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 18px" }}>
+              {skillColumns.map(function (group, i) {
+                return (
+                  <div key={i} style={{ fontSize: "10.8px", color: "#3d3d3d", lineHeight: 1.8 }}>
+                    {group.items.slice(0, 4).map(function (item, idx) {
+                      return <div key={idx}>{item}</div>;
+                    })}
                   </div>
-                  <p style={{ fontSize: "10.5px", color: "#999", whiteSpace: "nowrap", marginLeft: "12px" }}>{c.start_date ? c.start_date + (c.end_date ? " – " + c.end_date : "") : ""}</p>
+                );
+              })}
+              {extraSkills.length > 0 && (
+                <div style={{ fontSize: "10.8px", color: "#3d3d3d", lineHeight: 1.8 }}>
+                  {extraSkills.slice(0, 4).map(function (item, idx) {
+                    return <div key={idx}>{item}</div>;
+                  })}
                 </div>
-                <CertFilePreview url={c.file_url} />
-              </div>
-            );
-          })}
+              )}
+            </div>
+          </div>
         </MinimalSection>
       )}
-      {awards.length > 0 && <MinimalSection title="Шагнал"><div style={{ display: "flex", flexWrap: "wrap", gap: "8px 24px" }}>{awards.map(function (a, i) { return <div key={i} style={{ fontSize: "11.5px" }}>{a.name}{a.year ? <span style={{ color: "#999", fontSize: "10.5px" }}> ({a.year})</span> : ""}</div>; })}</div></MinimalSection>}
-      {(allSkills.length > 0 || languages.length > 0 || skills.length > 0) && (
-        <MinimalSection title="Ур чадвар">
-          {languages.length > 0 && <div style={{ marginBottom: "8px" }}><span style={{ fontSize: "10px", color: "#999", textTransform: "uppercase", letterSpacing: "0.5px", marginRight: "8px" }}>Гадаад хэл</span><span style={{ fontSize: "11.5px" }}>{languages.map(function (l) { return l.name + (l.level ? " (" + l.level + ")" : ""); }).join(", ")}</span></div>}
-          {allSkills.length > 0 && <div style={{ fontSize: "11.5px", color: "#333", lineHeight: 1.8 }}>{allSkills.join("  ·  ")}</div>}
-          {skills.length > 0 && allSkills.length === 0 && <div style={{ fontSize: "11.5px", color: "#333", lineHeight: 1.8 }}>{skills.map(function (s) { return s.skill_name; }).join("  ·  ")}</div>}
+      {languages.length > 0 && (
+        <MinimalSection title="LANGUAGES">
+          <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
+            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>In decreasing order</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 18px" }}>
+              {languages.map(function (l, i) {
+                return <div key={i} style={{ fontSize: "10.8px", color: "#3d3d3d" }}>{l.name}{l.level ? <span style={{ color: "#777" }}> {l.level}</span> : ""}</div>;
+              })}
+            </div>
+          </div>
         </MinimalSection>
+      )}
+      {(certs.length > 0 || internships.length > 0 || awards.length > 0) && (
+        <MinimalSection title="ADDITIONAL">
+          <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
+            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>Extra</div>
+            <div style={{ fontSize: "10.8px", color: "#3d3d3d", lineHeight: 1.8 }}>
+              {certs.length > 0 && <div><b>Certificates:</b> {certs.map(function (c) { return c.name; }).join(", ")}</div>}
+              {internships.length > 0 && <div><b>Internships:</b> {internships.map(function (n) { return [n.title, n.company].filter(Boolean).join(" - "); }).join(", ")}</div>}
+              {awards.length > 0 && <div><b>Achievements:</b> {awards.map(function (a) { return a.name + (a.year ? " (" + a.year + ")" : ""); }).join(", ")}</div>}
+            </div>
+          </div>
+        </MinimalSection>
+      )}
+      {(info.birthDate || info.marital || info.gender || info.address || info.regNo) && (
+        <div className="cv-print-section" style={{ marginTop: "18px", borderTop: "1px solid #bdbdbd", paddingTop: "10px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 20px" }}>
+          {info.birthDate && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>Date / Place of birth</span><span style={{ marginLeft: "10px" }}>{info.birthDate}{info.address ? " / " + info.address : ""}</span></div>}
+          {info.marital && <div style={{ fontSize: "10.5px", color: "#444", textAlign: "right" }}><span style={{ color: "#777" }}>Marital status</span><span style={{ marginLeft: "10px" }}>{info.marital}</span></div>}
+          {(info.regNo || info.gender) && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>Nationality / Gender</span><span style={{ marginLeft: "10px" }}>{info.regNo ? info.regNo + " / " : ""}{info.gender || ""}</span></div>}
+        </div>
       )}
     </div>
   );
 }
 
 function MinimalSection({ title, children }) {
-  return <div style={{ marginBottom: "20px" }}><p className="cv-print-section" style={{ fontSize: "9px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "2px", color: "#888", marginBottom: "8px", pageBreakAfter: "avoid" }}>{title}</p>{children}</div>;
+  return <div style={{ marginBottom: "18px", borderTop: "1px solid #bdbdbd", paddingTop: "8px" }}><div className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}><p style={{ fontSize: "10px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1.2px", color: "#3f3f46", margin: 0, pageBreakAfter: "avoid" }}>{title}</p><div>{children}</div></div></div>;
 }

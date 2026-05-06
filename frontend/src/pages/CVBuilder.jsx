@@ -306,7 +306,7 @@ export default function CVBuilder() {
                 {[
                   { id: "modern", name: "Modern", desc: "Орчин үеийн" },
                   { id: "classic", name: "Classic", desc: "Сонгодог" },
-                  { id: "minimal", name: "Minimal", desc: "Энгийн" }
+                  { id: "minimal", name: "European CV", desc: "Европ хэв маяг" }
                 ].map(function(t) {
                   var active = template === t.id;
                   return (

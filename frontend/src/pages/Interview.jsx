@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
+import Layout from "../components/Layout";
 
 export default function Interview() {
   var { user } = useAuth();
@@ -72,138 +73,89 @@ export default function Interview() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
-
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200 relative z-10">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-1 text-sm">
-            <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
-            <Link to="/cv" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">CV</Link>
-            <Link to="/interview" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Ярилцлага</Link>
-             <Link to="/advice" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Зөвлөмж</Link>
-            <Link to="/scholarship" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Тэтгэлэг</Link>
-          </div>
-          <Link to="/dashboard" className="text-sm text-slate-600 hover:text-slate-900 font-medium md:hidden">← Буцах</Link>
-        </div>
-      </nav>
-
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200 relative z-10">
-        <div className="max-w-6xl mx-auto px-6 py-3 text-xs text-slate-500 flex items-center justify-between">
+    <Layout>
+      <div className="p-5 md:p-6">
+        <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-900 font-medium">Ярилцлагын бэлтгэл</span>
+            <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Ярилцлагын бэлтгэл</p>
+            <h1 className="text-2xl font-bold text-gray-800">Ярилцлагад бэлтгэцгээе</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {stats ? stats.total : "..."} асуултын санг 3 өөр горимоор судалж, ярилцлагад өөртөө итгэлтэй орох боломжтой.
+            </p>
           </div>
-          {isAdmin && <Link to="/admin/interview" className="text-[#1e3a8a] font-medium hover:underline">Асуулт удирдах →</Link>}
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
-        {/* Hero header */}
-        <div className="mb-8 pb-6 border-b border-slate-200">
-          <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Ярилцлагын бэлтгэл</p>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Ярилцлагад бэлтгэцгээе</h1>
-          <p className="text-sm text-slate-600 mt-2 max-w-2xl">
-            {stats ? stats.total : "..."} асуултын санг 3 өөр горимоор судалж, ярилцлагад өөртөө итгэлтэй орох боломжтой.
-          </p>
+          {isAdmin && <Link to="/admin/interview" className="text-sm text-violet-600 font-semibold hover:underline whitespace-nowrap">Асуулт удирдах →</Link>}
         </div>
 
-        {/* Category stats */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {categories.map(function (c) {
               return (
-                <div key={c.key} className="bg-white border border-slate-200 rounded p-5">
+                <div key={c.key} className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-sm font-semibold text-slate-900">{c.label}</p>
-                    <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-semibold">
+                    <p className="text-sm font-semibold text-gray-800">{c.label}</p>
+                    <span className="text-xs bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded-lg font-semibold">
                       {stats[c.key]} асуулт
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500 leading-relaxed">{c.desc}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed">{c.desc}</p>
                 </div>
               );
             })}
           </div>
         )}
 
-        {/* Mode cards */}
-        <h2 className="text-base font-semibold text-slate-900 mb-4">Горимуудаас сонгоно уу</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <h2 className="text-sm font-semibold text-gray-700 mb-4 uppercase tracking-wide">Горимуудаас сонгоно уу</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {modes.map(function (m) {
             var card = (
-              <div className={"bg-white border rounded h-full flex flex-col transition " +
-                (m.available ? "border-slate-200 hover:border-[#1e3a8a] hover:shadow-sm cursor-pointer" : "border-slate-200 opacity-70")}>
-                <div className={"h-1 " + (m.available ? "bg-[#1e3a8a]" : "bg-slate-300")}></div>
+              <div className={"bg-white border rounded-2xl h-full flex flex-col shadow-sm transition " +
+                (m.available ? "border-gray-100 hover:border-violet-200 hover:shadow-md cursor-pointer" : "border-gray-100 opacity-60")}>
+                <div className={"h-1.5 rounded-t-2xl " + (m.available ? "bg-gradient-to-r from-violet-500 to-indigo-500" : "bg-gray-200")} />
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="flex items-start justify-between mb-3">
                     <div>
-                      <p className="text-xs font-bold text-[#1e3a8a] uppercase tracking-wider">{m.subtitle}</p>
-                      <h3 className="text-lg font-bold text-slate-900 mt-0.5">{m.title}</h3>
+                      <p className="text-xs font-bold text-violet-600 uppercase tracking-wider">{m.subtitle}</p>
+                      <h3 className="text-lg font-bold text-gray-800 mt-0.5">{m.title}</h3>
                     </div>
                     {!m.available && (
-                      <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium whitespace-nowrap">
-                        Удахгүй
-                      </span>
+                      <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg font-medium">Удахгүй</span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-600 leading-relaxed mb-4 flex-1">{m.description}</p>
-
+                  <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">{m.description}</p>
                   <ul className="space-y-1.5 mb-4">
                     {m.features.map(function (f, i) {
                       return (
-                        <li key={i} className="flex items-start gap-2 text-xs text-slate-600">
-                          <span className={m.available ? "text-emerald-600" : "text-slate-300"}>✓</span>
+                        <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
+                          <span className={m.available ? "text-emerald-500" : "text-gray-300"}>✓</span>
                           <span>{f}</span>
                         </li>
                       );
                     })}
                   </ul>
-
-                  <div className={"text-center py-2 rounded text-sm font-semibold transition " +
-                    (m.available ? "bg-[#1e3a8a] text-white" : "bg-slate-100 text-slate-400 cursor-not-allowed")}>
+                  <div className={"text-center py-2 rounded-xl text-sm font-semibold transition " +
+                    (m.available ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white" : "bg-gray-100 text-gray-400 cursor-not-allowed")}>
                     {m.available ? "Эхлэх →" : "Удахгүй нээгдэнэ"}
                   </div>
                 </div>
               </div>
             );
-            return m.available ? (
-              <Link key={m.id} to={m.link}>{card}</Link>
-            ) : (
-              <div key={m.id}>{card}</div>
-            );
+            return m.available ? <Link key={m.id} to={m.link}>{card}</Link> : <div key={m.id}>{card}</div>;
           })}
         </div>
 
-        {/* Tips section */}
-        <div className="bg-white border border-slate-200 rounded mb-8">
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-base font-semibold text-slate-900">Ярилцлагын ерөнхий зөвлөмж</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Мэргэжлийн сайн харагдахад тус болох зөвлөгөөнүүд.</p>
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-6">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h2 className="text-sm font-semibold text-gray-800">Ярилцлагын ерөнхий зөвлөмж</h2>
           </div>
           <div className="p-6">
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {tips.map(function (tip, i) {
                 return (
                   <li key={i} className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 text-[#1e3a8a] flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-violet-50 text-violet-700 flex items-center justify-center flex-shrink-0 text-xs font-bold mt-0.5">
                       {i + 1}
                     </div>
-                    <p className="text-sm text-slate-700 leading-relaxed">{tip}</p>
+                    <p className="text-sm text-gray-700 leading-relaxed">{tip}</p>
                   </li>
                 );
               })}
@@ -211,38 +163,31 @@ export default function Interview() {
           </div>
         </div>
 
-        {/* STAR intro */}
-        <div className="bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 rounded p-6 mb-8">
-          <div className="flex items-start gap-4">
-            <div className="flex-1">
-              <h3 className="text-base font-bold text-slate-900 mb-2">STAR арга гэж юу вэ?</h3>
-              <p className="text-sm text-slate-700 leading-relaxed mb-3">
-                Зан үйлийн асуултад бүтэцтэй хариулт өгөх арга. Дөрвөн хэсэгтэй:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  { letter: "S", name: "Situation", desc: "Ямар нөхцөл байсан" },
-                  { letter: "T", name: "Task", desc: "Таны үүрэг, зорилт юу байсан" },
-                  { letter: "A", name: "Action", desc: "Юу хийсэн, яаж шийдсэн" },
-                  { letter: "R", name: "Result", desc: "Ямар үр дүн гарсан (тоо баримттай)" },
-                ].map(function (item, i) {
-                  return (
-                    <div key={i} className="bg-white border border-slate-200 rounded p-3 flex items-start gap-3">
-                      <div className="w-8 h-8 bg-[#1e3a8a] text-white rounded flex items-center justify-center font-bold text-sm flex-shrink-0">
-                        {item.letter}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-slate-900">{item.name}</p>
-                        <p className="text-xs text-slate-600">{item.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+        <div className="bg-violet-50 border border-violet-100 rounded-2xl p-6">
+          <h3 className="text-base font-bold text-gray-800 mb-2">STAR арга гэж юу вэ?</h3>
+          <p className="text-sm text-gray-600 leading-relaxed mb-4">Зан үйлийн асуултад бүтэцтэй хариулт өгөх арга. Дөрвөн хэсэгтэй:</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { letter: "S", name: "Situation", desc: "Ямар нөхцөл байсан" },
+              { letter: "T", name: "Task", desc: "Таны үүрэг, зорилт юу байсан" },
+              { letter: "A", name: "Action", desc: "Юу хийсэн, яаж шийдсэн" },
+              { letter: "R", name: "Result", desc: "Ямар үр дүн гарсан (тоо баримттай)" },
+            ].map(function (item, i) {
+              return (
+                <div key={i} className="bg-white rounded-xl p-3 flex items-start gap-3 shadow-sm">
+                  <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
+                    {item.letter}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800">{item.name}</p>
+                    <p className="text-xs text-gray-500">{item.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import Layout from "../components/Layout";
 
 export default function Profile() {
   var { user, logout } = useAuth();
@@ -92,67 +93,35 @@ export default function Profile() {
   }
 
   var initial = (user?.first_name || "U").charAt(0).toUpperCase();
-  var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition";
-  var labelCls = "block text-sm font-semibold text-slate-700 mb-1.5";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-300 transition";
+  var labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
-
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <Link to="/dashboard" className="text-sm text-slate-600 hover:text-slate-900 font-medium">← Dashboard</Link>
-        </div>
-      </nav>
-
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto px-6 py-3 text-xs text-slate-500">
-          <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-          <span className="mx-2">/</span>
-          <span className="text-slate-900 font-medium">Профайл</span>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200">
-          <h1 className="text-2xl font-bold text-slate-900">Миний профайл</h1>
-          <p className="text-sm text-slate-600 mt-1">Хувийн мэдээллээ харах, засах.</p>
+    <Layout>
+      <div className="p-5 md:p-6 max-w-3xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Миний профайл</h1>
+          <p className="text-sm text-gray-500 mt-1">Хувийн мэдээллээ харах, засах.</p>
         </div>
 
-        {/* User header card */}
-        <div className="bg-white border border-slate-200 rounded mb-6">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-5">
           <div className="p-6 flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#1e3a8a] rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow">
               <span className="text-white font-bold text-2xl">{initial}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold text-slate-900">{user?.last_name} {user?.first_name}</h2>
-              <p className="text-sm text-slate-500 truncate">{user?.email}</p>
-              <span className={"text-xs px-2 py-0.5 rounded font-medium mt-1.5 inline-block border " + (user?.role === "admin" ? "bg-[#1e3a8a]/5 text-[#1e3a8a] border-[#1e3a8a]/20" : "bg-slate-50 text-slate-700 border-slate-200")}>
+              <h2 className="text-lg font-bold text-gray-800">{user?.last_name} {user?.first_name}</h2>
+              <p className="text-sm text-gray-500 truncate">{user?.email}</p>
+              <span className={"text-xs px-2 py-0.5 rounded-full font-medium mt-1.5 inline-block " + (user?.role === "admin" ? "bg-violet-100 text-violet-700" : "bg-gray-100 text-gray-600")}>
                 {user?.role === "admin" ? "Админ" : "Хэрэглэгч"}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Profile edit form */}
-        <div className="bg-white border border-slate-200 rounded mb-6">
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-base font-semibold text-slate-900">Профайл засах</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Өөрийн мэдээллээ шинэчлэх.</p>
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-5">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h2 className="text-base font-semibold text-gray-800">Профайл засах</h2>
           </div>
           <form onSubmit={handleSave} className="p-6 space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -167,8 +136,8 @@ export default function Profile() {
             </div>
             <div>
               <label className={labelCls}>И-мэйл</label>
-              <input value={user?.email || ""} disabled className="w-full px-4 py-2.5 border border-slate-200 rounded text-sm bg-slate-50 text-slate-500 cursor-not-allowed" />
-              <p className="text-xs text-slate-400 mt-1">И-мэйл хаягийг өөрчлөх боломжгүй.</p>
+              <input value={user?.email || ""} disabled className="w-full px-4 py-2.5 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+              <p className="text-xs text-gray-400 mt-1">И-мэйл хаягийг өөрчлөх боломжгүй.</p>
             </div>
             <div>
               <label className={labelCls}>Утас</label>
@@ -176,137 +145,86 @@ export default function Profile() {
             </div>
             <div>
               <label className={labelCls}>Бүртгүүлсэн огноо</label>
-              <input value={user?.created_at ? new Date(user.created_at).toLocaleDateString("mn-MN") : ""} disabled className="w-full px-4 py-2.5 border border-slate-200 rounded text-sm bg-slate-50 text-slate-500 cursor-not-allowed" />
+              <input value={user?.created_at ? new Date(user.created_at).toLocaleDateString("mn-MN") : ""} disabled className="w-full px-4 py-2.5 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
             </div>
-
-            <div className="flex justify-end pt-5 border-t border-slate-200">
-              <button type="submit" disabled={saving} className="px-6 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] disabled:opacity-50 transition">
+            <div className="flex justify-end pt-4 border-t border-gray-100">
+              <button type="submit" disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
                 {saving ? "Хадгалж байна..." : "Хадгалах"}
               </button>
             </div>
           </form>
         </div>
 
-        {/* Password change form */}
-        <div className="bg-white border border-slate-200 rounded mb-6">
-          <div className="px-6 py-4 border-b border-slate-200">
-            <h2 className="text-base font-semibold text-slate-900">Нууц үг солих</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Аюулгүй байдлын үүднээс нууц үгээ үе үе сольж байгаарай.</p>
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-5">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h2 className="text-base font-semibold text-gray-800">Нууц үг солих</h2>
           </div>
           <form onSubmit={handlePasswordChange} className="p-6 space-y-4">
             <div>
               <label className={labelCls}>Хуучин нууц үг <span className="text-red-500">*</span></label>
-              <input
-                type="password"
-                value={pwForm.old_password}
-                onChange={function (e) { updPw("old_password", e.target.value); }}
-                placeholder="Одоогийн нууц үг"
-                className={inputCls}
-                autoComplete="current-password"
-              />
+              <input type="password" value={pwForm.old_password} onChange={function (e) { updPw("old_password", e.target.value); }} placeholder="Одоогийн нууц үг" className={inputCls} autoComplete="current-password" />
             </div>
             <div>
               <label className={labelCls}>Шинэ нууц үг <span className="text-red-500">*</span></label>
-              <input
-                type="password"
-                value={pwForm.new_password}
-                onChange={function (e) { updPw("new_password", e.target.value); }}
-                placeholder="8+ тэмдэгт"
-                className={inputCls}
-                autoComplete="new-password"
-              />
+              <input type="password" value={pwForm.new_password} onChange={function (e) { updPw("new_password", e.target.value); }} placeholder="8+ тэмдэгт" className={inputCls} autoComplete="new-password" />
             </div>
             <div>
               <label className={labelCls}>Шинэ нууц үг давтах <span className="text-red-500">*</span></label>
-              <input
-                type="password"
-                value={pwForm.confirm_password}
-                onChange={function (e) { updPw("confirm_password", e.target.value); }}
-                placeholder="Шинэ нууц үгээ дахин оруулна уу"
-                className={inputCls}
-                autoComplete="new-password"
-              />
+              <input type="password" value={pwForm.confirm_password} onChange={function (e) { updPw("confirm_password", e.target.value); }} placeholder="Дахин оруулна уу" className={inputCls} autoComplete="new-password" />
             </div>
-
-            <div className="flex justify-end pt-5 border-t border-slate-200">
-              <button type="submit" disabled={pwSaving} className="px-6 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] disabled:opacity-50 transition">
+            <div className="flex justify-end pt-4 border-t border-gray-100">
+              <button type="submit" disabled={pwSaving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
                 {pwSaving ? "Солиж байна..." : "Нууц үг солих"}
               </button>
             </div>
           </form>
         </div>
 
-        {/* Danger zone */}
-        <div className="bg-white border border-red-200 rounded">
-          <div className="px-6 py-4 border-b border-red-200 bg-red-50">
+        <div className="bg-white border border-red-100 rounded-2xl shadow-sm">
+          <div className="px-6 py-4 border-b border-red-100 bg-red-50 rounded-t-2xl">
             <h2 className="text-base font-semibold text-red-700">Аюултай үйлдэл</h2>
-            <p className="text-xs text-red-600 mt-0.5">Доорх үйлдлүүдийг буцаах боломжгүй.</p>
           </div>
           <div className="p-6 flex items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-900">Бүртгэл устгах</p>
-              <p className="text-xs text-slate-500 mt-1">
-                Таны бүх өгөгдөл (CV, тэмдэглэл) бүрмөсөн устгагдана. Энэ үйлдлийг буцаах боломжгүй.
-              </p>
+              <p className="text-sm font-semibold text-gray-800">Бүртгэл устгах</p>
+              <p className="text-xs text-gray-500 mt-1">Таны бүх өгөгдөл бүрмөсөн устгагдана. Буцаах боломжгүй.</p>
             </div>
-            <button
-              type="button"
-              onClick={function () { setShowDeleteModal(true); }}
-              className="px-4 py-2 border border-red-300 text-red-600 rounded text-sm font-semibold hover:bg-red-50 transition whitespace-nowrap"
-            >
+            <button type="button" onClick={function () { setShowDeleteModal(true); }}
+              className="px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-50 transition whitespace-nowrap">
               Бүртгэл устгах
             </button>
           </div>
         </div>
       </div>
 
-      {/* Delete confirmation modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-lg max-w-md w-full">
-            <div className="p-6 border-b border-slate-200">
-              <h3 className="text-lg font-bold text-slate-900">Бүртгэл устгахдаа итгэлтэй байна уу?</h3>
+          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
+            <div className="p-6 border-b border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800">Бүртгэл устгахдаа итгэлтэй байна уу?</h3>
             </div>
             <div className="p-6 space-y-4">
-              <div className="bg-red-50 border border-red-200 rounded p-4">
-                <p className="text-sm text-red-700">
-                  <strong>Анхааруулга:</strong> Энэ үйлдэл нь буцаах боломжгүй. Таны бүх CV, профайл, бусад өгөгдөл бүрмөсөн устгагдана.
-                </p>
+              <div className="bg-red-50 border border-red-100 rounded-xl p-4">
+                <p className="text-sm text-red-700"><strong>Анхааруулга:</strong> Таны бүх CV, профайл, өгөгдөл бүрмөсөн устгагдана.</p>
               </div>
               <div>
-                <label className={labelCls}>
-                  Баталгаажуулахын тулд <span className="font-bold text-red-600">УСТГАХ</span> гэж бичнэ үү:
-                </label>
-                <input
-                  value={deleteConfirm}
-                  onChange={function (e) { setDeleteConfirm(e.target.value); }}
-                  placeholder="УСТГАХ"
-                  className={inputCls}
-                  autoFocus
-                />
+                <label className={labelCls}>Баталгаажуулахын тулд <span className="font-bold text-red-600">УСТГАХ</span> гэж бичнэ үү:</label>
+                <input value={deleteConfirm} onChange={function (e) { setDeleteConfirm(e.target.value); }} placeholder="УСТГАХ" className={inputCls} autoFocus />
               </div>
             </div>
-            <div className="p-6 border-t border-slate-200 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={function () { setShowDeleteModal(false); setDeleteConfirm(""); }}
-                disabled={deleting}
-                className="px-5 py-2 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
-              >
+            <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+              <button type="button" onClick={function () { setShowDeleteModal(false); setDeleteConfirm(""); }} disabled={deleting}
+                className="px-5 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                 Цуцлах
               </button>
-              <button
-                type="button"
-                onClick={handleDeleteAccount}
-                disabled={deleting || deleteConfirm !== "УСТГАХ"}
-                className="px-5 py-2 bg-red-600 text-white rounded text-sm font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-              >
+              <button type="button" onClick={handleDeleteAccount} disabled={deleting || deleteConfirm !== "УСТГАХ"}
+                className="px-5 py-2 bg-red-600 text-white rounded-xl text-sm font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition">
                 {deleting ? "Устгаж байна..." : "Бүрмөсөн устгах"}
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }

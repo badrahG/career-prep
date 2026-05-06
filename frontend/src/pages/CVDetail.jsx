@@ -102,7 +102,7 @@ export default function CVDetail() {
   try { info = cv.personal_info ? JSON.parse(cv.personal_info) : {}; } catch { info = {}; }
 
   var template = cv.template_type || "modern";
-  var TEMPLATE_LABELS = { modern: "Modern", classic: "Classic", minimal: "Minimal" };
+  var TEMPLATE_LABELS = { modern: "Modern", classic: "Classic", minimal: "European CV" };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">

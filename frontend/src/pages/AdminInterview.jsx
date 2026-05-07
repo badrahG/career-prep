@@ -1,18 +1,27 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { ListSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
+import Layout from "../components/Layout";
+
+var ADMIN_TABS = [
+  { to: "/admin/dashboard",   label: "Самбар" },
+  { to: "/admin/users",       label: "Хэрэглэгчид" },
+  { to: "/admin/interview",   label: "Ярилцлага" },
+  { to: "/admin/advice",      label: "Зөвлөмж" },
+  { to: "/admin/scholarship", label: "Тэтгэлэг" },
+];
 
 export default function AdminInterview() {
+  var location = useLocation();
   var [questions, setQuestions] = useState([]);
   var [loading, setLoading] = useState(true);
   var [search, setSearch] = useState("");
   var [categoryFilter, setCategoryFilter] = useState("all");
-  var [typeFilter, setTypeFilter] = useState("all"); // all | flashcard | quiz
+  var [typeFilter, setTypeFilter] = useState("all");
 
-  // Modal state
   var [showModal, setShowModal] = useState(false);
   var [editingId, setEditingId] = useState(null);
   var [form, setForm] = useState(emptyForm());
@@ -132,56 +141,40 @@ export default function AdminInterview() {
   var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн" };
   var difficultyLabels = { easy: "Хялбар", medium: "Дундаж", hard: "Хүнд" };
 
-  var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition";
-  var labelCls = "block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition";
+  var labelCls = "block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
+    <Layout>
+      <div className="p-5 md:p-6 space-y-6">
 
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-1 text-sm">
-            <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
-            <Link to="/admin/users" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Хэрэглэгч</Link>
-            <Link to="/admin/interview" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Ярилцлага</Link>
-          </div>
-          <button onClick={openCreate} className="bg-[#1e3a8a] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#1e40af] transition">+ Асуулт</button>
+        {/* Admin tabs */}
+        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
+          {ADMIN_TABS.map(function (tab) {
+            var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
+            return (
+              <Link key={tab.to} to={tab.to}
+                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                {tab.label}
+              </Link>
+            );
+          })}
         </div>
-      </nav>
 
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-3 text-xs text-slate-500 flex items-center justify-between">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-900 font-medium">Админ — Ярилцлагын асуулт</span>
+            <h1 className="text-xl font-bold text-gray-900">Ярилцлагын асуултын удирдлага</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Flashcard асуулт, Quiz асуулт үүсгэж, засаж, устгана.</p>
           </div>
-          <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-medium">Админ горим</span>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200">
-          <h1 className="text-2xl font-bold text-slate-900">Ярилцлагын асуултын удирдлага</h1>
-          <p className="text-sm text-slate-600 mt-1">Flashcard асуулт, Quiz асуулт үүсгэж, засаж, устгана.</p>
+          <button onClick={openCreate} className="bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition flex-shrink-0">
+            + Асуулт
+          </button>
         </div>
 
         {/* Filter panel */}
-        <div className="bg-white border border-slate-200 rounded p-4 mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
           <div className="flex flex-col md:flex-row gap-3">
             <input
               value={search}
@@ -209,34 +202,34 @@ export default function AdminInterview() {
         ) : questions.length === 0 ? (
           <EmptyState illustration="interview" title="Асуулт олдсонгүй" description="Шинэ асуулт нэмэхийн тулд дээрх товч дарна уу." />
         ) : (
-          <div className="bg-white border border-slate-200 rounded overflow-hidden">
-            <div className="divide-y divide-slate-200">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="divide-y divide-gray-200">
               {questions.map(function (q) {
                 return (
-                  <div key={q.id} className="p-5 hover:bg-slate-50 transition">
+                  <div key={q.id} className="p-5 hover:bg-gray-50 transition">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-full font-semibold">
                             {categoryLabels[q.category] || q.category}
                           </span>
                           {q.is_quiz && (
-                            <span className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded font-medium">
+                            <span className="text-xs bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-full font-medium">
                               Quiz
                             </span>
                           )}
                           {q.difficulty && (
-                            <span className="text-xs text-slate-500">{difficultyLabels[q.difficulty] || q.difficulty}</span>
+                            <span className="text-xs text-gray-500">{difficultyLabels[q.difficulty] || q.difficulty}</span>
                           )}
                           {q.tags && (
-                            <span className="text-xs text-slate-400 italic">#{q.tags}</span>
+                            <span className="text-xs text-gray-400 italic">#{q.tags}</span>
                           )}
                         </div>
 
-                        <p className="text-sm font-semibold text-slate-900 mb-1.5">{q.question_mn}</p>
+                        <p className="text-sm font-semibold text-gray-900 mb-1.5">{q.question_mn}</p>
 
                         {q.is_quiz ? (
-                          <div className="text-xs text-slate-600 space-y-0.5 mt-2">
+                          <div className="text-xs text-gray-600 space-y-0.5 mt-2">
                             <p>A. {q.option_a}</p>
                             <p>B. {q.option_b}</p>
                             <p>C. {q.option_c}</p>
@@ -244,20 +237,20 @@ export default function AdminInterview() {
                             <p className="text-emerald-700 font-semibold mt-1">Зөв: {(q.correct_option || "").toUpperCase()}</p>
                           </div>
                         ) : (
-                          q.sample_answer && <p className="text-xs text-slate-600 line-clamp-2">{q.sample_answer}</p>
+                          q.sample_answer && <p className="text-xs text-gray-600 line-clamp-2">{q.sample_answer}</p>
                         )}
                       </div>
 
                       <div className="flex gap-2 flex-shrink-0">
                         <button
                           onClick={function () { openEdit(q); }}
-                          className="text-xs px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded font-medium transition"
+                          className="text-xs px-3 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition"
                         >
                           Засах
                         </button>
                         <button
                           onClick={function () { handleDelete(q); }}
-                          className="text-xs px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded font-medium transition"
+                          className="text-xs px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg font-medium transition"
                         >
                           Устгах
                         </button>
@@ -270,18 +263,18 @@ export default function AdminInterview() {
           </div>
         )}
 
-        <p className="text-xs text-slate-400 mt-3">Нийт {questions.length} асуулт харагдаж байна.</p>
+        <p className="text-xs text-gray-400">Нийт {questions.length} асуулт харагдаж байна.</p>
       </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-900">
+          <div className="bg-white rounded-xl max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900">
                 {editingId ? "Асуулт засах" : "Шинэ асуулт нэмэх"}
               </h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-700 text-xl">✕</button>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto">
@@ -326,24 +319,24 @@ export default function AdminInterview() {
               </div>
 
               {/* Quiz toggle */}
-              <div className="bg-slate-50 border border-slate-200 rounded p-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.is_quiz}
                     onChange={function (e) { upd("is_quiz", e.target.checked); }}
-                    className="w-4 h-4 accent-[#1e3a8a]"
+                    className="w-4 h-4 accent-violet-600"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Quiz асуулт болгох</p>
-                    <p className="text-xs text-slate-500">Хэрэв идэвхтэй бол 4 сонголт + зөв хариултыг бөглөнө үү. Энэ асуулт Quiz горимд харагдана.</p>
+                    <p className="text-sm font-semibold text-gray-900">Quiz асуулт болгох</p>
+                    <p className="text-xs text-gray-500">Хэрэв идэвхтэй бол 4 сонголт + зөв хариултыг бөглөнө үү. Энэ асуулт Quiz горимд харагдана.</p>
                   </div>
                 </label>
               </div>
 
               {/* Quiz fields */}
               {form.is_quiz && (
-                <div className="border-l-4 border-[#1e3a8a] pl-4 space-y-3 bg-blue-50/30 p-4 rounded-r">
+                <div className="border-l-4 border-violet-500 pl-4 space-y-3 bg-violet-50/30 p-4 rounded-r-lg">
                   {["a", "b", "c", "d"].map(function (letter) {
                     var key = "option_" + letter;
                     var isCorrect = form.correct_option === letter;
@@ -359,7 +352,7 @@ export default function AdminInterview() {
                               onChange={function () { upd("correct_option", letter); }}
                               className="w-3 h-3 accent-emerald-600"
                             />
-                            <span className={"text-xs " + (isCorrect ? "text-emerald-700 font-semibold" : "text-slate-500")}>
+                            <span className={"text-xs " + (isCorrect ? "text-emerald-700 font-semibold" : "text-gray-500")}>
                               {isCorrect ? "✓ Зөв хариулт" : "Зөв болгох"}
                             </span>
                           </label>
@@ -389,7 +382,7 @@ export default function AdminInterview() {
 
               {/* Flashcard fields */}
               <div>
-                <label className={labelCls}>Жишээ хариулт {!form.is_quiz && <span className="text-slate-400">(Flashcard/STAR горимд харагдана)</span>}</label>
+                <label className={labelCls}>Жишээ хариулт {!form.is_quiz && <span className="text-gray-400">(Flashcard/STAR горимд харагдана)</span>}</label>
                 <textarea
                   value={form.sample_answer}
                   onChange={function (e) { upd("sample_answer", e.target.value); }}
@@ -411,16 +404,16 @@ export default function AdminInterview() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50">
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
               <button
                 onClick={closeModal}
-                className="px-5 py-2 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-white transition"
+                className="px-5 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition"
               >
                 Цуцлах
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition"
+                className="px-6 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition"
               >
                 {editingId ? "Шинэчлэх" : "Үүсгэх"}
               </button>
@@ -428,6 +421,6 @@ export default function AdminInterview() {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }

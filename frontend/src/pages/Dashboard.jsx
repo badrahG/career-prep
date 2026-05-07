@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Link, useLocation } from "react-router-dom";
 import API from "../services/api";
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from "recharts";
+import SearchModal from "../components/SearchModal";
 
 function Icon({ d, size = 20 }) {
   return (
@@ -41,6 +42,7 @@ const NAV = [
   { label: "Зөвлөмж",  link: "/advice",      icon: "advice" },
   { label: "Тэтгэлэг", link: "/scholarship", icon: "scholarship" },
   { label: "Профайл",  link: "/profile",     icon: "profile" },
+  { label: "CV Анализ", link: "/cv-analysis", icon: "analyze" },
 ];
 
 const MODULES = [
@@ -62,6 +64,7 @@ export default function Dashboard() {
   var [cvs, setCvs] = useState([]);
   var [activity, setActivity] = useState([]);
   var [sidebarOpen, setSidebarOpen] = useState(false);
+  var [searchOpen, setSearchOpen] = useState(false);
 
   var isAdmin = user?.role === "admin";
   var firstName = user?.first_name || "Хэрэглэгч";
@@ -74,6 +77,18 @@ export default function Dashboard() {
     API.get("/cv").then(function (r) { setCvs(r.data); }).catch(function () {});
     API.get("/auth/activity").then(function (r) { setActivity(r.data); }).catch(function () {});
   }, []);
+
+  var handleGlobalKey = useCallback(function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      setSearchOpen(true);
+    }
+  }, []);
+
+  useEffect(function () {
+    window.addEventListener("keydown", handleGlobalKey);
+    return function () { window.removeEventListener("keydown", handleGlobalKey); };
+  }, [handleGlobalKey]);
 
   var cvProgress = stats.cv_count > 0 ? stats.progress : 0;
   var ivProgress = Math.min(stats.studied_questions * 4 + (stats.quiz_count > 0 ? Math.round(stats.quiz_avg / 2) : 0), 100);
@@ -180,10 +195,14 @@ export default function Dashboard() {
             <p className="text-xs text-gray-400 mt-0.5">{todayStr}</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm">
-              <span className="text-gray-400"><Icon d={ICONS.search} size={14} /></span>
-              <input type="text" readOnly placeholder="Хайх..." className="bg-transparent text-sm text-gray-400 outline-none w-28 cursor-default" />
-            </div>
+            <button
+              onClick={function () { setSearchOpen(true); }}
+              className="hidden md:flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 shadow-sm hover:border-violet-300 hover:shadow-md transition group"
+            >
+              <span className="text-gray-400 group-hover:text-violet-500 transition"><Icon d={ICONS.search} size={14} /></span>
+              <span className="text-sm text-gray-400 w-28 text-left">Хайх...</span>
+              <kbd className="text-[10px] text-gray-300 bg-gray-100 px-1.5 py-0.5 rounded font-medium">Ctrl K</kbd>
+            </button>
             <button className="w-9 h-9 bg-white rounded-full border border-gray-200 shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-700 transition">
               <Icon d={ICONS.bell} size={16} />
             </button>
@@ -439,6 +458,8 @@ export default function Dashboard() {
 
         </div>
       </main>
+
+      <SearchModal open={searchOpen} onClose={function () { setSearchOpen(false); }} />
     </div>
   );
 }

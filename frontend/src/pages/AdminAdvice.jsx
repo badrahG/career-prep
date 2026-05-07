@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { ListSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
+import Layout from "../components/Layout";
+
+var ADMIN_TABS = [
+  { to: "/admin/dashboard",   label: "Самбар" },
+  { to: "/admin/users",       label: "Хэрэглэгчид" },
+  { to: "/admin/interview",   label: "Ярилцлага" },
+  { to: "/admin/advice",      label: "Зөвлөмж" },
+  { to: "/admin/scholarship", label: "Тэтгэлэг" },
+];
 
 export default function AdminAdvice() {
+  var location = useLocation();
   var [searchParams] = useSearchParams();
   var editParam = searchParams.get("edit");
 
@@ -14,12 +24,9 @@ export default function AdminAdvice() {
   var [search, setSearch] = useState("");
   var [categoryFilter, setCategoryFilter] = useState("all");
 
-  // Modal
   var [showModal, setShowModal] = useState(false);
   var [editingId, setEditingId] = useState(null);
   var [form, setForm] = useState(emptyForm());
-
-  // External links editor: use array state for easier editing
   var [linksArr, setLinksArr] = useState([]);
 
   function emptyForm() {
@@ -51,7 +58,6 @@ export default function AdminAdvice() {
     return function () { clearTimeout(timer); };
   }, [search, categoryFilter]);
 
-  // If URL has ?edit=X, open edit modal automatically
   useEffect(function () {
     if (editParam) {
       API.get("/advice/" + editParam)
@@ -79,7 +85,6 @@ export default function AdminAdvice() {
       sort_order: a.sort_order || 0,
       is_published: a.is_published !== false,
     });
-    // Parse existing links
     try {
       var parsed = a.external_links ? JSON.parse(a.external_links) : [];
       setLinksArr(Array.isArray(parsed) ? parsed : []);
@@ -163,59 +168,40 @@ export default function AdminAdvice() {
   }
 
   var categoryLabels = { cv: "CV", interview: "Ярилцлага", job_search: "Ажил олох", career: "Карьер" };
-  var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition";
-  var labelCls = "block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition";
+  var labelCls = "block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
+    <Layout>
+      <div className="p-5 md:p-6 space-y-6">
 
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-1 text-sm">
-            <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
-            <Link to="/admin/users" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Хэрэглэгч</Link>
-            <Link to="/admin/interview" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Ярилцлага</Link>
-            <Link to="/admin/advice" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Зөвлөмж</Link>
+        {/* Admin tabs */}
+        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
+          {ADMIN_TABS.map(function (tab) {
+            var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
+            return (
+              <Link key={tab.to} to={tab.to}
+                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                {tab.label}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Карьерын зөвлөмжийн удирдлага</h1>
+            <p className="text-sm text-gray-500 mt-0.5">Зөвлөмжүүдийг үүсгэж, засаж, нийтлэх/нуух.</p>
           </div>
-          <button onClick={openCreate} className="bg-[#1e3a8a] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#1e40af] transition">
+          <button onClick={openCreate} className="bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition flex-shrink-0">
             + Зөвлөмж
           </button>
         </div>
-      </nav>
-
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-3 text-xs text-slate-500 flex items-center justify-between">
-          <div>
-            <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-900 font-medium">Админ — Карьерын зөвлөмж</span>
-          </div>
-          <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-medium">Админ горим</span>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200">
-          <h1 className="text-2xl font-bold text-slate-900">Карьерын зөвлөмжийн удирдлага</h1>
-          <p className="text-sm text-slate-600 mt-1">Зөвлөмжүүдийг үүсгэж, засаж, нийтлэх/нуух.</p>
-        </div>
 
         {/* Filter */}
-        <div className="bg-white border border-slate-200 rounded p-4 mb-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
           <div className="flex flex-col md:flex-row gap-3">
             <input
               value={search}
@@ -239,51 +225,51 @@ export default function AdminAdvice() {
         ) : articles.length === 0 ? (
           <EmptyState illustration="advice" title="Зөвлөмж олдсонгүй" description="Шинэ зөвлөмж нэмэхийн тулд дээрх товч дарна уу." />
         ) : (
-          <div className="bg-white border border-slate-200 rounded overflow-hidden">
-            <div className="divide-y divide-slate-200">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="divide-y divide-gray-200">
               {articles.map(function (a) {
                 return (
-                  <div key={a.id} className="p-5 hover:bg-slate-50 transition">
+                  <div key={a.id} className="p-5 hover:bg-gray-50 transition">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                          <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-semibold">
+                          <span className="text-xs bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-full font-semibold">
                             {categoryLabels[a.category]}
                           </span>
                           {!a.is_published && (
-                            <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium">
+                            <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-medium">
                               Нуугдсан
                             </span>
                           )}
                           {a.youtube_url && (
-                            <span className="text-xs bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded font-medium">
+                            <span className="text-xs bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-full font-medium">
                               ▶ Видео
                             </span>
                           )}
-                          <span className="text-xs text-slate-500">Order: {a.sort_order}</span>
+                          <span className="text-xs text-gray-500">Order: {a.sort_order}</span>
                         </div>
 
-                        <h3 className="text-base font-bold text-slate-900 mb-1">{a.title}</h3>
-                        {a.summary && <p className="text-sm text-slate-600 line-clamp-2">{a.summary}</p>}
+                        <h3 className="text-base font-bold text-gray-900 mb-1">{a.title}</h3>
+                        {a.summary && <p className="text-sm text-gray-600 line-clamp-2">{a.summary}</p>}
                       </div>
 
                       <div className="flex gap-1.5 flex-shrink-0">
                         <button
                           onClick={function () { togglePublish(a); }}
                           title={a.is_published ? "Нуух" : "Нийтлэх"}
-                          className={"text-xs px-3 py-1.5 border rounded font-medium transition " + (a.is_published ? "border-amber-300 text-amber-700 hover:bg-amber-50" : "border-emerald-300 text-emerald-700 hover:bg-emerald-50")}
+                          className={"text-xs px-3 py-1.5 border rounded-lg font-medium transition " + (a.is_published ? "border-amber-300 text-amber-700 hover:bg-amber-50" : "border-emerald-300 text-emerald-700 hover:bg-emerald-50")}
                         >
                           {a.is_published ? "Нуух" : "Нийтлэх"}
                         </button>
                         <button
                           onClick={function () { openEdit(a); }}
-                          className="text-xs px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded font-medium transition"
+                          className="text-xs px-3 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition"
                         >
                           Засах
                         </button>
                         <button
                           onClick={function () { handleDelete(a); }}
-                          className="text-xs px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded font-medium transition"
+                          className="text-xs px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg font-medium transition"
                         >
                           Устгах
                         </button>
@@ -296,18 +282,18 @@ export default function AdminAdvice() {
           </div>
         )}
 
-        <p className="text-xs text-slate-400 mt-3">Нийт {articles.length} зөвлөмж харагдаж байна.</p>
+        <p className="text-xs text-gray-400">Нийт {articles.length} зөвлөмж харагдаж байна.</p>
       </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg max-w-3xl w-full my-8 max-h-[90vh] flex flex-col">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-900">
+          <div className="bg-white rounded-xl max-w-3xl w-full my-8 max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900">
                 {editingId ? "Зөвлөмж засах" : "Шинэ зөвлөмж нэмэх"}
               </h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-700 text-xl">✕</button>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto">
@@ -363,7 +349,7 @@ export default function AdminAdvice() {
                   placeholder="Бүтэн агуулга. Шинэ мөр автоматаар хадгалагдана."
                   className={inputCls}
                 />
-                <p className="text-xs text-slate-500 mt-1">Шинэ мөр (Enter) хадгалагдана. Markdown дэмжихгүй.</p>
+                <p className="text-xs text-gray-500 mt-1">Шинэ мөр (Enter) хадгалагдана. Markdown дэмжихгүй.</p>
               </div>
 
               <div>
@@ -374,49 +360,49 @@ export default function AdminAdvice() {
                   placeholder="https://www.youtube.com/watch?v=..."
                   className={inputCls}
                 />
-                <p className="text-xs text-slate-500 mt-1">Дэмжигдэх: youtube.com/watch, youtu.be, youtube.com/shorts</p>
+                <p className="text-xs text-gray-500 mt-1">Дэмжигдэх: youtube.com/watch, youtu.be, youtube.com/shorts</p>
               </div>
 
               {/* External links editor */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
                     Гадаад холбоосууд (сонголтоор)
                   </label>
                   <button
                     type="button"
                     onClick={addLink}
-                    className="text-xs px-3 py-1 border border-[#1e3a8a] text-[#1e3a8a] rounded font-medium hover:bg-[#1e3a8a]/5 transition"
+                    className="text-xs px-3 py-1 border border-violet-500 text-violet-600 rounded-lg font-medium hover:bg-violet-50 transition"
                   >
                     + Холбоос нэмэх
                   </button>
                 </div>
 
                 {linksArr.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">Одоогоор холбоос байхгүй.</p>
+                  <p className="text-xs text-gray-400 italic">Одоогоор холбоос байхгүй.</p>
                 ) : (
                   <div className="space-y-2">
                     {linksArr.map(function (link, i) {
                       return (
-                        <div key={i} className="flex gap-2 items-start bg-slate-50 border border-slate-200 rounded p-2">
+                        <div key={i} className="flex gap-2 items-start bg-gray-50 border border-gray-200 rounded-lg p-2">
                           <div className="flex-1 space-y-1.5">
                             <input
                               value={link.title}
                               onChange={function (e) { updLink(i, "title", e.target.value); }}
                               placeholder="Холбоосны нэр (Жишээ: Canva CV загвар)"
-                              className="w-full px-3 py-1.5 border border-slate-300 rounded text-xs focus:outline-none focus:border-[#1e3a8a]"
+                              className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-violet-500"
                             />
                             <input
                               value={link.url}
                               onChange={function (e) { updLink(i, "url", e.target.value); }}
                               placeholder="https://..."
-                              className="w-full px-3 py-1.5 border border-slate-300 rounded text-xs focus:outline-none focus:border-[#1e3a8a]"
+                              className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-violet-500"
                             />
                           </div>
                           <button
                             type="button"
                             onClick={function () { removeLink(i); }}
-                            className="text-xs px-2 py-2 border border-red-300 text-red-600 rounded hover:bg-red-50 transition flex-shrink-0"
+                            className="text-xs px-2 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition flex-shrink-0"
                           >
                             ✕
                           </button>
@@ -427,32 +413,32 @@ export default function AdminAdvice() {
                 )}
               </div>
 
-              <div className="bg-slate-50 border border-slate-200 rounded p-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={form.is_published}
                     onChange={function (e) { upd("is_published", e.target.checked); }}
-                    className="w-4 h-4 accent-[#1e3a8a]"
+                    className="w-4 h-4 accent-violet-600"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">Нийтлэх</p>
-                    <p className="text-xs text-slate-500">Нэмэх бол зөвлөмж нийтийн нүдэнд харагдана. Шалгаагүй бол зөвхөн админд харагдана.</p>
+                    <p className="text-sm font-semibold text-gray-900">Нийтлэх</p>
+                    <p className="text-xs text-gray-500">Нэмэх бол зөвлөмж нийтийн нүдэнд харагдана. Шалгаагүй бол зөвхөн админд харагдана.</p>
                   </div>
                 </label>
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50">
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
               <button
                 onClick={closeModal}
-                className="px-5 py-2 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-white transition"
+                className="px-5 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition"
               >
                 Цуцлах
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition"
+                className="px-6 py-2 bg-violet-600 text-white rounded-lg text-sm font-semibold hover:bg-violet-700 transition"
               >
                 {editingId ? "Шинэчлэх" : "Үүсгэх"}
               </button>
@@ -460,6 +446,6 @@ export default function AdminAdvice() {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }

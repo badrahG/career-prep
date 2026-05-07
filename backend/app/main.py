@@ -35,6 +35,7 @@ from app.models.refresh_token import RefreshToken  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.routers import cv_analysis
+from app.routers import search
 from app.seed import seed_data
 from app.services.auth import get_current_user
 
@@ -260,6 +261,7 @@ app.include_router(scholarship.router)
 app.include_router(admin.router)
 app.include_router(advice.router)
 app.include_router(cv_analysis.router)
+app.include_router(search.router)
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)

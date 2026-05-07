@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import Layout from "../components/Layout";
 
 var personalSkills = ["Багаар ажиллах","Ачаалал даах","Дасан зохицох","Хувийн сахилга бат","Цагийн менежмент","Санал бодлоо илэрхийлэх","Шинийг санаачлах","Манлайлал ба удирдлага","Асуудал шийдвэрлэх","Харилцааны чадвар","Шийдвэр гаргах","Анхааралтай сонсох","Илтгэх","Хариуцлага хүлээх","Нягт нямбай","Үлгэр дуурайлал үзүүлэх","Баг хамт олонтой харилцах","Хүнтэй ажиллах хандлага"];
 var techSkills = ["Microsoft Word","Microsoft Excel","Microsoft PowerPoint","Adobe Photoshop","AutoCAD","Python","HTML/CSS","JavaScript","React","SQL","Git","Figma","Adobe Illustrator","CorelDraw","SPSS","Adobe Premiere"];
@@ -13,8 +14,8 @@ var levelOptions = ["Анхан шат","Суурьтай анхан шат","Д
 var jobCategories = ["Мэдээллийн технологи","Банк санхүү","Барилга","Боловсрол","Маркетинг","Худалдаа","Эрүүл мэнд","Уул уурхай","Бусад"];
 var eduLevels = ["Доктор","Магистр","Бакалавр","Тусгай дунд","Бүрэн дунд"];
 
-var inputCls = "w-full px-3 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition bg-white";
-var labelCls = "block text-sm font-semibold text-slate-700 mb-1.5";
+var inputCls = "w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
+var labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
 
 function EduForm(props) {
   var edu = props.edu;
@@ -23,9 +24,9 @@ function EduForm(props) {
   var onRemove = props.onRemove;
   var canRemove = props.canRemove;
   return (
-    <div className="border border-slate-200 rounded p-5 mb-4 bg-slate-50">
-      <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
-        <span className="text-sm font-semibold text-slate-900">Боловсрол #{i + 1}</span>
+    <div className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
+      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+        <span className="text-sm font-semibold text-gray-800">Боловсрол #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -60,8 +61,8 @@ function EduForm(props) {
           <input defaultValue={edu.start_year} onBlur={function(e) { onUpdate("start_year", e.target.value); }} placeholder="2022" className={inputCls} />
         </div>
         <div className="flex items-center gap-2 mt-6">
-          <input type="checkbox" checked={edu.currently} onChange={function(e) { onUpdate("currently", e.target.checked); }} className="w-4 h-4 accent-[#1e3a8a]" />
-          <span className="text-sm text-slate-700">Одоо сурч байгаа</span>
+          <input type="checkbox" checked={edu.currently} onChange={function(e) { onUpdate("currently", e.target.checked); }} className="w-4 h-4 accent-violet-600" />
+          <span className="text-sm text-gray-700">Одоо сурч байгаа</span>
         </div>
         {!edu.currently && (
           <div>
@@ -81,9 +82,9 @@ function ExpForm(props) {
   var onRemove = props.onRemove;
   var canRemove = props.canRemove;
   return (
-    <div className="border border-slate-200 rounded p-5 mb-4 bg-slate-50">
-      <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
-        <span className="text-sm font-semibold text-slate-900">Туршлага #{i + 1}</span>
+    <div className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
+      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+        <span className="text-sm font-semibold text-gray-800">Туршлага #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -107,8 +108,8 @@ function ExpForm(props) {
           <input type="date" defaultValue={exp.start_date} onBlur={function(e) { onUpdate("start_date", e.target.value); }} className={inputCls} />
         </div>
         <div className="flex items-center gap-2 mt-6">
-          <input type="checkbox" checked={exp.currently} onChange={function(e) { onUpdate("currently", e.target.checked); }} className="w-4 h-4 accent-[#1e3a8a]" />
-          <span className="text-sm text-slate-700">Одоо ажиллаж байгаа</span>
+          <input type="checkbox" checked={exp.currently} onChange={function(e) { onUpdate("currently", e.target.checked); }} className="w-4 h-4 accent-violet-600" />
+          <span className="text-sm text-gray-700">Одоо ажиллаж байгаа</span>
         </div>
         {!exp.currently && (
           <div>
@@ -131,7 +132,9 @@ function SkillToggle(props) {
       {props.items.map(function(s) {
         var active = props.selected.includes(s);
         return (
-          <button key={s} type="button" onClick={function() { props.onToggle(s); }} className={"px-3 py-1.5 rounded text-xs font-medium transition border " + (active ? "bg-[#1e3a8a] text-white border-[#1e3a8a]" : "bg-white text-slate-700 border-slate-300 hover:border-slate-400")}>
+          <button key={s} type="button" onClick={function() { props.onToggle(s); }}
+            className={"px-3 py-1.5 rounded-xl text-xs font-medium transition border " +
+              (active ? "bg-violet-600 text-white border-violet-600" : "bg-white text-gray-700 border-gray-200 hover:border-gray-300")}>
             {s}
           </button>
         );
@@ -220,6 +223,7 @@ export default function CVBuilder() {
 
   var stepNames = ["Загвар", "Ерөнхий", "Холбоо барих", "Боловсрол", "Туршлага", "Хувийн чадвар", "Мэргэжлийн чадвар", "Хэл", "Сургалт", "Дадлага", "Шагнал", "Хадгалах"];
   var totalSteps = stepNames.length;
+  var progressPct = Math.round((step / totalSteps) * 100);
 
   function Inp(props) {
     return (
@@ -241,65 +245,52 @@ export default function CVBuilder() {
     );
   }
 
-  var progressPct = Math.round((step / totalSteps) * 100);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
+    <Layout>
+      <div className="p-5 md:p-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+          <Link to="/cv" className="hover:text-violet-600 transition">CV</Link>
+          <span>/</span>
+          <span className="text-gray-600 font-medium">Шинэ CV үүсгэх</span>
+          <span className="ml-auto text-gray-400">Алхам {step}/{totalSteps}</span>
+        </div>
 
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-slate-500 font-medium">Алхам {step}/{totalSteps}</span>
-            <Link to="/cv" className="text-sm text-slate-600 hover:text-slate-900 font-medium">Цуцлах</Link>
+        {/* Header */}
+        <div className="mb-5">
+          <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">CV үүсгэх</p>
+          <h1 className="text-xl font-bold text-gray-800">Шинэ CV</h1>
+        </div>
+
+        {/* Progress bar */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-5">
+          <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
+            <span>{stepNames[step - 1]}</span>
+            <span className="text-violet-600 font-semibold">{progressPct}%</span>
+          </div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full h-1.5 transition-all duration-300" style={{ width: progressPct + "%" }} />
           </div>
         </div>
-      </nav>
 
-      {/* Progress bar */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 py-3">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-700">{stepNames[step - 1]}</span>
-            <span className="text-xs text-[#1e3a8a] font-semibold">{progressPct}%</span>
-          </div>
-          <div className="w-full bg-slate-100 rounded-full h-1.5">
-            <div className="bg-[#1e3a8a] rounded-full h-1.5 transition-all duration-300" style={{ width: progressPct + "%" }}></div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-6 py-6">
         {/* Step tabs */}
-        <div className="flex gap-1 mb-6 overflow-x-auto pb-2">
+        <div className="flex gap-1 mb-5 overflow-x-auto pb-2">
           {stepNames.map(function(t, idx) {
             var s = idx + 1;
-            var cls = "px-3 py-1.5 rounded text-xs font-medium whitespace-nowrap transition border ";
-            if (step === s) cls += "bg-[#1e3a8a] text-white border-[#1e3a8a]";
-            else if (step > s) cls += "bg-[#1e3a8a]/5 text-[#1e3a8a] border-[#1e3a8a]/30";
-            else cls += "bg-white text-slate-500 border-slate-200 hover:border-slate-300";
+            var cls = "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition border ";
+            if (step === s) cls += "bg-violet-600 text-white border-violet-600";
+            else if (step > s) cls += "bg-violet-50 text-violet-600 border-violet-200";
+            else cls += "bg-white text-gray-500 border-gray-200 hover:border-gray-300";
             return <button key={idx} type="button" onClick={function() { setStep(s); }} className={cls}>{s}. {t}</button>;
           })}
         </div>
 
-        <div className="bg-white rounded border border-slate-200 p-6 md:p-8">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
 
           {step === 1 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">CV нэр болон загвар</h2>
-              <p className="text-sm text-slate-600 mb-6">CV-дээ нэр өгч загвар сонгоно уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">CV нэр болон загвар</h2>
+              <p className="text-sm text-gray-500 mb-6">CV-дээ нэр өгч загвар сонгоно уу.</p>
               <Inp label="CV нэр *" value={cvName} onChange={function(v) { setCvName(v); }} placeholder="Жишээ: Программистын CV" cls="mb-6" />
               <label className={labelCls}>Загвар</label>
               <div className="grid grid-cols-3 gap-3 mb-6">
@@ -310,13 +301,15 @@ export default function CVBuilder() {
                 ].map(function(t) {
                   var active = template === t.id;
                   return (
-                    <button key={t.id} type="button" onClick={function() { setTemplate(t.id); }} className={"border rounded p-4 text-left transition " + (active ? "border-[#1e3a8a] bg-[#1e3a8a]/5" : "border-slate-200 bg-white hover:border-slate-300")}>
-                      <div className="w-full h-20 rounded mb-3 bg-slate-100 border border-slate-200 flex items-center justify-center">
-                        <span className="text-xs text-slate-400">{t.name}</span>
+                    <button key={t.id} type="button" onClick={function() { setTemplate(t.id); }}
+                      className={"border rounded-2xl p-4 text-left transition " +
+                        (active ? "border-violet-400 bg-violet-50" : "border-gray-200 bg-white hover:border-gray-300")}>
+                      <div className="w-full h-20 rounded-xl mb-3 bg-gray-100 border border-gray-200 flex items-center justify-center">
+                        <span className="text-xs text-gray-400">{t.name}</span>
                       </div>
-                      <p className="font-semibold text-sm text-slate-900">{t.name}</p>
-                      <p className="text-xs text-slate-500">{t.desc}</p>
-                      {active && <p className="text-xs text-[#1e3a8a] font-semibold mt-1">✓ Сонгосон</p>}
+                      <p className="font-semibold text-sm text-gray-800">{t.name}</p>
+                      <p className="text-xs text-gray-500">{t.desc}</p>
+                      {active && <p className="text-xs text-violet-600 font-semibold mt-1">✓ Сонгосон</p>}
                     </button>
                   );
                 })}
@@ -324,12 +317,12 @@ export default function CVBuilder() {
               <div>
                 <label className={labelCls}>Профайл зураг</label>
                 <div className="flex items-center gap-4">
-                  <div className="w-24 h-28 rounded border border-dashed border-slate-300 flex items-center justify-center overflow-hidden bg-slate-50 flex-shrink-0">
-                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="text-slate-300 text-3xl">?</span>}
+                  <div className="w-24 h-28 rounded-xl border border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50 flex-shrink-0">
+                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="text-gray-300 text-3xl">?</span>}
                   </div>
                   <div>
                     <input type="file" accept="image/*" onChange={handlePhoto} className="text-sm" />
-                    {photoUploading && <p className="text-xs text-[#1e3a8a] mt-1">Оруулж байна...</p>}
+                    {photoUploading && <p className="text-xs text-violet-600 mt-1">Оруулж байна...</p>}
                   </div>
                 </div>
               </div>
@@ -338,8 +331,8 @@ export default function CVBuilder() {
 
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Ерөнхий мэдээлэл</h2>
-              <p className="text-sm text-slate-600 mb-6">Хувийн мэдээллээ оруулна уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Ерөнхий мэдээлэл</h2>
+              <p className="text-sm text-gray-500 mb-6">Хувийн мэдээллээ оруулна уу.</p>
               <div className="grid grid-cols-2 gap-4">
                 <Inp label="Овог *" value={info.lastName} onChange={function(v) { upd(setInfo, "lastName", v); }} placeholder="Ганбаатар" />
                 <Inp label="Нэр *" value={info.firstName} onChange={function(v) { upd(setInfo, "firstName", v); }} placeholder="Бадрах" />
@@ -359,8 +352,8 @@ export default function CVBuilder() {
 
           {step === 3 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Холбоо барих</h2>
-              <p className="text-sm text-slate-600 mb-6">Холбогдох мэдээллээ оруулна уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Холбоо барих</h2>
+              <p className="text-sm text-gray-500 mb-6">Холбогдох мэдээллээ оруулна уу.</p>
               <div className="grid grid-cols-2 gap-4">
                 <Inp label="И-мэйл *" value={contact.email} onChange={function(v) { upd(setContact, "email", v); }} placeholder="badrakh@email.com" type="email" />
                 <Inp label="Утас *" value={contact.phone} onChange={function(v) { upd(setContact, "phone", v); }} placeholder="88395886" />
@@ -373,54 +366,46 @@ export default function CVBuilder() {
 
           {step === 4 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Боловсрол</h2>
-              <p className="text-sm text-slate-600 mb-6">Боловсролын мэдээллээ оруулна уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Боловсрол</h2>
+              <p className="text-sm text-gray-500 mb-6">Боловсролын мэдээллээ оруулна уу.</p>
               {educations.map(function(edu, i) {
                 return (
-                  <EduForm
-                    key={i}
-                    edu={edu}
-                    index={i}
-                    canRemove={educations.length > 1}
+                  <EduForm key={i} edu={edu} index={i} canRemove={educations.length > 1}
                     onRemove={function() { setEducations(removeAt(educations, i)); }}
                     onUpdate={function(field, val) { updList(educations, setEducations, i, field, val); }}
                   />
                 );
               })}
-              <button type="button" onClick={function() { setEducations(educations.concat([{ level: "", school: "", major: "", major_field: "", gpa: "", start_year: "", end_year: "", currently: false }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Боловсрол нэмэх</button>
+              <button type="button" onClick={function() { setEducations(educations.concat([{ level: "", school: "", major: "", major_field: "", gpa: "", start_year: "", end_year: "", currently: false }])); }} className="text-sm text-violet-600 font-semibold hover:underline">+ Боловсрол нэмэх</button>
             </div>
           )}
 
           {step === 5 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Ажлын туршлага</h2>
-              <p className="text-sm text-slate-600 mb-6">Байхгүй бол алгасаж болно.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Ажлын туршлага</h2>
+              <p className="text-sm text-gray-500 mb-6">Байхгүй бол алгасаж болно.</p>
               {experiences.map(function(exp, i) {
                 return (
-                  <ExpForm
-                    key={i}
-                    exp={exp}
-                    index={i}
-                    canRemove={experiences.length > 1}
+                  <ExpForm key={i} exp={exp} index={i} canRemove={experiences.length > 1}
                     onRemove={function() { setExperiences(removeAt(experiences, i)); }}
                     onUpdate={function(field, val) { updList(experiences, setExperiences, i, field, val); }}
                   />
                 );
               })}
-              <button type="button" onClick={function() { setExperiences(experiences.concat([{ category: "", position: "", company: "", description: "", start_date: "", end_date: "", currently: false }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Туршлага нэмэх</button>
+              <button type="button" onClick={function() { setExperiences(experiences.concat([{ category: "", position: "", company: "", description: "", start_date: "", end_date: "", currently: false }])); }} className="text-sm text-violet-600 font-semibold hover:underline">+ Туршлага нэмэх</button>
             </div>
           )}
 
           {step === 6 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Хувийн ур чадвар, Компьютер</h2>
-              <p className="text-sm text-slate-600 mb-6">Товч дарж сонгоно уу.</p>
-              <div className="mb-6 pb-6 border-b border-slate-200">
-                <p className="text-sm font-semibold text-slate-700 mb-3">Хувийн ур чадвар <span className="text-slate-400 font-normal">({selectedPersonal.length})</span></p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Хувийн ур чадвар, Компьютер</h2>
+              <p className="text-sm text-gray-500 mb-6">Товч дарж сонгоно уу.</p>
+              <div className="mb-6 pb-6 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Хувийн ур чадвар <span className="text-gray-400 font-normal">({selectedPersonal.length})</span></p>
                 <SkillToggle items={personalSkills} selected={selectedPersonal} onToggle={function(s) { toggleSkill(selectedPersonal, setSelectedPersonal, s); }} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-700 mb-3">Компьютерын програм <span className="text-slate-400 font-normal">({selectedTech.length})</span></p>
+                <p className="text-sm font-semibold text-gray-700 mb-3">Компьютерын програм <span className="text-gray-400 font-normal">({selectedTech.length})</span></p>
                 <SkillToggle items={techSkills} selected={selectedTech} onToggle={function(s) { toggleSkill(selectedTech, setSelectedTech, s); }} />
               </div>
             </div>
@@ -428,18 +413,18 @@ export default function CVBuilder() {
 
           {step === 7 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Мэргэжлийн, урлаг, спорт</h2>
-              <p className="text-sm text-slate-600 mb-6">Товч дарж сонгоно уу.</p>
-              <div className="mb-6 pb-6 border-b border-slate-200">
-                <p className="text-sm font-semibold text-slate-700 mb-3">Мэргэжлийн ур чадвар <span className="text-slate-400 font-normal">({selectedProf.length})</span></p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Мэргэжлийн, урлаг, спорт</h2>
+              <p className="text-sm text-gray-500 mb-6">Товч дарж сонгоно уу.</p>
+              <div className="mb-6 pb-6 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Мэргэжлийн ур чадвар <span className="text-gray-400 font-normal">({selectedProf.length})</span></p>
                 <SkillToggle items={profSkills} selected={selectedProf} onToggle={function(s) { toggleSkill(selectedProf, setSelectedProf, s); }} />
               </div>
-              <div className="mb-6 pb-6 border-b border-slate-200">
-                <p className="text-sm font-semibold text-slate-700 mb-3">Урлагийн ур чадвар <span className="text-slate-400 font-normal">({selectedArt.length})</span></p>
+              <div className="mb-6 pb-6 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Урлагийн ур чадвар <span className="text-gray-400 font-normal">({selectedArt.length})</span></p>
                 <SkillToggle items={artSkills} selected={selectedArt} onToggle={function(s) { toggleSkill(selectedArt, setSelectedArt, s); }} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-700 mb-3">Спортын ур чадвар <span className="text-slate-400 font-normal">({selectedSport.length})</span></p>
+                <p className="text-sm font-semibold text-gray-700 mb-3">Спортын ур чадвар <span className="text-gray-400 font-normal">({selectedSport.length})</span></p>
                 <SkillToggle items={sportSkills} selected={selectedSport} onToggle={function(s) { toggleSkill(selectedSport, setSelectedSport, s); }} />
               </div>
             </div>
@@ -447,8 +432,8 @@ export default function CVBuilder() {
 
           {step === 8 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Гадаад хэлний мэдлэг</h2>
-              <p className="text-sm text-slate-600 mb-6">Мэддэг хэлээ нэмнэ үү.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Гадаад хэлний мэдлэг</h2>
+              <p className="text-sm text-gray-500 mb-6">Мэддэг хэлээ нэмнэ үү.</p>
               {langList.map(function(l, i) {
                 return (
                   <div key={i} className="flex items-end gap-3 mb-3">
@@ -458,19 +443,19 @@ export default function CVBuilder() {
                   </div>
                 );
               })}
-              <button type="button" onClick={function() { setLangList(langList.concat([{ name: "", level: "" }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Хэл нэмэх</button>
+              <button type="button" onClick={function() { setLangList(langList.concat([{ name: "", level: "" }])); }} className="text-sm text-violet-600 font-semibold hover:underline">+ Хэл нэмэх</button>
             </div>
           )}
 
           {step === 9 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Сургалт, сертификат</h2>
-              <p className="text-sm text-slate-600 mb-6">Хамрагдсан сургалтаа нэмнэ үү.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Сургалт, сертификат</h2>
+              <p className="text-sm text-gray-500 mb-6">Хамрагдсан сургалтаа нэмнэ үү.</p>
               {certs.map(function(c, i) {
                 return (
-                  <div key={i} className="border border-slate-200 rounded p-5 mb-4 bg-slate-50">
-                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
-                      <span className="text-sm font-semibold text-slate-900">Сургалт #{i + 1}</span>
+                  <div key={i} className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+                      <span className="text-sm font-semibold text-gray-800">Сургалт #{i + 1}</span>
                       {certs.length > 1 && <button type="button" onClick={function() { setCerts(removeAt(certs, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -480,15 +465,16 @@ export default function CVBuilder() {
                       <Inp label="Дууссан" value={c.end_date} onChange={function(v) { updList(certs, setCerts, i, "end_date", v); }} type="date" />
                     </div>
                     <div className="mt-3">
-                      <label className={labelCls}>Гэрчилгээний файл <span className="text-slate-400 font-normal">(PDF, JPG, PNG — 10MB хүртэл)</span></label>
+                      <label className={labelCls}>Гэрчилгээний файл <span className="text-gray-400 font-normal">(PDF, JPG, PNG — 10MB хүртэл)</span></label>
                       {c.file_url ? (
                         <div className="flex items-center gap-3">
-                          <a href={c.file_url} target="_blank" rel="noreferrer" className="text-sm text-[#1e3a8a] font-medium hover:underline">Хуулагдсан файл харах</a>
+                          <a href={c.file_url} target="_blank" rel="noreferrer" className="text-sm text-violet-600 font-medium hover:underline">Хуулагдсан файл харах</a>
                           <button type="button" onClick={function() { updList(certs, setCerts, i, "file_url", ""); }} className="text-xs text-red-500 hover:text-red-700">Устгах</button>
                         </div>
                       ) : (
                         <label className="inline-flex items-center gap-2 cursor-pointer">
-                          <span className={"px-4 py-2 text-sm rounded border font-medium transition " + (certUploading[i] ? "bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed" : "bg-white border-[#1e3a8a] text-[#1e3a8a] hover:bg-blue-50")}>
+                          <span className={"px-4 py-2 text-sm rounded-xl border font-medium transition " +
+                            (certUploading[i] ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" : "bg-white border-violet-400 text-violet-600 hover:bg-violet-50")}>
                             {certUploading[i] ? "Хуулж байна..." : "+ Файл хавсаргах"}
                           </span>
                           <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" disabled={!!certUploading[i]} onChange={function(e) { if (e.target.files[0]) uploadCertFile(i, e.target.files[0]); e.target.value = ""; }} />
@@ -498,19 +484,19 @@ export default function CVBuilder() {
                   </div>
                 );
               })}
-              <button type="button" onClick={function() { setCerts(certs.concat([{ name: "", organization: "", start_date: "", end_date: "", file_url: "" }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Сургалт нэмэх</button>
+              <button type="button" onClick={function() { setCerts(certs.concat([{ name: "", organization: "", start_date: "", end_date: "", file_url: "" }])); }} className="text-sm text-violet-600 font-semibold hover:underline">+ Сургалт нэмэх</button>
             </div>
           )}
 
           {step === 10 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Дадлага</h2>
-              <p className="text-sm text-slate-600 mb-6">Байхгүй бол алгасаж болно.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Дадлага</h2>
+              <p className="text-sm text-gray-500 mb-6">Байхгүй бол алгасаж болно.</p>
               {interns.map(function(n, i) {
                 return (
-                  <div key={i} className="border border-slate-200 rounded p-5 mb-4 bg-slate-50">
-                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-200">
-                      <span className="text-sm font-semibold text-slate-900">Дадлага #{i + 1}</span>
+                  <div key={i} className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+                      <span className="text-sm font-semibold text-gray-800">Дадлага #{i + 1}</span>
                       {interns.length > 1 && <button type="button" onClick={function() { setInterns(removeAt(interns, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -526,14 +512,14 @@ export default function CVBuilder() {
                   </div>
                 );
               })}
-              <button type="button" onClick={function() { setInterns(interns.concat([{ company: "", title: "", description: "", start_date: "", end_date: "" }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Дадлага нэмэх</button>
+              <button type="button" onClick={function() { setInterns(interns.concat([{ company: "", title: "", description: "", start_date: "", end_date: "" }])); }} className="text-sm text-violet-600 font-semibold hover:underline">+ Дадлага нэмэх</button>
             </div>
           )}
 
           {step === 11 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Шагнал урамшуулал</h2>
-              <p className="text-sm text-slate-600 mb-6">Авсан шагнал урамшуулалаа нэмнэ үү.</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Шагнал урамшуулал</h2>
+              <p className="text-sm text-gray-500 mb-6">Авсан шагнал урамшуулалаа нэмнэ үү.</p>
               {awards.map(function(a, i) {
                 return (
                   <div key={i} className="flex items-end gap-3 mb-3">
@@ -543,58 +529,58 @@ export default function CVBuilder() {
                   </div>
                 );
               })}
-              <button type="button" onClick={function() { setAwards(awards.concat([{ name: "", year: "" }])); }} className="text-sm text-[#1e3a8a] font-semibold hover:underline">+ Шагнал нэмэх</button>
+              <button type="button" onClick={function() { setAwards(awards.concat([{ name: "", year: "" }])); }} className="text-sm text-violet-600 font-semibold hover:underline">+ Шагнал нэмэх</button>
             </div>
           )}
 
           {step === 12 && (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 mb-1">Урьдчилан харах</h2>
-              <p className="text-sm text-slate-600 mb-6">Мэдээллээ шалгаад хадгална уу.</p>
-              <div className="border border-slate-200 rounded p-6 space-y-5 bg-slate-50">
+              <h2 className="text-xl font-bold text-gray-800 mb-1">Урьдчилан харах</h2>
+              <p className="text-sm text-gray-500 mb-6">Мэдээллээ шалгаад хадгална уу.</p>
+              <div className="border border-gray-200 rounded-2xl p-6 space-y-5 bg-gray-50">
                 <div className="flex gap-4">
-                  <div className="w-20 h-24 rounded border border-slate-200 bg-white overflow-hidden flex-shrink-0">
-                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="flex items-center justify-center h-full text-slate-300 text-2xl">?</span>}
+                  <div className="w-20 h-24 rounded-xl border border-gray-200 bg-white overflow-hidden flex-shrink-0">
+                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="flex items-center justify-center h-full text-gray-300 text-2xl">?</span>}
                   </div>
                   <div className="flex-1">
-                    <p className="text-xl font-bold text-slate-900">{info.lastName} {info.firstName}</p>
-                    <p className="text-sm text-slate-600">{contact.email} {contact.phone && "| " + contact.phone}</p>
-                    {contact.address && <p className="text-sm text-slate-500">{contact.address}</p>}
-                    <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded mt-1.5 inline-block font-medium">{template}</span>
+                    <p className="text-xl font-bold text-gray-800">{info.lastName} {info.firstName}</p>
+                    <p className="text-sm text-gray-500">{contact.email} {contact.phone && "| " + contact.phone}</p>
+                    {contact.address && <p className="text-sm text-gray-400">{contact.address}</p>}
+                    <span className="text-xs bg-violet-50 text-violet-600 border border-violet-100 px-2 py-0.5 rounded-lg mt-1.5 inline-block font-medium">{template}</span>
                   </div>
                 </div>
-                {info.about && <p className="text-sm text-slate-600 border-t border-slate-200 pt-3">{info.about}</p>}
+                {info.about && <p className="text-sm text-gray-500 border-t border-gray-200 pt-3">{info.about}</p>}
                 {educations.some(function(e) { return e.school; }) && (
-                  <div className="border-t border-slate-200 pt-3">
-                    <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Боловсрол</p>
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Боловсрол</p>
                     {educations.filter(function(e) { return e.school; }).map(function(e, i) {
-                      return <p key={i} className="text-sm text-slate-700">{e.school} — {e.major}</p>;
+                      return <p key={i} className="text-sm text-gray-700">{e.school} — {e.major}</p>;
                     })}
                   </div>
                 )}
                 {experiences.some(function(e) { return e.company; }) && (
-                  <div className="border-t border-slate-200 pt-3">
-                    <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Ажлын туршлага</p>
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Ажлын туршлага</p>
                     {experiences.filter(function(e) { return e.company; }).map(function(e, i) {
-                      return <p key={i} className="text-sm text-slate-700">{e.company} — {e.position}</p>;
+                      return <p key={i} className="text-sm text-gray-700">{e.company} — {e.position}</p>;
                     })}
                   </div>
                 )}
                 {selectedPersonal.length > 0 && (
-                  <div className="border-t border-slate-200 pt-3">
-                    <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Ур чадвар</p>
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Ур чадвар</p>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedPersonal.concat(selectedTech).concat(selectedProf).map(function(s) {
-                        return <span key={s} className="text-xs px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700">{s}</span>;
+                        return <span key={s} className="text-xs px-2 py-0.5 rounded-lg bg-white border border-gray-200 text-gray-700">{s}</span>;
                       })}
                     </div>
                   </div>
                 )}
                 {awards.some(function(a) { return a.name; }) && (
-                  <div className="border-t border-slate-200 pt-3">
-                    <p className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wide">Шагнал</p>
+                  <div className="border-t border-gray-200 pt-3">
+                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Шагнал</p>
                     {awards.filter(function(a) { return a.name; }).map(function(a, i) {
-                      return <p key={i} className="text-sm text-slate-700">{a.name} ({a.year})</p>;
+                      return <p key={i} className="text-sm text-gray-700">{a.name} ({a.year})</p>;
                     })}
                   </div>
                 )}
@@ -603,20 +589,20 @@ export default function CVBuilder() {
           )}
 
           {/* Footer actions */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-slate-200">
+          <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
             {step > 1 ? (
-              <button type="button" onClick={function() { setStep(step - 1); }} className="px-5 py-2.5 bg-white border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition">← Буцах</button>
+              <button type="button" onClick={function() { setStep(step - 1); }} className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">← Буцах</button>
             ) : (
-              <Link to="/cv" className="px-5 py-2.5 bg-white border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 transition">Цуцлах</Link>
+              <Link to="/cv" className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Цуцлах</Link>
             )}
             {step < 12 ? (
-              <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">Дараагийн →</button>
+              <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">Дараагийн →</button>
             ) : (
-              <button type="button" onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] disabled:opacity-50 transition">{saving ? "Хадгалж байна..." : "CV хадгалах"}</button>
+              <button type="button" onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">{saving ? "Хадгалж байна..." : "CV хадгалах"}</button>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

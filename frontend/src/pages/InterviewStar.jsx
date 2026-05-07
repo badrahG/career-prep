@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import Layout from "../components/Layout";
 
 export default function InterviewStar() {
   var [questions, setQuestions] = useState([]);
@@ -13,14 +14,11 @@ export default function InterviewStar() {
 
   useEffect(function () {
     API.get("/interview/behavioral")
-      .then(function (res) {
-        setQuestions(res.data);
-      })
+      .then(function (res) { setQuestions(res.data); })
       .catch(function () { toast.error("Ачаалахад алдаа"); })
       .finally(function () { setLoading(false); });
   }, []);
 
-  // Load saved answers from localStorage
   useEffect(function () {
     var saved = localStorage.getItem("star_answers");
     if (saved) {
@@ -28,7 +26,6 @@ export default function InterviewStar() {
     }
   }, []);
 
-  // Load current question's saved answer when navigating
   useEffect(function () {
     var q = questions[currentIndex];
     if (!q) return;
@@ -83,99 +80,79 @@ export default function InterviewStar() {
 
   var starFields = [
     { key: "situation", letter: "S", name: "Situation (Нөхцөл байдал)", placeholder: "Ямар нөхцөлд байсан бэ? Хаана, хэзээ, ямар орчин байсан...", color: "bg-blue-50 border-blue-200 text-blue-700" },
-    { key: "task", letter: "T", name: "Task (Үүрэг)", placeholder: "Таны даалгавар, үүрэг, зорилт юу байсан бэ?...", color: "bg-purple-50 border-purple-200 text-purple-700" },
-    { key: "action", letter: "A", name: "Action (Хийсэн үйлдэл)", placeholder: "Та тодорхой юу хийсэн бэ? Яаж шийдсэн бэ?...", color: "bg-amber-50 border-amber-200 text-amber-700" },
-    { key: "result", letter: "R", name: "Result (Үр дүн)", placeholder: "Ямар үр дүн гарсан бэ? Тоон үзүүлэлт оруулж чадвал сайн...", color: "bg-emerald-50 border-emerald-200 text-emerald-700" },
+    { key: "task",      letter: "T", name: "Task (Үүрэг)",              placeholder: "Таны даалгавар, үүрэг, зорилт юу байсан бэ?...",               color: "bg-purple-50 border-purple-200 text-purple-700" },
+    { key: "action",    letter: "A", name: "Action (Хийсэн үйлдэл)",    placeholder: "Та тодорхой юу хийсэн бэ? Яаж шийдсэн бэ?...",                color: "bg-amber-50 border-amber-200 text-amber-700" },
+    { key: "result",    letter: "R", name: "Result (Үр дүн)",            placeholder: "Ямар үр дүн гарсан бэ? Тоон үзүүлэлт оруулж чадвал сайн...", color: "bg-emerald-50 border-emerald-200 text-emerald-700" },
   ];
 
   if (loading) {
-    return <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-400 text-sm">Ачааллаж байна...</div>;
+    return (
+      <Layout>
+        <div className="p-5 md:p-6 flex items-center justify-center min-h-[60vh]">
+          <div className="text-gray-400 text-sm">Ачааллаж байна...</div>
+        </div>
+      </Layout>
+    );
   }
 
   if (questions.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4 p-6">
-        <p className="text-slate-600 text-sm">Зан үйлийн асуулт олдсонгүй.</p>
-        <Link to="/interview" className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">← Горимууд руу буцах</Link>
-      </div>
+      <Layout>
+        <div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <p className="text-gray-500 text-sm">Зан үйлийн асуулт олдсонгүй.</p>
+          <Link to="/interview" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">← Горимууд руу буцах</Link>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
-
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <Link to="/interview" className="text-sm text-slate-600 hover:text-slate-900 font-medium">← Горимууд</Link>
+    <Layout>
+      <div className="p-5 md:p-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+          <Link to="/interview" className="hover:text-violet-600 transition">Ярилцлага</Link>
+          <span>/</span>
+          <span className="text-gray-600 font-medium">STAR дадлага</span>
+          <span className="ml-auto text-gray-400">Дуусгасан: <span className="font-semibold text-violet-600">{answeredCount}</span> / {questions.length}</span>
         </div>
-      </nav>
 
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 py-3 text-xs text-slate-500 flex items-center justify-between">
-          <div>
-            <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-            <span className="mx-2">/</span>
-            <Link to="/interview" className="hover:text-slate-900">Ярилцлага</Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-900 font-medium">STAR дадлага</span>
-          </div>
-          <span className="text-slate-500">Дуусгасан: <span className="font-semibold text-[#1e3a8a]">{answeredCount}</span> / {questions.length}</span>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="mb-6 pb-6 border-b border-slate-200">
-          <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-1">Дадлага горим</p>
-          <h1 className="text-2xl font-bold text-slate-900">STAR арга</h1>
-          <p className="text-sm text-slate-600 mt-1">Зан үйлийн асуултад 4 хэсэгт хариулж, мэргэжилтний жишээтэй харьцуулна уу.</p>
+        <div className="mb-5">
+          <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Дадлага горим</p>
+          <h1 className="text-xl font-bold text-gray-800">STAR арга</h1>
+          <p className="text-sm text-gray-500 mt-1">Зан үйлийн асуултад 4 хэсэгт хариулж, мэргэжилтний жишээтэй харьцуулна уу.</p>
         </div>
 
         {/* Progress */}
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-2 text-xs text-slate-500">
+          <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
             <span>Асуулт {currentIndex + 1} / {questions.length}</span>
             <span>{progress}% бөглөсөн</span>
           </div>
-          <div className="w-full bg-slate-100 rounded-full h-1.5">
-            <div className="bg-[#1e3a8a] rounded-full h-1.5 transition-all duration-300" style={{ width: progress + "%" }}></div>
+          <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full h-1.5 transition-all duration-300" style={{ width: progress + "%" }} />
           </div>
         </div>
 
         {/* Question */}
-        <div className="bg-white border-2 border-[#1e3a8a] rounded mb-6">
+        <div className="bg-white border-2 border-violet-400 rounded-2xl mb-5">
           <div className="p-6">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Асуулт</p>
-            <h2 className="text-lg md:text-xl font-bold text-slate-900 leading-relaxed">{currentQuestion.question_mn}</h2>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Асуулт</p>
+            <h2 className="text-lg md:text-xl font-bold text-gray-800 leading-relaxed">{currentQuestion.question_mn}</h2>
           </div>
         </div>
 
         {/* STAR form */}
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4 mb-5">
           {starFields.map(function (field) {
             return (
-              <div key={field.key} className="bg-white border border-slate-200 rounded overflow-hidden">
-                <div className={"px-5 py-3 border-b border-slate-200 flex items-center gap-3 " + field.color}>
-                  <div className="w-8 h-8 bg-white border-2 border-current rounded flex items-center justify-center font-bold text-sm flex-shrink-0">
+              <div key={field.key} className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+                <div className={"px-5 py-3 border-b border-gray-100 flex items-center gap-3 " + field.color}>
+                  <div className="w-8 h-8 bg-white border-2 border-current rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
                     {field.letter}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold">{field.name}</p>
-                  </div>
+                  <p className="text-sm font-semibold flex-1">{field.name}</p>
                   <span className="text-xs opacity-75">{star[field.key].length} тэмдэгт</span>
                 </div>
                 <div className="p-4">
@@ -184,7 +161,7 @@ export default function InterviewStar() {
                     onChange={function (e) { updStar(field.key, e.target.value); }}
                     placeholder={field.placeholder}
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-200 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition resize-vertical"
+                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition resize-vertical"
                   />
                 </div>
               </div>
@@ -193,42 +170,30 @@ export default function InterviewStar() {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-          <div className="flex gap-2">
-            <button
-              onClick={saveAnswer}
-              className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition"
-            >
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div className="flex gap-2 flex-wrap">
+            <button onClick={saveAnswer}
+              className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
               Хадгалах
             </button>
-            <button
-              onClick={function () { setShowSample(!showSample); }}
-              className="px-5 py-2.5 border border-amber-300 text-amber-700 rounded text-sm font-semibold hover:bg-amber-50 transition"
-            >
+            <button onClick={function () { setShowSample(!showSample); }}
+              className="px-5 py-2.5 border border-amber-300 text-amber-700 rounded-xl text-sm font-semibold hover:bg-amber-50 transition">
               {showSample ? "Жишээг нуух" : "💡 Мэргэжилтний жишээ харах"}
             </button>
             {totalChars > 0 && (
-              <button
-                onClick={clearAnswer}
-                className="px-4 py-2.5 border border-slate-300 text-slate-600 rounded text-sm font-medium hover:bg-slate-50 transition"
-              >
+              <button onClick={clearAnswer}
+                className="px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
                 Цэвэрлэх
               </button>
             )}
           </div>
           <div className="flex gap-2">
-            <button
-              onClick={goPrev}
-              disabled={currentIndex === 0}
-              className="px-4 py-2.5 border border-slate-300 bg-white rounded text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
-            >
+            <button onClick={goPrev} disabled={currentIndex === 0}
+              className="px-4 py-2.5 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
               ← Өмнөх
             </button>
-            <button
-              onClick={goNext}
-              disabled={currentIndex === questions.length - 1}
-              className="px-4 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] disabled:opacity-40 disabled:cursor-not-allowed transition"
-            >
+            <button onClick={goNext} disabled={currentIndex === questions.length - 1}
+              className="px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition">
               Дараах →
             </button>
           </div>
@@ -236,7 +201,7 @@ export default function InterviewStar() {
 
         {/* Expert sample */}
         {showSample && currentQuestion.sample_answer && (
-          <div className="bg-white border-2 border-amber-300 rounded mb-6">
+          <div className="bg-white border-2 border-amber-300 rounded-2xl shadow-sm mb-5 overflow-hidden">
             <div className="px-6 py-4 bg-amber-50 border-b border-amber-200">
               <h3 className="text-base font-bold text-amber-900 flex items-center gap-2">
                 <span>💡</span>
@@ -245,10 +210,9 @@ export default function InterviewStar() {
               <p className="text-xs text-amber-800 mt-0.5">Өөрийн хариулттайгаа харьцуулж, сайжруулах боломжоо ол.</p>
             </div>
             <div className="p-6">
-              <p className="text-sm text-slate-800 leading-relaxed whitespace-pre-line">{currentQuestion.sample_answer}</p>
-
+              <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-line">{currentQuestion.sample_answer}</p>
               {currentQuestion.advice && (
-                <div className="mt-4 bg-amber-50 border border-amber-200 rounded p-4">
+                <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
                   <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1.5">Зөвлөмж</p>
                   <p className="text-sm text-amber-900 leading-relaxed">{currentQuestion.advice}</p>
                 </div>
@@ -258,35 +222,31 @@ export default function InterviewStar() {
         )}
 
         {/* Question selector grid */}
-        <div className="bg-white border border-slate-200 rounded p-5">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Асуулт сонгох</p>
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Асуулт сонгох</p>
           <div className="flex flex-wrap gap-2">
             {questions.map(function (q, i) {
               var isAnswered = savedAnswers[q.id];
               var isCurrent = i === currentIndex;
               return (
-                <button
-                  key={q.id}
-                  onClick={function () { setCurrentIndex(i); }}
-                  title={q.question_mn}
-                  className={"w-9 h-9 rounded text-xs font-semibold transition " + (
-                    isCurrent ? "bg-[#1e3a8a] text-white" :
+                <button key={q.id} onClick={function () { setCurrentIndex(i); }} title={q.question_mn}
+                  className={"w-9 h-9 rounded-lg text-xs font-semibold transition " + (
+                    isCurrent ? "bg-violet-600 text-white" :
                     isAnswered ? "bg-emerald-100 text-emerald-700 border border-emerald-300" :
-                    "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
-                  )}
-                >
+                    "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200"
+                  )}>
                   {i + 1}
                 </button>
               );
             })}
           </div>
-          <div className="mt-3 flex gap-4 text-xs text-slate-500">
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-[#1e3a8a] rounded"></span>Одоо</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded"></span>Хадгалсан</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-slate-100 border border-slate-200 rounded"></span>Хоосон</span>
+          <div className="mt-3 flex gap-4 text-xs text-gray-400">
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-violet-600 rounded-sm" />Одоо</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded-sm" />Хадгалсан</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-100 border border-gray-200 rounded-sm" />Хоосон</span>
           </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

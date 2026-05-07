@@ -182,13 +182,17 @@ def reset_flashcard_progress(db: Session = Depends(get_db), current_user: User =
 
 @router.post("/questions/{qid}/viewed")
 def mark_question_viewed(qid: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    from datetime import datetime, timezone
     existing = db.query(UserFlashcardProgress).filter(
         UserFlashcardProgress.user_id == current_user.id,
         UserFlashcardProgress.question_id == qid,
     ).first()
     if not existing:
         db.add(UserFlashcardProgress(user_id=current_user.id, question_id=qid))
-        db.commit()
+    else:
+        # Дахин судалсан тохиолдолд viewed_at шинэчилнэ — өнөөдрийн activity-д харагдана
+        existing.viewed_at = datetime.now(timezone.utc)
+    db.commit()
     return {"ok": True}
 
 

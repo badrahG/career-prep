@@ -98,7 +98,7 @@ export default function Profile() {
 
   return (
     <Layout>
-      <div className="p-5 md:p-6 max-w-3xl">
+      <div className="p-5 md:p-6 max-w-3xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Миний профайл</h1>
           <p className="text-sm text-gray-500 mt-1">Хувийн мэдээллээ харах, засах.</p>

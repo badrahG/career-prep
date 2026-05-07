@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
+import Layout from "../components/Layout";
+
+var ADMIN_TABS = [
+  { to: "/admin/dashboard",   label: "Самбар" },
+  { to: "/admin/users",       label: "Хэрэглэгчид" },
+  { to: "/admin/interview",   label: "Ярилцлага" },
+  { to: "/admin/advice",      label: "Зөвлөмж" },
+  { to: "/admin/scholarship", label: "Тэтгэлэг" },
+];
 
 function emptyForm() {
   return {
-    name: "",
-    organization: "",
-    target: "",
-    requirements: "",
-    deadline: "",
-    website_url: "",
-    description: "",
-    image_url: "",
-    gpa: "",
-    duration: "",
+    name: "", organization: "", target: "", requirements: "",
+    deadline: "", website_url: "", description: "", image_url: "", gpa: "", duration: "",
   };
 }
 
 export default function AdminScholarship() {
+  var location = useLocation();
   var [scholarships, setScholarships] = useState([]);
   var [loading, setLoading] = useState(true);
   var [showModal, setShowModal] = useState(false);
@@ -45,24 +47,14 @@ export default function AdminScholarship() {
   function openEdit(s) {
     setEditingId(s.id);
     setForm({
-      name: s.name || "",
-      organization: s.organization || "",
-      target: s.target || "",
-      requirements: s.requirements || "",
-      deadline: s.deadline || "",
-      website_url: s.website_url || "",
-      description: s.description || "",
-      image_url: s.image_url || "",
-      gpa: s.gpa || "",
-      duration: s.duration || "",
+      name: s.name || "", organization: s.organization || "", target: s.target || "",
+      requirements: s.requirements || "", deadline: s.deadline || "", website_url: s.website_url || "",
+      description: s.description || "", image_url: s.image_url || "", gpa: s.gpa || "", duration: s.duration || "",
     });
     setShowModal(true);
   }
 
-  function closeModal() {
-    setShowModal(false);
-    setEditingId(null);
-  }
+  function closeModal() { setShowModal(false); setEditingId(null); }
 
   function upd(field, value) {
     setForm(function (p) { return { ...p, [field]: value }; });
@@ -70,20 +62,13 @@ export default function AdminScholarship() {
 
   async function handleSave() {
     if (!form.name.trim()) { toast.error("Тэтгэлгийн нэр заавал бичих ёстой"); return; }
-
     var payload = {
       ...form,
-      deadline: form.deadline || null,
-      organization: form.organization || null,
-      target: form.target || null,
-      requirements: form.requirements || null,
-      website_url: form.website_url || null,
-      description: form.description || null,
-      image_url: form.image_url || null,
-      gpa: form.gpa || null,
-      duration: form.duration || null,
+      deadline: form.deadline || null, organization: form.organization || null,
+      target: form.target || null, requirements: form.requirements || null,
+      website_url: form.website_url || null, description: form.description || null,
+      image_url: form.image_url || null, gpa: form.gpa || null, duration: form.duration || null,
     };
-
     try {
       if (editingId) {
         await API.put("/scholarship/" + editingId, payload);
@@ -149,164 +134,129 @@ export default function AdminScholarship() {
     URL.revokeObjectURL(url);
   }
 
-  var inputCls = "w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition";
-  var labelCls = "block text-xs font-semibold text-slate-700 mb-1.5 uppercase tracking-wide";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
+  var labelCls = "block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
+    <Layout>
+      <div className="p-5 md:p-6 space-y-6">
 
-      {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-1 text-sm">
-            <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
-            <Link to="/admin/users" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Хэрэглэгч</Link>
-            <Link to="/admin/interview" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Ярилцлага</Link>
-            <Link to="/admin/advice" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Зөвлөмж</Link>
-            <Link to="/admin/scholarship" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Тэтгэлэг</Link>
-          </div>
-          <button onClick={openCreate} className="bg-[#1e3a8a] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#1e40af] transition">
-            + Тэтгэлэг
-          </button>
+        {/* Admin tabs */}
+        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6">
+          {ADMIN_TABS.map(function (tab) {
+            var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
+            return (
+              <Link key={tab.to} to={tab.to}
+                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                {tab.label}
+              </Link>
+            );
+          })}
         </div>
-      </nav>
 
-      {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-3 text-xs text-slate-500 flex items-center justify-between">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-            <span className="mx-2">/</span>
-            <span className="text-slate-900 font-medium">Админ — Тэтгэлэг</span>
+            <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Админ</p>
+            <h1 className="text-xl font-bold text-gray-800">Тэтгэлгийн удирдлага</h1>
+            <p className="text-sm text-gray-500 mt-1">Тэтгэлгүүдийг нэмэж, засаж, устгана уу.</p>
           </div>
-          <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-medium">Админ горим</span>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200 flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Тэтгэлгийн удирдлага</h1>
-            <p className="text-sm text-slate-600 mt-1">Тэтгэлгүүдийг нэмэж, засаж, устгана уу.</p>
+          <div className="flex gap-2 flex-shrink-0">
+            <button onClick={exportCSV} className="px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
+              CSV татах
+            </button>
+            <button onClick={openCreate} className="px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+              + Тэтгэлэг
+            </button>
           </div>
-          <button
-            onClick={exportCSV}
-            className="text-sm border border-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-50 transition font-medium flex-shrink-0"
-          >
-            CSV татах
-          </button>
         </div>
 
+        {/* Bulk action bar */}
         {selected.length > 0 && (
-          <div className="mb-4 flex items-center gap-3 bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 rounded px-4 py-2.5">
-            <span className="text-sm font-semibold text-[#1e3a8a]">{selected.length} сонгосон</span>
-            <button
-              onClick={handleBulkDelete}
-              className="text-sm border border-red-300 text-red-600 hover:bg-red-50 px-3 py-1 rounded font-medium transition"
-            >
+          <div className="flex items-center gap-3 bg-violet-50 border border-violet-200 rounded-xl px-4 py-2.5">
+            <span className="text-sm font-semibold text-violet-700">{selected.length} сонгосон</span>
+            <button onClick={handleBulkDelete}
+              className="text-sm border border-red-200 text-red-600 hover:bg-red-50 px-3 py-1 rounded-lg font-medium transition">
               Устгах
             </button>
-            <button
-              onClick={function () { setSelected([]); }}
-              className="text-sm text-slate-500 hover:text-slate-700 ml-auto"
-            >
+            <button onClick={function () { setSelected([]); }} className="text-sm text-gray-500 hover:text-gray-700 ml-auto">
               Цуцлах
             </button>
           </div>
         )}
 
         {/* List */}
-        <div className="bg-white border border-slate-200 rounded overflow-hidden">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
           {loading ? (
-            <div className="text-center py-20 text-slate-400 text-sm">Ачааллаж байна...</div>
+            <div className="text-center py-20 text-gray-400 text-sm">Ачааллаж байна...</div>
           ) : scholarships.length === 0 ? (
-            <div className="text-center py-20 text-sm text-slate-500">
+            <div className="text-center py-20 text-sm text-gray-500">
               <p className="text-lg mb-2">Тэтгэлэг байхгүй байна</p>
-              <button onClick={openCreate} className="text-[#1e3a8a] font-medium hover:underline">+ Тэтгэлэг нэмэх</button>
+              <button onClick={openCreate} className="text-violet-600 font-medium hover:underline">+ Тэтгэлэг нэмэх</button>
             </div>
           ) : (
-            <div className="divide-y divide-slate-200">
-              <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center gap-3">
+            <div className="divide-y divide-gray-100">
+              <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
                 <input
                   type="checkbox"
                   checked={selected.length === scholarships.length && scholarships.length > 0}
                   onChange={toggleAll}
-                  className="w-4 h-4 accent-[#1e3a8a]"
+                  className="w-4 h-4 accent-violet-600"
                 />
-                <span className="text-xs text-slate-500 font-medium">Бүгдийг сонгох</span>
+                <span className="text-xs text-gray-500 font-medium">Бүгдийг сонгох</span>
               </div>
               {scholarships.map(function (s) {
                 var isSelected = selected.includes(s.id);
                 return (
-                  <div key={s.id} className={"p-5 hover:bg-slate-50 transition " + (isSelected ? "bg-[#1e3a8a]/5" : "")}>
+                  <div key={s.id} className={"p-5 hover:bg-gray-50 transition " + (isSelected ? "bg-violet-50" : "")}>
                     <div className="flex items-start gap-3">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={function () { toggleSelect(s.id); }}
-                        className="w-4 h-4 mt-1 accent-[#1e3a8a] flex-shrink-0"
+                        className="w-4 h-4 mt-1 accent-violet-600 flex-shrink-0"
                       />
-                    <div className="flex-1 flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                          {s.target && (
-                            <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 px-2 py-0.5 rounded font-semibold">
-                              {s.target}
-                            </span>
-                          )}
-                          {s.deadline && (
-                            <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium">
-                              Дуусах: {s.deadline}
-                            </span>
-                          )}
-                          {s.gpa && (
-                            <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-medium">
-                              GPA: {s.gpa}
-                            </span>
-                          )}
+                      <div className="flex-1 flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                            {s.target && (
+                              <span className="text-xs bg-violet-50 text-violet-700 border border-violet-200 px-2 py-0.5 rounded-lg font-semibold">
+                                {s.target}
+                              </span>
+                            )}
+                            {s.deadline && (
+                              <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg font-medium">
+                                Дуусах: {s.deadline}
+                              </span>
+                            )}
+                            {s.gpa && (
+                              <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-lg font-medium">
+                                GPA: {s.gpa}
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="text-base font-bold text-gray-900 mb-0.5">{s.name}</h3>
+                          {s.organization && <p className="text-sm text-gray-500">{s.organization}</p>}
+                          {s.description && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{s.description}</p>}
                         </div>
-                        <h3 className="text-base font-bold text-slate-900 mb-0.5">{s.name}</h3>
-                        {s.organization && <p className="text-sm text-slate-500">{s.organization}</p>}
-                        {s.description && <p className="text-sm text-slate-600 mt-1 line-clamp-2">{s.description}</p>}
+                        <div className="flex gap-1.5 flex-shrink-0">
+                          {s.website_url && (
+                            <a href={s.website_url} target="_blank" rel="noopener noreferrer"
+                              className="text-xs px-3 py-1.5 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition">
+                              Вэбсайт
+                            </a>
+                          )}
+                          <button onClick={function () { openEdit(s); }}
+                            className="text-xs px-3 py-1.5 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition">
+                            Засах
+                          </button>
+                          <button onClick={function () { handleDelete(s); }}
+                            className="text-xs px-3 py-1.5 border border-red-200 text-red-600 hover:bg-red-50 rounded-lg font-medium transition">
+                            Устгах
+                          </button>
+                        </div>
                       </div>
-
-                      <div className="flex gap-1.5 flex-shrink-0">
-                        {s.website_url && (
-                          <a
-                            href={s.website_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded font-medium transition"
-                          >
-                            Вэбсайт
-                          </a>
-                        )}
-                        <button
-                          onClick={function () { openEdit(s); }}
-                          className="text-xs px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded font-medium transition"
-                        >
-                          Засах
-                        </button>
-                        <button
-                          onClick={function () { handleDelete(s); }}
-                          className="text-xs px-3 py-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded font-medium transition"
-                        >
-                          Устгах
-                        </button>
-                      </div>
-                    </div>
                     </div>
                   </div>
                 );
@@ -315,18 +265,18 @@ export default function AdminScholarship() {
           )}
         </div>
 
-        <p className="text-xs text-slate-400 mt-3">Нийт {scholarships.length} тэтгэлэг.</p>
+        <p className="text-xs text-gray-400">Нийт {scholarships.length} тэтгэлэг.</p>
       </div>
 
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-lg max-w-2xl w-full my-8 max-h-[90vh] flex flex-col">
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-slate-900">
+          <div className="bg-white rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] flex flex-col shadow-xl">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-800">
                 {editingId ? "Тэтгэлэг засах" : "Шинэ тэтгэлэг нэмэх"}
               </h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-700 text-xl">✕</button>
+              <button onClick={closeModal} className="text-gray-400 hover:text-gray-700 text-xl leading-none">✕</button>
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto">
@@ -384,17 +334,17 @@ export default function AdminScholarship() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50">
-              <button onClick={closeModal} className="px-5 py-2 border border-slate-300 rounded text-sm font-medium text-slate-700 hover:bg-white transition">
+            <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
+              <button onClick={closeModal} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-white transition">
                 Цуцлах
               </button>
-              <button onClick={handleSave} className="px-6 py-2 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">
+              <button onClick={handleSave} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
                 {editingId ? "Шинэчлэх" : "Үүсгэх"}
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }

@@ -33,6 +33,7 @@ const NAV = [
   { label: "Зөвлөмж",  link: "/advice",      icon: "advice" },
   { label: "Тэтгэлэг", link: "/scholarship", icon: "scholarship" },
   { label: "Профайл",  link: "/profile",     icon: "profile" },
+  { label: "CV Анализ", link: "/cv-analysis", icon: "analyze" },
 ];
 
 export default function Layout({ children }) {
@@ -51,7 +52,7 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-[#f3f4f6] overflow-hidden">
 
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -60,29 +61,21 @@ export default function Layout({ children }) {
 
       {/* Sidebar */}
       <aside className={
-        "fixed top-0 left-0 h-full z-30 flex flex-col bg-white border-r border-gray-100 shadow-sm transition-transform duration-300 w-60 " +
+        "fixed top-0 left-0 h-full z-30 flex flex-col bg-white border-r border-gray-100 transition-transform duration-300 w-[220px] " +
         (sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")
       }>
         {/* Logo */}
-        <div className="px-5 py-5 flex items-center justify-between">
-          <Link to="/dashboard" className="flex items-center gap-2.5" onClick={function () { setSidebarOpen(false); }}>
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center shadow">
-              <span className="text-white font-bold text-xs">CP</span>
-            </div>
-            <span className="text-base font-bold text-gray-800">CareerPrep</span>
+        <div className="px-5 pt-6 pb-5 flex items-center gap-2.5">
+          <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+            <span className="text-white font-bold text-xs">CP</span>
+          </div>
+          <Link to="/dashboard" onClick={function () { setSidebarOpen(false); }}
+            className="text-[15px] font-bold text-gray-900 tracking-tight">
+            CareerPrep
           </Link>
-          <button className="lg:hidden text-gray-400" onClick={function () { setSidebarOpen(false); }}>
-            <Icon d={ICONS.close} />
+          <button className="lg:hidden ml-auto text-gray-400 hover:text-gray-600" onClick={function () { setSidebarOpen(false); }}>
+            <Icon d={ICONS.close} size={16} />
           </button>
-        </div>
-
-        {/* CTA */}
-        <div className="px-4 mb-4">
-          <Link to="/cv/new" onClick={function () { setSidebarOpen(false); }}
-            className="flex items-center justify-center gap-2 w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow hover:shadow-md transition"
-          >
-            <span className="text-lg leading-none">+</span> Шинэ CV үүсгэх
-          </Link>
         </div>
 
         {/* Nav */}
@@ -91,65 +84,82 @@ export default function Layout({ children }) {
             var active = isActive(item.link);
             return (
               <Link key={item.link} to={item.link} onClick={function () { setSidebarOpen(false); }}
-                className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition " +
-                  (active ? "bg-violet-50 text-violet-700" : "text-gray-600 hover:bg-gray-50 hover:text-gray-900")}
+                className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition " +
+                  (active
+                    ? "bg-gray-100 text-gray-900 font-semibold"
+                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-medium")}
               >
-                <span className={active ? "text-violet-600" : "text-gray-400"}><Icon d={ICONS[item.icon]} /></span>
+                <span className={active ? "text-gray-800" : "text-gray-400"}>
+                  <Icon d={ICONS[item.icon]} size={18} />
+                </span>
                 {item.label}
-                {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-600" />}
               </Link>
             );
           })}
           {isAdmin && (
             <Link to="/admin/users" onClick={function () { setSidebarOpen(false); }}
-              className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition " +
-                (location.pathname.startsWith("/admin") ? "bg-violet-50 text-violet-700" : "text-gray-600 hover:bg-gray-50")}
+              className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition " +
+                (location.pathname.startsWith("/admin")
+                  ? "bg-gray-100 text-gray-900 font-semibold"
+                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-medium")}
             >
-              <span className="text-gray-400"><Icon d={ICONS.admin} /></span>
+              <span className="text-gray-400"><Icon d={ICONS.admin} size={18} /></span>
               Админ
             </Link>
           )}
         </nav>
 
-        {/* CV Analysis promo */}
-        <div className="px-4 pb-5">
-          <Link to="/cv-analysis" onClick={function () { setSidebarOpen(false); }}
-            className="block rounded-2xl p-4 bg-gradient-to-br from-violet-600 to-indigo-700 text-white shadow-lg hover:shadow-xl transition"
+        {/* Help + Logout */}
+        <div className="px-3 pb-5 space-y-0.5">
+          <Link to="/profile" onClick={function () { setSidebarOpen(false); }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition"
           >
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center mb-3">
-              <Icon d={ICONS.analyze} size={16} />
-            </div>
-            <p className="text-sm font-semibold mb-0.5">CV Анализ</p>
-            <p className="text-xs opacity-75">AI-ийн тусламжтай CV-г сайжруул</p>
+            <span className="text-gray-400">
+              <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </span>
+            Тусламж
           </Link>
+          <button
+            onClick={function () { logout(); window.location.href = "/login"; }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-500 transition w-full text-left"
+          >
+            <span className="text-gray-400">
+              <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </span>
+            Гарах
+          </button>
         </div>
       </aside>
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:ml-60">
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-[220px]">
 
         {/* Top header */}
-        <header className="bg-white border-b border-gray-100 px-5 py-3 flex items-center gap-4 sticky top-0 z-10 shadow-sm">
-          <button className="lg:hidden text-gray-500 p-1" onClick={function () { setSidebarOpen(true); }}>
+        <header className="bg-white border-b border-gray-100 px-6 py-3.5 flex items-center gap-3 sticky top-0 z-10">
+          <button className="lg:hidden text-gray-500" onClick={function () { setSidebarOpen(true); }}>
             <Icon d={ICONS.menu} size={20} />
           </button>
 
-          <div className="flex-1 max-w-sm hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2">
-            <span className="text-gray-400"><Icon d={ICONS.search} size={16} /></span>
-            <input type="text" readOnly placeholder="Хайх..."
-              className="bg-transparent text-sm text-gray-500 outline-none w-full cursor-default" />
-          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 hover:border-violet-300 transition group cursor-default">
+              <span className="text-gray-400 group-hover:text-violet-500 transition"><Icon d={ICONS.search} size={14} /></span>
+              <span className="text-sm text-gray-400 w-24 text-left">Хайх...</span>
+              <kbd className="text-[10px] text-gray-300 bg-gray-100 px-1.5 py-0.5 rounded font-medium">Ctrl K</kbd>
+            </div>
 
-          <div className="flex items-center gap-3 ml-auto">
-            <button className="w-9 h-9 bg-gray-50 hover:bg-gray-100 rounded-xl flex items-center justify-center text-gray-500 transition">
-              <Icon d={ICONS.bell} size={18} />
+            <button className="w-9 h-9 bg-gray-50 hover:bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 transition border border-gray-200">
+              <Icon d={ICONS.bell} size={16} />
             </button>
 
             <div className="relative">
               <button onClick={function () { setUserMenuOpen(!userMenuOpen); }}
                 className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1.5 rounded-xl transition">
-                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center shadow-sm">
-                  <span className="text-white font-semibold text-sm">{initial}</span>
+                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
+                  <span className="text-white font-bold text-sm">{initial}</span>
                 </div>
                 <span className="text-sm font-medium text-gray-700 hidden md:block">{firstName}</span>
                 <span className="text-gray-400 text-xs">▾</span>
@@ -157,22 +167,22 @@ export default function Layout({ children }) {
 
               {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-lg py-2 z-20">
-                  <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                  <div className="px-4 py-2.5 border-b border-gray-100 mb-1">
                     <p className="text-sm font-semibold text-gray-800">{user?.last_name} {user?.first_name}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
-                    {isAdmin && <span className="text-xs px-2 py-0.5 mt-1 inline-block rounded-full bg-violet-100 text-violet-700 font-medium">Админ</span>}
+                    <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
+                    {isAdmin && <span className="text-xs px-2 py-0.5 mt-1.5 inline-block rounded-full bg-violet-100 text-violet-700 font-medium">Админ</span>}
                   </div>
                   <Link to="/profile" onClick={function () { setUserMenuOpen(false); }}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
                     <Icon d={ICONS.profile} size={15} /> Профайл
                   </Link>
                   <Link to="/cv" onClick={function () { setUserMenuOpen(false); }}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
                     <Icon d={ICONS.cv} size={15} /> Миний CV
                   </Link>
                   <div className="border-t border-gray-100 my-1" />
                   <button onClick={function () { logout(); window.location.href = "/login"; }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50">
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition">
                     <Icon d={ICONS.logout} size={15} /> Гарах
                   </button>
                 </div>

@@ -287,33 +287,51 @@ def get_dashboard_stats(db: Session = Depends(get_db), current_user: User = Depe
 
 @router.get("/activity")
 def get_activity(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    from datetime import datetime, timezone, date as date_type
     from app.models.cv import CV
     from app.models.progress import UserQuizResult, UserFlashcardProgress
     from app.models.scholarship_checklist import UserScholarshipChecklist
     from app.models.audit_log import AuditLog
     from sqlalchemy import func as sqlfunc, cast, Date
 
+    _EPOCH = datetime.min.replace(tzinfo=timezone.utc)
+
+    def _aware(dt) -> datetime:
+        """Ensure datetime is timezone-aware UTC."""
+        if dt is None:
+            return _EPOCH
+        if isinstance(dt, date_type) and not isinstance(dt, datetime):
+            return datetime(dt.year, dt.month, dt.day, tzinfo=timezone.utc)
+        if dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+
     events = []
 
     for cv in db.query(CV).filter(CV.user_id == current_user.id).all():
-        events.append({"type": "cv", "label": "CV үүсгэсэн", "detail": cv.name, "ts": cv.created_at})
+        events.append({"type": "cv", "label": "CV үүсгэсэн", "detail": cv.name, "ts": _aware(cv.created_at)})
 
     for qr in db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).all():
-        events.append({"type": "quiz", "label": "Quiz дүүргэсэн", "detail": f"{qr.correct}/{qr.total} ({int(qr.percentage)}%)", "ts": qr.created_at})
+        events.append({
+            "type": "quiz",
+            "label": "Quiz дүүргэсэн",
+            "detail": f"{qr.correct}/{qr.total} ({int(qr.percentage)}%)",
+            "ts": _aware(qr.created_at),
+        })
 
     flashcard_days = (
         db.query(cast(UserFlashcardProgress.viewed_at, Date), sqlfunc.count(UserFlashcardProgress.id))
         .filter(UserFlashcardProgress.user_id == current_user.id)
         .group_by(cast(UserFlashcardProgress.viewed_at, Date))
+        .order_by(cast(UserFlashcardProgress.viewed_at, Date).desc())
         .all()
     )
     for day, cnt in flashcard_days:
-        from datetime import datetime, timezone
-        ts = datetime.combine(day, datetime.min.time()).replace(tzinfo=timezone.utc)
+        ts = datetime(day.year, day.month, day.day, tzinfo=timezone.utc)
         events.append({"type": "flashcard", "label": "Flashcard судалсан", "detail": f"{cnt} асуулт", "ts": ts})
 
     for cl in db.query(UserScholarshipChecklist).filter(UserScholarshipChecklist.user_id == current_user.id).all():
-        events.append({"type": "checklist", "label": "Тэтгэлгийн checklist", "detail": "Шинэчилсэн", "ts": cl.updated_at})
+        events.append({"type": "checklist", "label": "Тэтгэлгийн checklist", "detail": "Шинэчилсэн", "ts": _aware(cl.updated_at)})
 
     for log in (
         db.query(AuditLog)
@@ -323,12 +341,17 @@ def get_activity(db: Session = Depends(get_db), current_user: User = Depends(get
         .all()
     ):
         label = "Системд нэвтэрсэн" if log.action == "login" else "Профайл шинэчилсэн"
-        events.append({"type": log.action, "label": label, "detail": None, "ts": log.created_at})
+        events.append({"type": log.action, "label": label, "detail": None, "ts": _aware(log.created_at)})
 
-    events.sort(key=lambda e: e["ts"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
+    events.sort(key=lambda e: e["ts"], reverse=True)
 
     return [
-        {"type": e["type"], "label": e["label"], "detail": e["detail"], "created_at": e["ts"].isoformat() if e["ts"] else None}
+        {
+            "type": e["type"],
+            "label": e["label"],
+            "detail": e["detail"],
+            "created_at": e["ts"].isoformat() if e["ts"] != _EPOCH else None,
+        }
         for e in events[:15]
     ]
 

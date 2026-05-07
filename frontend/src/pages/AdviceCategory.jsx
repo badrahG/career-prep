@@ -5,6 +5,7 @@ import API from "../services/api";
 import toast from "react-hot-toast";
 import { ListSkeleton } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
+import Layout from "../components/Layout";
 
 export default function AdviceCategory() {
   var params = useParams();
@@ -17,10 +18,10 @@ export default function AdviceCategory() {
   var [search, setSearch] = useState("");
 
   var CATEGORY_META = {
-    cv: { title: "CV бичих зөвлөмж", subtitle: "CV Writing", color: "bg-blue-600" },
-    interview: { title: "Ярилцлагын зөвлөмж", subtitle: "Interview Tips", color: "bg-purple-600" },
-    job_search: { title: "Ажил олох", subtitle: "Job Search", color: "bg-emerald-600" },
-    career: { title: "Карьерын зөвлөмж", subtitle: "Career Growth", color: "bg-amber-600" },
+    cv:          { title: "CV бичих зөвлөмж",    subtitle: "CV Writing",    color: "bg-blue-600" },
+    interview:   { title: "Ярилцлагын зөвлөмж",  subtitle: "Interview Tips",color: "bg-purple-600" },
+    job_search:  { title: "Ажил олох",            subtitle: "Job Search",    color: "bg-emerald-600" },
+    career:      { title: "Карьерын зөвлөмж",     subtitle: "Career Growth", color: "bg-amber-600" },
   };
 
   var meta = CATEGORY_META[categoryKey];
@@ -41,70 +42,57 @@ export default function AdviceCategory() {
 
   if (!meta) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center gap-4">
-        <p className="text-slate-600 text-sm">Буруу категори.</p>
-        <Link to="/advice" className="px-5 py-2.5 bg-[#1e3a8a] text-white rounded text-sm font-semibold hover:bg-[#1e40af] transition">← Зөвлөмжүүд</Link>
-      </div>
+      <Layout>
+        <div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <p className="text-gray-500 text-sm">Буруу категори.</p>
+          <Link to="/advice" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">← Зөвлөмжүүд</Link>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-400/10 rounded-full blur-2xl"></div>
-      </div>
-
-      <nav className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
-          <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
-              <span className="text-white font-bold text-xs tracking-wide">CP</span>
-            </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-1 text-sm">
-            <Link to="/dashboard" className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium">Нүүр</Link>
-            <Link to="/advice" className="px-3 py-2 text-slate-900 font-medium border-b-2 border-[#1e3a8a]">Зөвлөмж</Link>
-          </div>
-          <Link to="/advice" className="text-sm text-slate-600 hover:text-slate-900 font-medium">← Сэдвүүд</Link>
+    <Layout>
+      <div className="p-5 md:p-6">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+          <Link to="/advice" className="hover:text-violet-600 transition">Зөвлөмж</Link>
+          <span>/</span>
+          <span className="text-gray-700 font-medium">{meta.title}</span>
         </div>
-      </nav>
 
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto px-6 py-3 text-xs text-slate-500">
-          <Link to="/dashboard" className="hover:text-slate-900">Нүүр</Link>
-          <span className="mx-2">/</span>
-          <Link to="/advice" className="hover:text-slate-900">Зөвлөмж</Link>
-          <span className="mx-2">/</span>
-          <span className="text-slate-900 font-medium">{meta.title}</span>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        <div className="mb-6 pb-6 border-b border-slate-200">
-          <div className="flex items-center gap-4 mb-3">
-            <div className={"w-12 h-12 rounded flex items-center justify-center flex-shrink-0 " + meta.color}>
+        {/* Header */}
+        <div className="mb-5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className={"w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 " + meta.color}>
               <span className="text-white font-bold text-lg">{meta.title.charAt(0)}</span>
             </div>
             <div>
-              <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider">{meta.subtitle}</p>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-900">{meta.title}</h1>
+              <p className="text-xs text-violet-600 font-bold uppercase tracking-wider">{meta.subtitle}</p>
+              <h1 className="text-xl font-bold text-gray-800">{meta.title}</h1>
             </div>
           </div>
-          <p className="text-sm text-slate-600">{articles.length} зөвлөмж</p>
+          {isAdmin && (
+            <Link to="/admin/advice" className="text-sm text-violet-600 font-semibold hover:underline whitespace-nowrap">
+              Удирдах →
+            </Link>
+          )}
         </div>
 
-        <div className="bg-white border border-slate-200 rounded p-4 mb-6">
+        {/* Search */}
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-5">
           <input
             value={search}
             onChange={function (e) { setSearch(e.target.value); }}
             placeholder="Зөвлөмж дотроос хайх..."
-            className="w-full px-4 py-2.5 border border-slate-300 rounded text-sm focus:outline-none focus:border-[#1e3a8a] focus:ring-1 focus:ring-[#1e3a8a] transition"
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition"
           />
         </div>
+
+        {/* Count */}
+        {!loading && (
+          <p className="text-xs text-gray-400 mb-3">{articles.length} зөвлөмж</p>
+        )}
 
         {loading ? (
           <ListSkeleton count={4} />
@@ -123,38 +111,38 @@ export default function AdviceCategory() {
                 <Link
                   key={a.id}
                   to={"/advice/detail/" + a.id}
-                  className="bg-white border border-slate-200 rounded p-5 hover:border-[#1e3a8a] hover:shadow-sm transition group block"
+                  className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 hover:border-violet-200 hover:shadow-md transition group block"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 rounded flex items-center justify-center flex-shrink-0 font-bold text-[#1e3a8a]">
+                    <div className="w-10 h-10 bg-violet-50 border border-violet-100 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-violet-600">
                       {i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-bold text-slate-900 group-hover:text-[#1e3a8a] transition mb-1">
+                      <h3 className="text-base font-bold text-gray-800 group-hover:text-violet-700 transition mb-1">
                         {a.title}
                       </h3>
                       {a.summary && (
-                        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">{a.summary}</p>
+                        <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{a.summary}</p>
                       )}
                       <div className="flex items-center gap-2 mt-3">
                         {hasVideo && (
-                          <span className="text-xs bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded font-medium flex items-center gap-1">
+                          <span className="text-xs bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-lg font-medium flex items-center gap-1">
                             ▶ Видео
                           </span>
                         )}
                         {hasLinks && (
-                          <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded font-medium">
+                          <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-lg font-medium">
                             🔗 Холбоос
                           </span>
                         )}
                         {!a.is_published && isAdmin && (
-                          <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded font-medium">
+                          <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-lg font-medium">
                             Нийтлэгдээгүй
                           </span>
                         )}
                       </div>
                     </div>
-                    <span className="text-slate-400 group-hover:text-[#1e3a8a] text-xl">→</span>
+                    <span className="text-gray-300 group-hover:text-violet-500 transition text-xl">→</span>
                   </div>
                 </Link>
               );
@@ -162,6 +150,6 @@ export default function AdviceCategory() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }

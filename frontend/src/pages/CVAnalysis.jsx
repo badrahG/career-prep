@@ -129,7 +129,7 @@ export default function CVAnalysis() {
 
   return (
     <Layout>
-      <div className="p-5 md:p-6 max-w-3xl">
+      <div className="p-5 md:p-6 max-w-3xl mx-auto">
         <div className="mb-6">
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">AI Шинжилгээ</p>
           <h1 className="text-2xl font-bold text-gray-800">CV Анализ</h1>

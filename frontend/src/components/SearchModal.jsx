@@ -84,9 +84,9 @@ export default function SearchModal({ open, onClose }) {
       onClick={function (e) { if (e.target === e.currentTarget) onClose(); }}>
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+      <div className="relative w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
         {/* Search input */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100 dark:border-gray-700">
           <span className="text-gray-400 flex-shrink-0">
             <Icon d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" size={18} />
           </span>
@@ -95,10 +95,10 @@ export default function SearchModal({ open, onClose }) {
             value={query}
             onChange={function (e) { setQuery(e.target.value); setActive(0); }}
             placeholder="Хайх... (зөвлөмж, тэтгэлэг, асуулт)"
-            className="flex-1 text-sm text-gray-800 outline-none placeholder-gray-400 bg-transparent"
+            className="flex-1 text-sm text-gray-800 dark:text-gray-100 outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-transparent"
           />
           {loading && (
-            <span className="text-gray-300 flex-shrink-0">
+            <span className="text-gray-300 dark:text-gray-500 flex-shrink-0">
               <svg className="animate-spin" width={16} height={16} fill="none" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity=".3" />
                 <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
@@ -106,7 +106,7 @@ export default function SearchModal({ open, onClose }) {
             </span>
           )}
           <button onClick={onClose}
-            className="text-xs text-gray-400 hover:text-gray-600 bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded-lg transition flex-shrink-0">
+            className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded-lg transition flex-shrink-0">
             Esc
           </button>
         </div>
@@ -120,7 +120,7 @@ export default function SearchModal({ open, onClose }) {
                 return (
                   <button key={i} onClick={function () { go(item.url); }}
                     className={"w-full flex items-center gap-3 px-4 py-2.5 text-left transition " +
-                      (active === i ? "bg-gray-50" : "hover:bg-gray-50")}>
+                      (active === i ? "bg-gray-50 dark:bg-gray-700/50" : "hover:bg-gray-50 dark:hover:bg-gray-700/50")}>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{ background: meta.bg }}>
                       <span style={{ color: meta.color }}>
@@ -128,9 +128,9 @@ export default function SearchModal({ open, onClose }) {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">{item.title}</p>
+                      <p className="text-sm font-medium text-gray-800 dark:text-gray-100 truncate">{item.title}</p>
                       {item.subtitle && (
-                        <p className="text-xs text-gray-400 truncate mt-0.5">{item.subtitle}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 truncate mt-0.5">{item.subtitle}</p>
                       )}
                     </div>
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
@@ -145,7 +145,7 @@ export default function SearchModal({ open, onClose }) {
 
           {/* No results */}
           {query.trim().length >= 2 && !loading && allItems.length === 0 && (
-            <div className="py-10 text-center text-sm text-gray-400">
+            <div className="py-10 text-center text-sm text-gray-400 dark:text-gray-500">
               <p>"{query}" гэсэн үр дүн олдсонгүй</p>
             </div>
           )}
@@ -153,17 +153,17 @@ export default function SearchModal({ open, onClose }) {
           {/* Quick links (shown when no query) */}
           {query.trim().length < 2 && (
             <div className="py-3 px-2">
-              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">Шуурхай холбоос</p>
+              <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2 mb-2">Шуурхай холбоос</p>
               <div className="grid grid-cols-2 gap-1.5">
                 {QUICK_LINKS.map(function (ql, i) {
                   return (
                     <button key={i} onClick={function () { go(ql.url); }}
-                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-50 transition text-left">
+                      className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition text-left">
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{ background: ql.bg }}>
                         <span style={{ color: ql.color }}><Icon d={ql.icon} size={14} /></span>
                       </div>
-                      <span className="text-sm text-gray-700 font-medium">{ql.label}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{ql.label}</span>
                     </button>
                   );
                 })}
@@ -173,10 +173,10 @@ export default function SearchModal({ open, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2.5 border-t border-gray-100 flex items-center gap-4 text-[11px] text-gray-400">
-          <span><kbd className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500 font-medium">↑↓</kbd> шилжих</span>
-          <span><kbd className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500 font-medium">Enter</kbd> нээх</span>
-          <span><kbd className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500 font-medium">Esc</kbd> хаах</span>
+        <div className="px-4 py-2.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-4 text-[11px] text-gray-400 dark:text-gray-500">
+          <span><kbd className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400 font-medium">↑↓</kbd> шилжих</span>
+          <span><kbd className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400 font-medium">Enter</kbd> нээх</span>
+          <span><kbd className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400 font-medium">Esc</kbd> хаах</span>
         </div>
       </div>
     </div>

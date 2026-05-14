@@ -3,6 +3,24 @@ from typing import Optional, List
 from datetime import datetime
 
 
+class CaseCreate(BaseModel):
+    title: str
+    case_text: str
+    difficulty: Optional[str] = "medium"
+
+
+class CaseResponse(BaseModel):
+    id: int
+    title: str
+    case_text: str
+    difficulty: Optional[str] = None
+    question_count: Optional[int] = 0
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class QuestionCreate(BaseModel):
     question_mn: str
     category: str
@@ -10,6 +28,7 @@ class QuestionCreate(BaseModel):
     advice: Optional[str] = None
     difficulty: Optional[str] = "medium"
     tags: Optional[str] = None
+    case_id: Optional[int] = None
     # Quiz fields
     is_quiz: Optional[bool] = False
     option_a: Optional[str] = None
@@ -28,6 +47,7 @@ class QuestionResponse(BaseModel):
     advice: Optional[str] = None
     difficulty: Optional[str] = None
     tags: Optional[str] = None
+    case_id: Optional[int] = None
     is_quiz: bool = False
     option_a: Optional[str] = None
     option_b: Optional[str] = None
@@ -45,6 +65,9 @@ class QuizQuestionPublic(BaseModel):
     id: int
     question_mn: str
     category: str
+    case_id: Optional[int] = None
+    case_title: Optional[str] = None
+    case_text: Optional[str] = None
     option_a: str
     option_b: str
     option_c: str
@@ -89,4 +112,5 @@ class CategoryStats(BaseModel):
     general: int
     technical: int
     behavioral: int
+    case: int
     total: int

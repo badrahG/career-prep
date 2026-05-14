@@ -55,10 +55,10 @@ export default function AdviceCategory() {
     <Layout>
       <div className="p-5 md:p-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-5">
           <Link to="/advice" className="hover:text-violet-600 transition">Зөвлөмж</Link>
           <span>/</span>
-          <span className="text-gray-700 font-medium">{meta.title}</span>
+          <span className="text-gray-700 dark:text-gray-300 font-medium">{meta.title}</span>
         </div>
 
         {/* Header */}
@@ -69,7 +69,7 @@ export default function AdviceCategory() {
             </div>
             <div>
               <p className="text-xs text-violet-600 font-bold uppercase tracking-wider">{meta.subtitle}</p>
-              <h1 className="text-xl font-bold text-gray-800">{meta.title}</h1>
+              <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">{meta.title}</h1>
             </div>
           </div>
           {isAdmin && (
@@ -80,18 +80,18 @@ export default function AdviceCategory() {
         </div>
 
         {/* Search */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-5">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-5">
           <input
             value={search}
             onChange={function (e) { setSearch(e.target.value); }}
             placeholder="Зөвлөмж дотроос хайх..."
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition"
+            className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
           />
         </div>
 
         {/* Count */}
         {!loading && (
-          <p className="text-xs text-gray-400 mb-3">{articles.length} зөвлөмж</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">{articles.length} зөвлөмж</p>
         )}
 
         {loading ? (
@@ -111,18 +111,18 @@ export default function AdviceCategory() {
                 <Link
                   key={a.id}
                   to={"/advice/detail/" + a.id}
-                  className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5 hover:border-violet-200 hover:shadow-md transition group block"
+                  className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-5 hover:border-violet-200 dark:hover:border-violet-600 hover:shadow-md transition group block"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-violet-50 border border-violet-100 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-violet-600">
+                    <div className="w-10 h-10 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-xl flex items-center justify-center flex-shrink-0 font-bold text-violet-600 dark:text-violet-400">
                       {i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-bold text-gray-800 group-hover:text-violet-700 transition mb-1">
+                      <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition mb-1">
                         {a.title}
                       </h3>
                       {a.summary && (
-                        <p className="text-sm text-gray-500 leading-relaxed line-clamp-2">{a.summary}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2">{a.summary}</p>
                       )}
                       <div className="flex items-center gap-2 mt-3">
                         {hasVideo && (
@@ -142,7 +142,7 @@ export default function AdviceCategory() {
                         )}
                       </div>
                     </div>
-                    <span className="text-gray-300 group-hover:text-violet-500 transition text-xl">→</span>
+                    <span className="text-gray-300 dark:text-gray-600 group-hover:text-violet-500 transition text-xl">→</span>
                   </div>
                 </Link>
               );

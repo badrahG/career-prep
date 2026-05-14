@@ -61,8 +61,8 @@ export default function Advice() {
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Карьерын зөвлөмж</p>
-            <h1 className="text-2xl font-bold text-gray-800">Ажил мэргэжлийн замд тань туслах</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Ажил мэргэжлийн замд тань туслах</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               {stats ? stats.total : "..."} зөвлөмж 4 гол сэдвээр.
             </p>
           </div>
@@ -74,7 +74,7 @@ export default function Advice() {
             var count = stats ? stats[c.key] || 0 : 0;
             return (
               <Link key={c.key} to={c.link}
-                className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 hover:shadow-md hover:border-violet-200 transition group"
+                className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-6 hover:shadow-md hover:border-violet-200 dark:hover:border-violet-600 transition group"
               >
                 <div className="flex items-start gap-4 mb-4">
                   <div className={"w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 " + c.color}>
@@ -82,23 +82,23 @@ export default function Advice() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{c.subtitle}</p>
-                      <span className="text-xs bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded-lg font-semibold whitespace-nowrap">
+                      <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">{c.subtitle}</p>
+                      <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-lg font-semibold whitespace-nowrap">
                         {count} зөвлөмж
                       </span>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-800 group-hover:text-violet-700 transition">{c.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">{c.title}</h3>
                   </div>
                 </div>
-                <p className="text-sm text-gray-500 leading-relaxed mb-4">{c.description}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">{c.description}</p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {c.examples.map(function (e, i) {
                     return (
-                      <span key={i} className="text-xs bg-gray-50 text-gray-600 border border-gray-200 px-2 py-1 rounded-lg">{e}</span>
+                      <span key={i} className="text-xs bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 px-2 py-1 rounded-lg">{e}</span>
                     );
                   })}
                 </div>
-                <div className="pt-3 border-t border-gray-100">
+                <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
                   <span className="text-sm text-violet-600 font-semibold group-hover:underline">Зөвлөмж унших →</span>
                 </div>
               </Link>
@@ -106,9 +106,9 @@ export default function Advice() {
           })}
         </div>
 
-        <div className="bg-violet-50 border border-violet-100 rounded-2xl p-6">
-          <h3 className="text-base font-bold text-gray-800 mb-3">Хэрхэн хамгийн үр дүнтэй ашиглах вэ?</h3>
-          <ul className="space-y-2 text-sm text-gray-700">
+        <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 rounded-2xl p-6">
+          <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-3">Хэрхэн хамгийн үр дүнтэй ашиглах вэ?</h3>
+          <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
             {["Өөрт тохирох сэдвээс эхэл — CV бичих гэж байвал эхлээд CV хэсэг.",
               "Нэг зөвлөмжийг уншаад шууд ажлын практикт тусга.",
               "Видео хавсралттай зөвлөмжүүд — илүү гүн сурах боломж."].map(function (t, i) {

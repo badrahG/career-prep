@@ -24,15 +24,15 @@ var illustrations = {
       <rect x="60" y="50" width="80" height="100" rx="4" fill="#FFFBF5" stroke="#e5dfd2" strokeWidth="1.5" transform="rotate(-5 100 100)" />
       {/* Main paper */}
       <rect x="65" y="55" width="80" height="100" rx="4" fill="white" stroke="#cbd5e1" strokeWidth="1.5" />
-      <rect x="65" y="55" width="80" height="12" rx="4" fill="#1e3a8a" />
+      <rect x="65" y="55" width="80" height="12" rx="4" fill="#7C3AED" />
       <circle cx="78" cy="78" r="5" fill="#cbd5e1" />
       <rect x="88" y="75" width="40" height="3" rx="1" fill="#94a3b8" />
       <rect x="88" y="81" width="28" height="2" rx="1" fill="#cbd5e1" />
-      <rect x="72" y="95" width="12" height="2" rx="1" fill="#1e3a8a" />
+      <rect x="72" y="95" width="12" height="2" rx="1" fill="#7C3AED" />
       <rect x="72" y="102" width="60" height="2" rx="1" fill="#e2e8f0" />
       <rect x="72" y="107" width="50" height="2" rx="1" fill="#e2e8f0" />
       <rect x="72" y="112" width="55" height="2" rx="1" fill="#e2e8f0" />
-      <rect x="72" y="122" width="16" height="2" rx="1" fill="#1e3a8a" />
+      <rect x="72" y="122" width="16" height="2" rx="1" fill="#7C3AED" />
       <rect x="72" y="129" width="60" height="2" rx="1" fill="#e2e8f0" />
       <rect x="72" y="134" width="45" height="2" rx="1" fill="#e2e8f0" />
       {/* Decorative sparkles */}
@@ -48,9 +48,9 @@ var illustrations = {
       <circle cx="100" cy="100" r="90" fill="#FDF6EC" />
       <circle cx="100" cy="100" r="90" stroke="#e5dfd2" strokeWidth="2" strokeDasharray="4 4" fill="none" />
       {/* Magnifying glass */}
-      <circle cx="88" cy="88" r="30" fill="white" stroke="#1e3a8a" strokeWidth="3" />
+      <circle cx="88" cy="88" r="30" fill="white" stroke="#7C3AED" strokeWidth="3" />
       <circle cx="88" cy="88" r="22" fill="#FDF6EC" />
-      <line x1="110" y1="110" x2="135" y2="135" stroke="#1e3a8a" strokeWidth="5" strokeLinecap="round" />
+      <line x1="110" y1="110" x2="135" y2="135" stroke="#7C3AED" strokeWidth="5" strokeLinecap="round" />
       {/* Question mark inside */}
       <text x="88" y="98" textAnchor="middle" fontSize="28" fontWeight="bold" fill="#94a3b8">?</text>
       {/* Dust */}
@@ -87,8 +87,8 @@ var illustrations = {
       <circle cx="100" cy="100" r="90" fill="#FDF6EC" />
       <circle cx="100" cy="100" r="90" stroke="#e5dfd2" strokeWidth="2" strokeDasharray="4 4" fill="none" />
       {/* Speech bubble 1 */}
-      <rect x="40" y="65" width="70" height="45" rx="8" fill="#1e3a8a" />
-      <path d="M 55 110 L 55 120 L 68 110 Z" fill="#1e3a8a" />
+      <rect x="40" y="65" width="70" height="45" rx="8" fill="#7C3AED" />
+      <path d="M 55 110 L 55 120 L 68 110 Z" fill="#7C3AED" />
       <rect x="50" y="78" width="50" height="3" rx="1" fill="white" opacity="0.7" />
       <rect x="50" y="85" width="35" height="3" rx="1" fill="white" opacity="0.5" />
       <rect x="50" y="92" width="45" height="3" rx="1" fill="white" opacity="0.5" />
@@ -139,12 +139,12 @@ export default function EmptyState({ illustration, title, description, actionLab
   var svg = illustrations[illustration] || illustrations.inbox;
 
   return (
-    <div className="bg-white border border-slate-200 rounded p-8 md:p-12 text-center">
+    <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-8 md:p-12 text-center">
       <div className="mb-5">{svg}</div>
 
-      <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2">{title}</h3>
+      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">{title}</h3>
       {description && (
-        <p className="text-sm text-slate-600 leading-relaxed max-w-md mx-auto mb-6">{description}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-md mx-auto mb-6">{description}</p>
       )}
 
       {(actionLabel || secondaryLabel) && (
@@ -153,14 +153,14 @@ export default function EmptyState({ illustration, title, description, actionLab
             actionLink ? (
               <Link
                 to={actionLink}
-                className="inline-flex items-center gap-2 bg-[#1e3a8a] text-white px-5 py-2.5 rounded text-sm font-semibold hover:bg-[#1e40af] transition shadow-sm"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition"
               >
                 {actionLabel}
               </Link>
             ) : (
               <button
                 onClick={onAction}
-                className="inline-flex items-center gap-2 bg-[#1e3a8a] text-white px-5 py-2.5 rounded text-sm font-semibold hover:bg-[#1e40af] transition shadow-sm"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition"
               >
                 {actionLabel}
               </button>
@@ -169,7 +169,7 @@ export default function EmptyState({ illustration, title, description, actionLab
           {secondaryLabel && secondaryLink && (
             <Link
               to={secondaryLink}
-              className="inline-flex items-center gap-2 border border-slate-300 bg-white text-slate-700 px-5 py-2.5 rounded text-sm font-semibold hover:bg-slate-50 transition"
+              className="inline-flex items-center gap-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 transition"
             >
               {secondaryLabel}
             </Link>

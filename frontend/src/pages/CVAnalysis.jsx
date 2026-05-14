@@ -44,8 +44,8 @@ function ScoreCircle({ score }) {
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-3xl font-bold text-gray-800">{score}</span>
-        <span className="text-xs text-gray-500">/ 100</span>
+        <span className="text-3xl font-bold text-gray-800 dark:text-gray-200">{score}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">/ 100</span>
       </div>
     </div>
   );
@@ -58,7 +58,7 @@ function SectionBar({ label, data }) {
   return (
     <div className="mb-4">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-medium text-gray-700">{label}</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
         <div className="flex items-center gap-2">
           {!data.present && (
             <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Дутуу</span>
@@ -66,7 +66,7 @@ function SectionBar({ label, data }) {
           <span className="text-sm text-gray-500">{data.score}/10</span>
         </div>
       </div>
-      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-700 ${color}`}
           style={{ width: `${pct}%` }}
@@ -132,26 +132,26 @@ export default function CVAnalysis() {
       <div className="p-5 md:p-6 max-w-3xl mx-auto">
         <div className="mb-6">
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">AI Шинжилгээ</p>
-          <h1 className="text-2xl font-bold text-gray-800">CV Анализ</h1>
-          <p className="text-sm text-gray-500 mt-1">AI-ийн тусламжтайгаар CV-ийгээ сайжруул</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">CV Анализ</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">AI-ийн тусламжтайгаар CV-ийгээ сайжруул</p>
         </div>
         {!result ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-50 rounded-2xl mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl mb-4">
                 <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-gray-800 mb-1">CV-ийгээ оруулна уу</h2>
-              <p className="text-sm text-gray-500">Claude AI таны CV-г задлан шинжилж, Монгол хэлээр зөвлөгөө өгнө</p>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">CV-ийгээ оруулна уу</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Claude AI таны CV-г задлан шинжилж, Монгол хэлээр зөвлөгөө өгнө</p>
             </div>
 
             {/* Drop zone */}
             <div
               className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-                dragging ? "border-indigo-400 bg-indigo-50" : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50"
+                dragging ? "border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20" : "border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               }`}
               onClick={() => inputRef.current?.click()}
               onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -173,8 +173,8 @@ export default function CVAnalysis() {
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <p className="font-medium text-gray-700">{file.name}</p>
-                  <p className="text-xs text-gray-400">{(file.size / 1024).toFixed(0)} KB</p>
+                  <p className="font-medium text-gray-700 dark:text-gray-300">{file.name}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{(file.size / 1024).toFixed(0)} KB</p>
                   <button
                     onClick={(e) => { e.stopPropagation(); setFile(null); }}
                     className="text-xs text-red-500 hover:text-red-700 mt-1"
@@ -184,12 +184,12 @@ export default function CVAnalysis() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-10 h-10 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                       d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
-                  <p className="text-gray-500 text-sm">PDF файлаа энд чирж оруулна уу</p>
-                  <p className="text-xs text-gray-400">эсвэл дарж сонгоно уу (макс. 10MB)</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">PDF файлаа энд чирж оруулна уу</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">эсвэл дарж сонгоно уу (макс. 10MB)</p>
                 </div>
               )}
             </div>
@@ -234,7 +234,7 @@ export default function CVAnalysis() {
         ) : (
           <div className="space-y-5">
             {/* Score card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 <ScoreCircle score={result.score} />
                 <div className="flex-1 text-center sm:text-left">
@@ -247,7 +247,7 @@ export default function CVAnalysis() {
                   >
                     {result.grade}
                   </div>
-                  <p className="text-gray-600 text-sm leading-relaxed">{result.summary}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{result.summary}</p>
                 </div>
               </div>
             </div>
@@ -311,8 +311,8 @@ export default function CVAnalysis() {
 
             {/* Section breakdown */}
             {result.sections && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h3 className="font-semibold text-gray-800 mb-4">Хэсэг бүрийн үнэлгээ</h3>
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">Хэсэг бүрийн үнэлгээ</h3>
                 {Object.entries(result.sections).map(([key, val]) => (
                   <SectionBar key={key} label={SECTION_LABELS[key] || key} data={val} />
                 ))}
@@ -346,7 +346,7 @@ export default function CVAnalysis() {
             <div className="flex gap-3">
               <button
                 onClick={reset}
-                className="flex-1 py-3 px-4 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-colors"
+                className="flex-1 py-3 px-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl transition-colors"
               >
                 Дахин анализ хийх
               </button>

@@ -7,7 +7,7 @@ import EmptyState from "../components/EmptyState";
 import CVPreview from "../components/CVPreview";
 import Layout from "../components/Layout";
 
-var TEMPLATE_LABELS = { modern: "Modern", classic: "Classic", minimal: "European CV" };
+var TEMPLATE_LABELS = { modern: "Монгол стандарт", classic: "Ази загвар", minimal: "Европ загвар" };
 
 export default function CVList() {
   var [cvs, setCvs] = useState([]);
@@ -56,8 +56,8 @@ export default function CVList() {
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">CV цуглуулга</p>
-            <h1 className="text-2xl font-bold text-gray-800">Миний CV</h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Миний CV</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               {loading ? "Ачааллаж байна..." : cvs.length + " CV үүсгэсэн"}
             </p>
           </div>
@@ -72,7 +72,7 @@ export default function CVList() {
           <EmptyState
             illustration="cv"
             title="CV үүсгээгүй байна"
-            description="Эхний CV-гээ үүсгэж, ажилд орох бэлтгэлээ эхлүүлцгээе."
+            description="Эхний CV-гээ үүсгэж, ажилд орох бэлтгэлээ эхлүүлцгааe."
             actionLabel="Шинэ CV үүсгэх"
             actionLink="/cv/new"
             secondaryLabel="Зөвлөмж унших"
@@ -82,40 +82,40 @@ export default function CVList() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {cvs.map(function (cv) {
               return (
-                <div key={cv.id} className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-violet-200 transition group overflow-hidden">
+                <div key={cv.id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-md hover:border-violet-200 dark:hover:border-violet-600 transition group overflow-hidden">
                   <div className={"h-1.5 " + (cv.template_type === "classic" ? "bg-gradient-to-r from-slate-500 to-slate-700" : cv.template_type === "minimal" ? "bg-gradient-to-r from-gray-300 to-gray-400" : "bg-gradient-to-r from-violet-500 to-indigo-500")} />
 
                   <Link to={"/cv/" + cv.id} className="block p-5 pb-4">
                     <div className="flex items-start gap-3 mb-3">
-                      <div className="w-11 h-11 bg-violet-50 border border-violet-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <div className="w-11 h-11 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-xl flex items-center justify-center flex-shrink-0">
                         <span className="text-violet-600 font-bold text-xs">CV</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-800 truncate group-hover:text-violet-700 transition">{cv.name}</h3>
+                        <h3 className="font-semibold text-gray-800 dark:text-gray-200 truncate group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">{cv.name}</h3>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg font-medium">
+                          <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-lg font-medium">
                             {TEMPLATE_LABELS[cv.template_type] || cv.template_type}
                           </span>
-                          <span className="text-xs text-gray-400">{new Date(cv.created_at).toLocaleDateString("mn-MN")}</span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(cv.created_at).toLocaleDateString("mn-MN")}</span>
                         </div>
                       </div>
                     </div>
                   </Link>
 
-                  <div className="px-5 py-3 border-t border-gray-100 flex gap-2">
+                  <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex gap-2">
                     <button
                       onClick={function () { openPreview(cv); }}
-                      className="flex-1 text-center text-xs py-1.5 bg-violet-50 border border-violet-200 rounded-lg font-medium text-violet-700 hover:bg-violet-100 transition"
+                      className="flex-1 text-center text-xs py-1.5 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700 rounded-lg font-medium text-violet-700 dark:text-violet-400 hover:bg-violet-100 dark:hover:bg-violet-900/40 transition"
                     >
                       Харах
                     </button>
                     <Link to={"/cv/" + cv.id + "/edit"}
-                      className="flex-1 text-center text-xs py-1.5 border border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition">
+                      className="flex-1 text-center text-xs py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                       Засах
                     </Link>
                     <button
                       onClick={function () { handleDelete(cv); }}
-                      className="flex-1 text-xs py-1.5 border border-red-200 rounded-lg font-medium text-red-600 hover:bg-red-50 transition"
+                      className="flex-1 text-xs py-1.5 border border-red-200 dark:border-red-800 rounded-lg font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                     >
                       Устгах
                     </button>
@@ -129,21 +129,20 @@ export default function CVList() {
 
       {/* Preview modal */}
       {previewCv && (
-
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={closePreview}
         >
           <div
-            className="bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col"
             style={{ width: "min(900px, 95vw)", maxHeight: "92vh" }}
             onClick={function (e) { e.stopPropagation(); }}
           >
             {/* Modal header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 flex-shrink-0">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-gray-700 flex-shrink-0">
               <div>
-                <p className="font-semibold text-slate-900 text-sm">{previewCv.name}</p>
-                <p className="text-xs text-slate-400">{TEMPLATE_LABELS[previewCv.template_type] || previewCv.template_type} загвар</p>
+                <p className="font-semibold text-slate-900 dark:text-gray-100 text-sm">{previewCv.name}</p>
+                <p className="text-xs text-slate-400 dark:text-gray-500">{TEMPLATE_LABELS[previewCv.template_type] || previewCv.template_type} загвар</p>
               </div>
               <div className="flex items-center gap-2">
                 <Link
@@ -155,14 +154,14 @@ export default function CVList() {
                 </Link>
                 <Link
                   to={"/cv/" + previewCv.id + "/edit"}
-                  className="text-xs px-3 py-1.5 border border-slate-300 text-slate-700 rounded font-medium hover:bg-slate-50 transition"
+                  className="text-xs px-3 py-1.5 border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 rounded font-medium hover:bg-slate-50 dark:hover:bg-gray-700 transition"
                   onClick={closePreview}
                 >
                   Засах
                 </Link>
                 <button
                   onClick={closePreview}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-500 transition text-lg"
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-gray-700 text-slate-500 dark:text-gray-400 transition text-lg"
                 >
                   ×
                 </button>
@@ -170,7 +169,7 @@ export default function CVList() {
             </div>
 
             {/* CV preview content */}
-            <div className="overflow-y-auto flex-1 bg-slate-100 p-4">
+            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4">
               {previewCv._loading || previewLoading ? (
                 <div className="flex items-center justify-center h-64">
                   <div className="w-8 h-8 border-2 border-[#1e3a8a] border-t-transparent rounded-full animate-spin" />

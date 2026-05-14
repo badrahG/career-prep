@@ -44,7 +44,7 @@ export default function OrgLogo(props) {
   // Priority 1: explicit image_url
   if (imageUrl && !imgError) {
     return (
-      <div className={"rounded bg-white border border-slate-200 overflow-hidden flex items-center justify-center flex-shrink-0 " + sizeCls}>
+      <div className={"rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0 " + sizeCls}>
         <img
           src={imageUrl}
           alt={name}
@@ -58,7 +58,7 @@ export default function OrgLogo(props) {
   // Priority 2: Clearbit
   if (clearbitUrl && !clearbitError) {
     return (
-      <div className={"rounded bg-white border border-slate-200 overflow-hidden flex items-center justify-center flex-shrink-0 " + sizeCls}>
+      <div className={"rounded-xl bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 overflow-hidden flex items-center justify-center flex-shrink-0 " + sizeCls}>
         <img
           src={clearbitUrl}
           alt={name}
@@ -69,9 +69,9 @@ export default function OrgLogo(props) {
     );
   }
 
-  // Fallback: navy circle with initial
+  // Fallback: violet circle with initial
   return (
-    <div className={"rounded bg-[#1e3a8a] flex items-center justify-center flex-shrink-0 " + sizeCls}>
+    <div className={"rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center flex-shrink-0 " + sizeCls}>
       <span className="text-white font-bold">{initial}</span>
     </div>
   );

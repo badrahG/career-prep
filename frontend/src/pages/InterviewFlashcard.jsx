@@ -38,7 +38,10 @@ export default function InterviewFlashcard() {
     if (category !== "all") params.category = category;
     if (search.trim()) params.search = search.trim();
     API.get("/interview/questions", { params: params })
-      .then(function (res) { setQuestions(res.data); setCurrentIndex(0); setFlipped(false); })
+      .then(function (res) {
+        setQuestions(res.data.filter(function (q) { return q.category !== "case"; }));
+        setCurrentIndex(0); setFlipped(false);
+      })
       .catch(function () { toast.error("Ачаалахад алдаа"); })
       .finally(function () { setLoading(false); });
   }, [category]);
@@ -50,7 +53,10 @@ export default function InterviewFlashcard() {
       if (category !== "all") params.category = category;
       if (search.trim()) params.search = search.trim();
       API.get("/interview/questions", { params: params })
-        .then(function (res) { setQuestions(res.data); setCurrentIndex(0); setFlipped(false); })
+        .then(function (res) {
+          setQuestions(res.data.filter(function (q) { return q.category !== "case"; }));
+          setCurrentIndex(0); setFlipped(false);
+        })
         .catch(function () { toast.error("Ачаалахад алдаа"); })
         .finally(function () { setLoading(false); });
     }, 350);
@@ -120,35 +126,35 @@ export default function InterviewFlashcard() {
     <Layout>
       <div className="p-5 md:p-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-5">
           <Link to="/interview" className="hover:text-violet-600 transition">Ярилцлага</Link>
           <span>/</span>
-          <span className="text-gray-600 font-medium">Flashcard</span>
-          <span className="ml-auto text-gray-400">Судалсан: <span className="font-semibold text-violet-600">{studiedCount}</span> / {questions.length}</span>
+          <span className="text-gray-600 dark:text-gray-300 font-medium">Flashcard</span>
+          <span className="ml-auto text-gray-400 dark:text-gray-500">Судалсан: <span className="font-semibold text-violet-600">{studiedCount}</span> / {questions.length}</span>
         </div>
 
         {/* Header */}
         <div className="mb-5">
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Судлах горим</p>
-          <h1 className="text-xl font-bold text-gray-800">Flashcard</h1>
-          <p className="text-sm text-gray-500 mt-1">Карт дарж эсвэл Space/Enter товчоор эргүүлнэ үү.</p>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Flashcard</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Карт дарж эсвэл Space/Enter товчоор эргүүлнэ үү.</p>
         </div>
 
         {/* Search + filter */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-5">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-5">
           <div className="flex flex-col md:flex-row gap-3">
             <input
               value={search}
               onChange={function (e) { setSearch(e.target.value); }}
               placeholder="Асуулт хайх..."
-              className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition"
+              className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             />
             <div className="flex gap-1 flex-wrap">
               {categories.map(function (c) {
                 return (
                   <button key={c.key} onClick={function () { setCategory(c.key); }}
                     className={"px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
-                      (category === c.key ? "bg-violet-600 text-white" : "bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100")}>
+                      (category === c.key ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                     {c.label}
                   </button>
                 );
@@ -160,11 +166,11 @@ export default function InterviewFlashcard() {
         {/* Progress bar */}
         {questions.length > 0 && (
           <div className="mb-4">
-            <div className="flex justify-between text-xs text-gray-400 mb-2">
+            <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mb-2">
               <span>Асуулт {currentIndex + 1} / {questions.length}</span>
               <span>{progress}%</span>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-1.5">
+            <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
               <div className="bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full h-1.5 transition-all duration-300" style={{ width: progress + "%" }} />
             </div>
           </div>
@@ -183,10 +189,10 @@ export default function InterviewFlashcard() {
                 style={{ transformStyle: "preserve-3d", transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)", minHeight: "380px" }}
               >
                 {/* Front */}
-                <div className="absolute inset-0 w-full bg-white border-2 border-gray-100 rounded-2xl p-6 md:p-8 flex flex-col shadow-sm"
+                <div className="absolute inset-0 w-full bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 md:p-8 flex flex-col shadow-sm"
                   style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}>
                   <div className="flex items-center justify-between mb-5">
-                    <span className="text-xs bg-violet-50 text-violet-700 border border-violet-100 px-2 py-0.5 rounded-lg font-semibold">
+                    <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-lg font-semibold">
                       {categoryLabels[currentQuestion.category] || currentQuestion.category}
                     </span>
                     {isStudied && (
@@ -196,28 +202,28 @@ export default function InterviewFlashcard() {
                     )}
                   </div>
                   <div className="flex-1 flex flex-col items-center justify-center text-center">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Асуулт</p>
-                    <h2 className="text-xl md:text-2xl font-bold text-gray-800 leading-relaxed max-w-2xl">
+                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">Асуулт</p>
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 leading-relaxed max-w-2xl">
                       {currentQuestion.question_mn}
                     </h2>
                   </div>
-                  <div className="text-center text-xs text-gray-400 mt-4 border-t border-gray-100 pt-4">
+                  <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
                     Карт дарж хариултыг харах
                   </div>
                 </div>
 
                 {/* Back */}
-                <div className="absolute inset-0 w-full bg-white border-2 border-violet-400 rounded-2xl p-6 md:p-8 flex flex-col shadow-sm"
+                <div className="absolute inset-0 w-full bg-white dark:bg-gray-800 border-2 border-violet-400 rounded-2xl p-6 md:p-8 flex flex-col shadow-sm"
                   style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg)" }}>
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                     <span className="text-xs bg-violet-600 text-white px-2 py-0.5 rounded-lg font-semibold">Хариулт</span>
-                    <span className="text-xs text-gray-400 line-clamp-1 max-w-[60%] text-right">{currentQuestion.question_mn}</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500 line-clamp-1 max-w-[60%] text-right">{currentQuestion.question_mn}</span>
                   </div>
                   <div className="flex-1 overflow-y-auto space-y-4">
                     {currentQuestion.sample_answer && (
                       <div>
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Жишээ хариулт</p>
-                        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{currentQuestion.sample_answer}</p>
+                        <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Жишээ хариулт</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{currentQuestion.sample_answer}</p>
                       </div>
                     )}
                     {currentQuestion.advice && (
@@ -227,10 +233,10 @@ export default function InterviewFlashcard() {
                       </div>
                     )}
                     {!currentQuestion.sample_answer && !currentQuestion.advice && (
-                      <p className="text-sm text-gray-400 italic">Хариулт оруулаагүй байна.</p>
+                      <p className="text-sm text-gray-400 dark:text-gray-500 italic">Хариулт оруулаагүй байна.</p>
                     )}
                   </div>
-                  <div className="text-center text-xs text-gray-400 mt-4 border-t border-gray-100 pt-4">
+                  <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
                     Карт дарж буцаж асуултыг харах
                   </div>
                 </div>
@@ -239,11 +245,11 @@ export default function InterviewFlashcard() {
 
             <div className="flex items-center justify-between gap-3">
               <button onClick={goPrev} disabled={currentIndex === 0}
-                className="px-5 py-2.5 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+                className="px-5 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition">
                 ← Өмнөх
               </button>
               <button onClick={handleFlip}
-                className="px-5 py-2.5 border border-violet-400 text-violet-600 rounded-xl text-sm font-semibold hover:bg-violet-50 transition">
+                className="px-5 py-2.5 border border-violet-400 text-violet-600 dark:text-violet-400 rounded-xl text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-900/20 transition">
                 {flipped ? "Асуулт" : "Хариулт"}
               </button>
               <button onClick={goNext} disabled={currentIndex === questions.length - 1}
@@ -254,7 +260,7 @@ export default function InterviewFlashcard() {
 
             {studiedCount > 0 && (
               <div className="text-center mt-6">
-                <button onClick={resetProgress} className="text-xs text-gray-400 hover:text-gray-700 font-medium">
+                <button onClick={resetProgress} className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-medium">
                   Судалсан түүхийг цэвэрлэх
                 </button>
               </div>

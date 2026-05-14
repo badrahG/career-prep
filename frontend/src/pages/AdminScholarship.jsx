@@ -134,21 +134,21 @@ export default function AdminScholarship() {
     URL.revokeObjectURL(url);
   }
 
-  var inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
-  var labelCls = "block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500";
+  var labelCls = "block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wide";
 
   return (
     <Layout>
       <div className="p-5 md:p-6 space-y-6">
 
         {/* Admin tabs */}
-        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6">
           {ADMIN_TABS.map(function (tab) {
             var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
             return (
               <Link key={tab.to} to={tab.to}
                 className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
-                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {tab.label}
               </Link>
             );
@@ -159,11 +159,11 @@ export default function AdminScholarship() {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Админ</p>
-            <h1 className="text-xl font-bold text-gray-800">Тэтгэлгийн удирдлага</h1>
-            <p className="text-sm text-gray-500 mt-1">Тэтгэлгүүдийг нэмэж, засаж, устгана уу.</p>
+            <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Тэтгэлгийн удирдлага</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Тэтгэлгүүдийг нэмэж, засаж, устгана уу.</p>
           </div>
           <div className="flex gap-2 flex-shrink-0">
-            <button onClick={exportCSV} className="px-4 py-2.5 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
+            <button onClick={exportCSV} className="px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
               CSV татах
             </button>
             <button onClick={openCreate} className="px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
@@ -187,17 +187,17 @@ export default function AdminScholarship() {
         )}
 
         {/* List */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
           {loading ? (
-            <div className="text-center py-20 text-gray-400 text-sm">Ачааллаж байна...</div>
+            <div className="text-center py-20 text-gray-400 dark:text-gray-500 text-sm">Ачааллаж байна...</div>
           ) : scholarships.length === 0 ? (
-            <div className="text-center py-20 text-sm text-gray-500">
+            <div className="text-center py-20 text-sm text-gray-500 dark:text-gray-400">
               <p className="text-lg mb-2">Тэтгэлэг байхгүй байна</p>
               <button onClick={openCreate} className="text-violet-600 font-medium hover:underline">+ Тэтгэлэг нэмэх</button>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
-              <div className="px-5 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-3">
+            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+              <div className="px-5 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3">
                 <input
                   type="checkbox"
                   checked={selected.length === scholarships.length && scholarships.length > 0}
@@ -209,7 +209,7 @@ export default function AdminScholarship() {
               {scholarships.map(function (s) {
                 var isSelected = selected.includes(s.id);
                 return (
-                  <div key={s.id} className={"p-5 hover:bg-gray-50 transition " + (isSelected ? "bg-violet-50" : "")}>
+                  <div key={s.id} className={"p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition " + (isSelected ? "bg-violet-50 dark:bg-violet-900/20" : "")}>
                     <div className="flex items-start gap-3">
                       <input
                         type="checkbox"
@@ -236,19 +236,19 @@ export default function AdminScholarship() {
                               </span>
                             )}
                           </div>
-                          <h3 className="text-base font-bold text-gray-900 mb-0.5">{s.name}</h3>
-                          {s.organization && <p className="text-sm text-gray-500">{s.organization}</p>}
-                          {s.description && <p className="text-sm text-gray-600 mt-1 line-clamp-2">{s.description}</p>}
+                          <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-0.5">{s.name}</h3>
+                          {s.organization && <p className="text-sm text-gray-500 dark:text-gray-400">{s.organization}</p>}
+                          {s.description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{s.description}</p>}
                         </div>
                         <div className="flex gap-1.5 flex-shrink-0">
                           {s.website_url && (
                             <a href={s.website_url} target="_blank" rel="noopener noreferrer"
-                              className="text-xs px-3 py-1.5 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition">
+                              className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition">
                               Вэбсайт
                             </a>
                           )}
                           <button onClick={function () { openEdit(s); }}
-                            className="text-xs px-3 py-1.5 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition">
+                            className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition">
                             Засах
                           </button>
                           <button onClick={function () { handleDelete(s); }}
@@ -271,12 +271,12 @@ export default function AdminScholarship() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] flex flex-col shadow-xl">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-800">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] flex flex-col shadow-xl">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
                 {editingId ? "Тэтгэлэг засах" : "Шинэ тэтгэлэг нэмэх"}
               </h3>
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-700 text-xl leading-none">✕</button>
+              <button onClick={closeModal} className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xl leading-none">✕</button>
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto">
@@ -334,8 +334,8 @@ export default function AdminScholarship() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-2xl">
-              <button onClick={closeModal} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-white transition">
+            <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-800/50 rounded-b-2xl">
+              <button onClick={closeModal} className="px-5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition">
                 Цуцлах
               </button>
               <button onClick={handleSave} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">

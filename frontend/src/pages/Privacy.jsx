@@ -17,7 +17,7 @@ export default function Privacy() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
@@ -26,24 +26,24 @@ export default function Privacy() {
       </div>
 
       {/* Nav */}
-      <nav className="bg-white border-b border-slate-200">
+      <nav className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to={backLink} className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded">
               <span className="text-white font-bold text-xs tracking-wide">CP</span>
             </div>
-            <span className="text-base font-semibold text-slate-900">CareerPrep</span>
+            <span className="text-base font-semibold text-slate-900 dark:text-gray-100">CareerPrep</span>
           </Link>
-          <Link to={backLink} className="text-sm text-slate-600 hover:text-slate-900 font-medium">← {backLabel}</Link>
+          <Link to={backLink} className="text-sm text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 font-medium">← {backLabel}</Link>
         </div>
       </nav>
 
       {/* Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-6 py-3 text-xs text-slate-500">
-          <Link to={backLink} className="hover:text-slate-900">{backLabel}</Link>
+      <div className="bg-white dark:bg-gray-900 border-b border-slate-200 dark:border-gray-700">
+        <div className="max-w-6xl mx-auto px-6 py-3 text-xs text-slate-500 dark:text-gray-500">
+          <Link to={backLink} className="hover:text-slate-900 dark:hover:text-gray-300">{backLabel}</Link>
           <span className="mx-2">/</span>
-          <span className="text-slate-900 font-medium">Нууцлалын бодлого</span>
+          <span className="text-slate-900 dark:text-gray-300 font-medium">Нууцлалын бодлого</span>
         </div>
       </div>
 
@@ -52,13 +52,13 @@ export default function Privacy() {
 
           {/* Sidebar — table of contents */}
           <aside className="lg:col-span-1">
-            <div className="bg-white border border-slate-200 rounded p-5 lg:sticky lg:top-6">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Гарчиг</p>
+            <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded p-5 lg:sticky lg:top-6">
+              <p className="text-xs font-semibold text-slate-500 dark:text-gray-500 uppercase tracking-wider mb-3">Гарчиг</p>
               <ul className="space-y-1">
                 {sections.map(function (s) {
                   return (
                     <li key={s.id}>
-                      <a href={"#section-" + s.id} className="block text-sm text-slate-600 hover:text-[#1e3a8a] hover:bg-slate-50 px-2 py-1.5 rounded transition">
+                      <a href={"#section-" + s.id} className="block text-sm text-slate-600 dark:text-gray-400 hover:text-[#1e3a8a] dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-gray-700 px-2 py-1.5 rounded transition">
                         {s.id}. {s.title}
                       </a>
                     </li>
@@ -70,31 +70,31 @@ export default function Privacy() {
 
           {/* Content */}
           <article className="lg:col-span-3">
-            <div className="mb-8 pb-6 border-b border-slate-200">
+            <div className="mb-8 pb-6 border-b border-slate-200 dark:border-gray-700">
               <p className="text-xs text-[#1e3a8a] font-bold uppercase tracking-wider mb-2">Хууль эрх зүй</p>
-              <h1 className="text-3xl font-bold text-slate-900">Нууцлалын бодлого</h1>
-              <p className="text-sm text-slate-500 mt-2">Сүүлд шинэчлэгдсэн: 2026 оны 4 сарын 15</p>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-gray-100">Нууцлалын бодлого</h1>
+              <p className="text-sm text-slate-500 dark:text-gray-500 mt-2">Сүүлд шинэчлэгдсэн: 2026 оны 4 сарын 15</p>
             </div>
 
-            <div className="bg-white border border-slate-200 rounded">
+            <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded">
               <div className="p-8 space-y-8">
 
                 <section id="section-1">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">1</span>
                     Ерөнхий мэдээлэл
                   </h2>
-                  <p className="text-sm text-slate-700 leading-relaxed">
+                  <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed">
                     CareerPrep платформ нь хэрэглэгчдийн хувийн мэдээллийг хамгаалахад онцгой анхаарал хандуулдаг. Энэхүү нууцлалын бодлого нь бидний цуглуулж, ашиглаж, хадгалж буй мэдээллийн төрөл, зорилго, хамгаалалтын арга хэмжээг тодорхойлно.
                   </p>
                 </section>
 
-                <section id="section-2" className="pt-6 border-t border-slate-200">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <section id="section-2" className="pt-6 border-t border-slate-200 dark:border-gray-700">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">2</span>
                     Цуглуулах мэдээлэл
                   </h2>
-                  <p className="text-sm text-slate-700 leading-relaxed mb-3">Бид дараах мэдээллийг цуглуулна:</p>
+                  <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed mb-3">Бид дараах мэдээллийг цуглуулна:</p>
                   <ul className="space-y-2">
                     {[
                       { title: "Бүртгэлийн мэдээлэл", desc: "овог, нэр, и-мэйл хаяг, утасны дугаар" },
@@ -102,11 +102,11 @@ export default function Privacy() {
                       { title: "Платформ ашиглалт", desc: "нэвтрэлтийн түүх, үйлдлийн лог" },
                     ].map(function (item, i) {
                       return (
-                        <li key={i} className="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded p-3">
+                        <li key={i} className="flex items-start gap-3 bg-slate-50 dark:bg-gray-700/50 border border-slate-200 dark:border-gray-600 rounded p-3">
                           <span className="text-[#1e3a8a] font-bold text-sm flex-shrink-0">›</span>
                           <div>
-                            <span className="text-sm font-semibold text-slate-900">{item.title}: </span>
-                            <span className="text-sm text-slate-600">{item.desc}</span>
+                            <span className="text-sm font-semibold text-slate-900 dark:text-gray-100">{item.title}: </span>
+                            <span className="text-sm text-slate-600 dark:text-gray-400">{item.desc}</span>
                           </div>
                         </li>
                       );
@@ -114,8 +114,8 @@ export default function Privacy() {
                   </ul>
                 </section>
 
-                <section id="section-3" className="pt-6 border-t border-slate-200">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <section id="section-3" className="pt-6 border-t border-slate-200 dark:border-gray-700">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">3</span>
                     Мэдээлэл ашиглах зорилго
                   </h2>
@@ -128,7 +128,7 @@ export default function Privacy() {
                       "Үйлчилгээг сайжруулах зорилгоор статистик дүн шинжилгээ хийх",
                     ].map(function (item, i) {
                       return (
-                        <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                        <li key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-gray-300">
                           <span className="text-[#1e3a8a] mt-0.5">•</span>
                           <span>{item}</span>
                         </li>
@@ -137,12 +137,12 @@ export default function Privacy() {
                   </ul>
                 </section>
 
-                <section id="section-4" className="pt-6 border-t border-slate-200">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <section id="section-4" className="pt-6 border-t border-slate-200 dark:border-gray-700">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">4</span>
                     Мэдээллийн хамгаалалт
                   </h2>
-                  <p className="text-sm text-slate-700 leading-relaxed mb-3">
+                  <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed mb-3">
                     Бид хэрэглэгчдийн мэдээллийг хамгаалахын тулд дараах арга хэмжээг авч хэрэгжүүлнэ:
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -154,27 +154,27 @@ export default function Privacy() {
                       "SQL injection, XSS довтолгооноос хамгаалах",
                     ].map(function (item, i) {
                       return (
-                        <div key={i} className="flex items-start gap-2 bg-emerald-50 border border-emerald-200 rounded p-2.5">
+                        <div key={i} className="flex items-start gap-2 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded p-2.5">
                           <span className="text-emerald-700 text-sm flex-shrink-0">✓</span>
-                          <span className="text-xs text-slate-700">{item}</span>
+                          <span className="text-xs text-slate-700 dark:text-gray-300">{item}</span>
                         </div>
                       );
                     })}
                   </div>
                 </section>
 
-                <section id="section-5" className="pt-6 border-t border-slate-200">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <section id="section-5" className="pt-6 border-t border-slate-200 dark:border-gray-700">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">5</span>
                     Гуравдагч талд мэдээлэл дамжуулах
                   </h2>
-                  <p className="text-sm text-slate-700 leading-relaxed">
+                  <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed">
                     Бид хэрэглэгчийн хувийн мэдээллийг гуравдагч талд зөвшөөрөлгүйгээр дамжуулахгүй. Зөвхөн хуулийн шаардлагаар эсвэл хэрэглэгчийн зөвшөөрлөөр дамжуулж болно.
                   </p>
                 </section>
 
-                <section id="section-6" className="pt-6 border-t border-slate-200">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <section id="section-6" className="pt-6 border-t border-slate-200 dark:border-gray-700">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">6</span>
                     Хэрэглэгчийн эрх
                   </h2>
@@ -185,7 +185,7 @@ export default function Privacy() {
                       "Мэдээлэл цуглуулахаас татгалзах эрхтэй",
                     ].map(function (item, i) {
                       return (
-                        <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                        <li key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-gray-300">
                           <span className="text-[#1e3a8a] mt-0.5">•</span>
                           <span>{item}</span>
                         </li>
@@ -194,12 +194,12 @@ export default function Privacy() {
                   </ul>
                 </section>
 
-                <section id="section-7" className="pt-6 border-t border-slate-200">
-                  <h2 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-3">
+                <section id="section-7" className="pt-6 border-t border-slate-200 dark:border-gray-700">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-gray-100 mb-3 flex items-center gap-3">
                     <span className="text-xs bg-[#1e3a8a]/5 text-[#1e3a8a] border border-[#1e3a8a]/20 w-7 h-7 rounded flex items-center justify-center font-bold">7</span>
                     Холбоо барих
                   </h2>
-                  <p className="text-sm text-slate-700 leading-relaxed mb-3">
+                  <p className="text-sm text-slate-700 dark:text-gray-300 leading-relaxed mb-3">
                     Нууцлалын бодлоготой холбоотой асуулт, хүсэлт байвал доорх хаягаар холбогдоно уу.
                   </p>
                   <a href="mailto:info@careerprep.mn" className="inline-flex items-center gap-2 bg-[#1e3a8a]/5 border border-[#1e3a8a]/20 text-[#1e3a8a] px-4 py-2 rounded text-sm font-semibold hover:bg-[#1e3a8a]/10 transition">
@@ -211,12 +211,12 @@ export default function Privacy() {
             </div>
 
             {/* Related links */}
-            <div className="mt-6 bg-white border border-slate-200 rounded p-5 flex items-center justify-between flex-wrap gap-3">
+            <div className="mt-6 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded p-5 flex items-center justify-between flex-wrap gap-3">
               <div>
-                <p className="text-sm font-semibold text-slate-900">Үйлчилгээний нөхцөлийг харах</p>
-                <p className="text-xs text-slate-500 mt-0.5">Платформын үйлчилгээний нөхцөлүүдийг танилцана уу.</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-gray-100">Үйлчилгээний нөхцөлийг харах</p>
+                <p className="text-xs text-slate-500 dark:text-gray-500 mt-0.5">Платформын үйлчилгээний нөхцөлүүдийг танилцана уу.</p>
               </div>
-              <Link to="/terms" className="px-4 py-2 border border-slate-300 text-slate-700 rounded text-sm font-semibold hover:bg-slate-50 transition whitespace-nowrap">
+              <Link to="/terms" className="px-4 py-2 border border-slate-300 dark:border-gray-600 text-slate-700 dark:text-gray-300 rounded text-sm font-semibold hover:bg-slate-50 dark:hover:bg-gray-700 transition whitespace-nowrap">
                 Үйлчилгээний нөхцөл →
               </Link>
             </div>
@@ -226,12 +226,12 @@ export default function Privacy() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-12">
+      <footer className="bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-gray-700 mt-12">
         <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-slate-500">© 2026 CareerPrep. Бүх эрх хуулиар хамгаалагдсан.</p>
-          <div className="flex gap-4 text-xs text-slate-500">
+          <p className="text-xs text-slate-500 dark:text-gray-500">© 2026 CareerPrep. Бүх эрх хуулиар хамгаалагдсан.</p>
+          <div className="flex gap-4 text-xs text-slate-500 dark:text-gray-500">
             <Link to="/privacy" className="text-[#1e3a8a] font-medium">Нууцлал</Link>
-            <Link to="/terms" className="hover:text-slate-900">Нөхцөл</Link>
+            <Link to="/terms" className="hover:text-slate-900 dark:hover:text-gray-300">Нөхцөл</Link>
           </div>
         </div>
       </footer>

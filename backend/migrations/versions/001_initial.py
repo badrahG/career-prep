@@ -34,6 +34,7 @@ def upgrade() -> None:
     op.execute("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS option_d TEXT")
     op.execute("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS correct_option VARCHAR(1)")
     op.execute("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS explanation TEXT")
+    op.execute("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS case_text TEXT")
 
     # ── Quiz results ────────────────────────────────────────────────────────
     op.execute("""
@@ -130,7 +131,7 @@ def upgrade() -> None:
     op.execute("""
         INSERT INTO cv_templates (key, name, description, sort_order, is_active) VALUES
             ('modern',  'Орчин үеийн', 'Цэвэр, орчин үеийн дизайн', 1, TRUE),
-            ('classic', 'Сонгодог',    'Уламжлалт, албан ёсны загвар', 2, TRUE),
+            ('classic', 'Ази загвар', 'Цэгцтэй, бүрэн мэдээлэлтэй CV загвар', 2, TRUE),
             ('minimal', 'Хялбар',      'Цомхон, хялбар загвар', 3, TRUE)
         ON CONFLICT (key) DO NOTHING
     """)

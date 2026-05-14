@@ -74,19 +74,19 @@ export default function CVDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f3f4f6] flex items-center justify-center">
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-12">
+      <div className="min-h-screen bg-[#f3f4f6] dark:bg-gray-950 flex items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-12">
           <div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-400 text-sm text-center">Ачааллаж байна...</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm text-center">Ачааллаж байна...</p>
         </div>
       </div>
     );
   }
   if (notFound || !cv) {
     return (
-      <div className="min-h-screen bg-[#f3f4f6] flex items-center justify-center p-6">
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-12 text-center">
-          <p className="text-gray-500 text-sm mb-4">CV олдсонгүй.</p>
+      <div className="min-h-screen bg-[#f3f4f6] dark:bg-gray-950 flex items-center justify-center p-6">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">CV олдсонгүй.</p>
           <Link to="/cv" className="inline-block bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition">← CV жагсаалт</Link>
         </div>
       </div>
@@ -97,30 +97,30 @@ export default function CVDetail() {
   try { info = cv.personal_info ? JSON.parse(cv.personal_info) : {}; } catch { info = {}; }
 
   var template = cv.template_type || "modern";
-  var TEMPLATE_LABELS = { modern: "Modern", classic: "Classic", minimal: "European CV" };
+  var TEMPLATE_LABELS = { modern: "Монгол стандарт", classic: "Ази загвар", minimal: "Европ загвар" };
 
   return (
-    <div className="min-h-screen bg-[#f3f4f6]">
+    <div className="min-h-screen bg-[#f3f4f6] dark:bg-gray-950">
       {/* Nav */}
-      <nav className="cv-screen-only bg-white border-b border-gray-100 sticky top-0 z-30">
+      <nav className="cv-screen-only bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to="/dashboard" className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-lg shadow-sm">
               <span className="text-white font-bold text-xs">CP</span>
             </div>
-            <span className="text-base font-semibold text-gray-900">CareerPrep</span>
+            <span className="text-base font-semibold text-gray-900 dark:text-gray-100">CareerPrep</span>
           </Link>
-          <Link to="/cv" className="text-sm text-gray-500 hover:text-violet-600 font-medium transition">← CV жагсаалт</Link>
+          <Link to="/cv" className="text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 font-medium transition">← CV жагсаалт</Link>
         </div>
       </nav>
 
       <div className="max-w-5xl mx-auto px-4 py-6">
         {/* Action bar */}
-        <div className="cv-screen-only bg-white border border-gray-100 rounded-2xl shadow-sm px-6 py-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="cv-screen-only bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm px-6 py-4 mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">CV дэлгэрэнгүй</p>
-            <h1 className="text-xl font-bold text-gray-800">{cv.name}</h1>
-            <span className="inline-block mt-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg font-medium">
+            <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">{cv.name}</h1>
+            <span className="inline-block mt-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-lg font-medium">
               {TEMPLATE_LABELS[template] || template}
             </span>
           </div>
@@ -134,10 +134,10 @@ export default function CVDetail() {
                 <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Бэлтгэж байна...</>
               ) : "⬇ PDF татах"}
             </button>
-            <Link to={"/cv/" + cv.id + "/edit"} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+            <Link to={"/cv/" + cv.id + "/edit"} className="px-5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
               Засах
             </Link>
-            <button onClick={handleDelete} className="px-5 py-2.5 border border-red-200 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition">
+            <button onClick={handleDelete} className="px-5 py-2.5 border border-red-200 dark:border-red-800 rounded-xl text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
               Устгах
             </button>
           </div>

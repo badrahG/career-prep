@@ -14,8 +14,18 @@ var levelOptions = ["Анхан шат","Суурьтай анхан шат","Д
 var jobCategories = ["Мэдээллийн технологи","Банк санхүү","Барилга","Боловсрол","Маркетинг","Худалдаа","Эрүүл мэнд","Уул уурхай","Бусад"];
 var eduLevels = ["Доктор","Магистр","Бакалавр","Тусгай дунд","Бүрэн дунд"];
 
-var inputCls = "w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
-var labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
+personalSkills = ["Багаар ажиллах", "Ачаалал даах", "Дасан зохицох", "Хувийн сахилга бат", "Цагийн менежмент", "Санал бодлоо илэрхийлэх", "Шинийг санаачлах", "Манлайлал ба удирдлага", "Асуудал шийдвэрлэх", "Харилцааны чадвар", "Шийдвэр гаргах", "Анхааралтай сонсох", "Илтгэх", "Хариуцлага хүлээх", "Нягт нямбай", "Үлгэр дуурайлал үзүүлэх", "Баг хамт олонтой харилцах", "Хүнтэй ажиллах хандлага"];
+techSkills = ["Microsoft Word", "Microsoft Excel", "Microsoft PowerPoint", "Adobe Photoshop", "AutoCAD", "Python", "HTML/CSS", "JavaScript", "React", "SQL", "Git", "Figma", "Adobe Illustrator", "CorelDraw", "SPSS", "Adobe Premiere"];
+profSkills = ["Компьютерын хэрэглээ", "Жолоо барих", "Бичиг баримт боловсруулах", "Дүн шинжилгээ хийх", "Баримт бичиг, тайлан боловсруулах", "Автомашины мэдлэг", "Бичиг баримт бүрдүүлэх", "Техникийн англи хэл", "Захиргааны менежмент"];
+artSkills = ["Дуулах", "Бүжиглэх", "Зураг зурах", "Гар урлал", "Хөгжмийн зэмсэг тоглох", "Яруу найраг", "Жүжиглэх"];
+sportSkills = ["Сагсан бөмбөг", "Гар бөмбөг", "Ширээний теннис", "Шатар", "Хөл бөмбөг", "Кибер спорт", "Усан спорт", "Хөнгөн атлетик", "Бокс"];
+languageOptions = ["Англи хэл", "Орос хэл", "Солонгос хэл", "Хятад хэл", "Япон хэл", "Герман хэл", "Франц хэл", "Турк хэл"];
+levelOptions = ["Анхан шат", "Суурьтай анхан шат", "Дунд шат", "Ахисан дунд шат", "Бүрэн эзэмшсэн"];
+jobCategories = ["Мэдээллийн технологи", "Банк санхүү", "Барилга", "Боловсрол", "Маркетинг", "Худалдаа", "Эрүүл мэнд", "Уул уурхай", "Бусад"];
+eduLevels = ["Доктор", "Магистр", "Бакалавр", "Тусгай дунд", "Бүрэн дунд"];
+
+var inputCls = "w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500";
+var labelCls = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5";
 
 function EduForm(props) {
   var edu = props.edu;
@@ -24,9 +34,9 @@ function EduForm(props) {
   var onRemove = props.onRemove;
   var canRemove = props.canRemove;
   return (
-    <div className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
-      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
-        <span className="text-sm font-semibold text-gray-800">Боловсрол #{i + 1}</span>
+    <div className="border border-gray-200 dark:border-gray-600 rounded-2xl p-5 mb-4 bg-gray-50 dark:bg-gray-700/50">
+      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-600">
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Боловсрол #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -82,9 +92,9 @@ function ExpForm(props) {
   var onRemove = props.onRemove;
   var canRemove = props.canRemove;
   return (
-    <div className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
-      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
-        <span className="text-sm font-semibold text-gray-800">Туршлага #{i + 1}</span>
+    <div className="border border-gray-200 dark:border-gray-600 rounded-2xl p-5 mb-4 bg-gray-50 dark:bg-gray-700/50">
+      <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-600">
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Туршлага #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -134,7 +144,7 @@ function SkillToggle(props) {
         return (
           <button key={s} type="button" onClick={function() { props.onToggle(s); }}
             className={"px-3 py-1.5 rounded-xl text-xs font-medium transition border " +
-              (active ? "bg-violet-600 text-white border-violet-600" : "bg-white text-gray-700 border-gray-200 hover:border-gray-300")}>
+              (active ? "bg-violet-600 text-white border-violet-600" : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500")}>
             {s}
           </button>
         );
@@ -249,26 +259,26 @@ export default function CVBuilder() {
     <Layout>
       <div className="p-5 md:p-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-5">
           <Link to="/cv" className="hover:text-violet-600 transition">CV</Link>
           <span>/</span>
-          <span className="text-gray-600 font-medium">Шинэ CV үүсгэх</span>
-          <span className="ml-auto text-gray-400">Алхам {step}/{totalSteps}</span>
+          <span className="text-gray-600 dark:text-gray-300 font-medium">Шинэ CV үүсгэх</span>
+          <span className="ml-auto text-gray-400 dark:text-gray-500">Алхам {step}/{totalSteps}</span>
         </div>
 
         {/* Header */}
         <div className="mb-5">
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">CV үүсгэх</p>
-          <h1 className="text-xl font-bold text-gray-800">Шинэ CV</h1>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Шинэ CV</h1>
         </div>
 
         {/* Progress bar */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4 mb-5">
-          <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-5">
+          <div className="flex items-center justify-between mb-2 text-xs text-gray-400 dark:text-gray-500">
             <span>{stepNames[step - 1]}</span>
             <span className="text-violet-600 font-semibold">{progressPct}%</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
+          <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
             <div className="bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full h-1.5 transition-all duration-300" style={{ width: progressPct + "%" }} />
           </div>
         </div>
@@ -279,36 +289,36 @@ export default function CVBuilder() {
             var s = idx + 1;
             var cls = "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition border ";
             if (step === s) cls += "bg-violet-600 text-white border-violet-600";
-            else if (step > s) cls += "bg-violet-50 text-violet-600 border-violet-200";
-            else cls += "bg-white text-gray-500 border-gray-200 hover:border-gray-300";
+            else if (step > s) cls += "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-700";
+            else cls += "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500";
             return <button key={idx} type="button" onClick={function() { setStep(s); }} className={cls}>{s}. {t}</button>;
           })}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 md:p-8">
 
           {step === 1 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">CV нэр болон загвар</h2>
-              <p className="text-sm text-gray-500 mb-6">CV-дээ нэр өгч загвар сонгоно уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">CV нэр болон загвар</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">CV-дээ нэр өгч загвар сонгоно уу.</p>
               <Inp label="CV нэр *" value={cvName} onChange={function(v) { setCvName(v); }} placeholder="Жишээ: Программистын CV" cls="mb-6" />
               <label className={labelCls}>Загвар</label>
               <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
-                  { id: "modern", name: "Modern", desc: "Орчин үеийн" },
-                  { id: "classic", name: "Classic", desc: "Сонгодог" },
-                  { id: "minimal", name: "European CV", desc: "Европ хэв маяг" }
+                  { id: "modern", name: "Монгол стандарт", desc: "Монголын компаниудад нийцсэн" },
+                  { id: "classic", name: "Ази загвар", desc: "Цэгцтэй, бүрэн CV" },
+                  { id: "minimal", name: "Европ загвар", desc: "Европ хэв маяг" }
                 ].map(function(t) {
                   var active = template === t.id;
                   return (
                     <button key={t.id} type="button" onClick={function() { setTemplate(t.id); }}
                       className={"border rounded-2xl p-4 text-left transition " +
-                        (active ? "border-violet-400 bg-violet-50" : "border-gray-200 bg-white hover:border-gray-300")}>
-                      <div className="w-full h-20 rounded-xl mb-3 bg-gray-100 border border-gray-200 flex items-center justify-center">
-                        <span className="text-xs text-gray-400">{t.name}</span>
+                        (active ? "border-violet-400 bg-violet-50 dark:bg-violet-900/20" : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500")}>
+                      <div className="w-full h-20 rounded-xl mb-3 bg-gray-100 dark:bg-gray-600 border border-gray-200 dark:border-gray-500 flex items-center justify-center">
+                        <span className="text-xs text-gray-400 dark:text-gray-300">{t.name}</span>
                       </div>
-                      <p className="font-semibold text-sm text-gray-800">{t.name}</p>
-                      <p className="text-xs text-gray-500">{t.desc}</p>
+                      <p className="font-semibold text-sm text-gray-800 dark:text-gray-200">{t.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{t.desc}</p>
                       {active && <p className="text-xs text-violet-600 font-semibold mt-1">✓ Сонгосон</p>}
                     </button>
                   );
@@ -317,8 +327,8 @@ export default function CVBuilder() {
               <div>
                 <label className={labelCls}>Профайл зураг</label>
                 <div className="flex items-center gap-4">
-                  <div className="w-24 h-28 rounded-xl border border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50 flex-shrink-0">
-                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="text-gray-300 text-3xl">?</span>}
+                  <div className="w-24 h-28 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-700 flex-shrink-0">
+                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="text-gray-300 dark:text-gray-600 text-3xl">?</span>}
                   </div>
                   <div>
                     <input type="file" accept="image/*" onChange={handlePhoto} className="text-sm" />
@@ -331,8 +341,8 @@ export default function CVBuilder() {
 
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Ерөнхий мэдээлэл</h2>
-              <p className="text-sm text-gray-500 mb-6">Хувийн мэдээллээ оруулна уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Ерөнхий мэдээлэл</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Хувийн мэдээллээ оруулна уу.</p>
               <div className="grid grid-cols-2 gap-4">
                 <Inp label="Овог *" value={info.lastName} onChange={function(v) { upd(setInfo, "lastName", v); }} placeholder="Ганбаатар" />
                 <Inp label="Нэр *" value={info.firstName} onChange={function(v) { upd(setInfo, "firstName", v); }} placeholder="Бадрах" />
@@ -352,8 +362,8 @@ export default function CVBuilder() {
 
           {step === 3 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Холбоо барих</h2>
-              <p className="text-sm text-gray-500 mb-6">Холбогдох мэдээллээ оруулна уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Холбоо барих</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Холбогдох мэдээллээ оруулна уу.</p>
               <div className="grid grid-cols-2 gap-4">
                 <Inp label="И-мэйл *" value={contact.email} onChange={function(v) { upd(setContact, "email", v); }} placeholder="badrakh@email.com" type="email" />
                 <Inp label="Утас *" value={contact.phone} onChange={function(v) { upd(setContact, "phone", v); }} placeholder="88395886" />
@@ -366,8 +376,8 @@ export default function CVBuilder() {
 
           {step === 4 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Боловсрол</h2>
-              <p className="text-sm text-gray-500 mb-6">Боловсролын мэдээллээ оруулна уу.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Боловсрол</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Боловсролын мэдээллээ оруулна уу.</p>
               {educations.map(function(edu, i) {
                 return (
                   <EduForm key={i} edu={edu} index={i} canRemove={educations.length > 1}
@@ -382,8 +392,8 @@ export default function CVBuilder() {
 
           {step === 5 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Ажлын туршлага</h2>
-              <p className="text-sm text-gray-500 mb-6">Байхгүй бол алгасаж болно.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Ажлын туршлага</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Байхгүй бол алгасаж болно.</p>
               {experiences.map(function(exp, i) {
                 return (
                   <ExpForm key={i} exp={exp} index={i} canRemove={experiences.length > 1}
@@ -398,14 +408,14 @@ export default function CVBuilder() {
 
           {step === 6 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Хувийн ур чадвар, Компьютер</h2>
-              <p className="text-sm text-gray-500 mb-6">Товч дарж сонгоно уу.</p>
-              <div className="mb-6 pb-6 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-700 mb-3">Хувийн ур чадвар <span className="text-gray-400 font-normal">({selectedPersonal.length})</span></p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Хувийн ур чадвар, Компьютер</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Товч дарж сонгоно уу.</p>
+              <div className="mb-6 pb-6 border-b border-gray-100 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Хувийн ур чадвар <span className="text-gray-400 dark:text-gray-500 font-normal">({selectedPersonal.length})</span></p>
                 <SkillToggle items={personalSkills} selected={selectedPersonal} onToggle={function(s) { toggleSkill(selectedPersonal, setSelectedPersonal, s); }} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-3">Компьютерын програм <span className="text-gray-400 font-normal">({selectedTech.length})</span></p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Компьютерын програм <span className="text-gray-400 dark:text-gray-500 font-normal">({selectedTech.length})</span></p>
                 <SkillToggle items={techSkills} selected={selectedTech} onToggle={function(s) { toggleSkill(selectedTech, setSelectedTech, s); }} />
               </div>
             </div>
@@ -413,18 +423,18 @@ export default function CVBuilder() {
 
           {step === 7 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Мэргэжлийн, урлаг, спорт</h2>
-              <p className="text-sm text-gray-500 mb-6">Товч дарж сонгоно уу.</p>
-              <div className="mb-6 pb-6 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-700 mb-3">Мэргэжлийн ур чадвар <span className="text-gray-400 font-normal">({selectedProf.length})</span></p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Мэргэжлийн, урлаг, спорт</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Товч дарж сонгоно уу.</p>
+              <div className="mb-6 pb-6 border-b border-gray-100 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Мэргэжлийн ур чадвар <span className="text-gray-400 dark:text-gray-500 font-normal">({selectedProf.length})</span></p>
                 <SkillToggle items={profSkills} selected={selectedProf} onToggle={function(s) { toggleSkill(selectedProf, setSelectedProf, s); }} />
               </div>
-              <div className="mb-6 pb-6 border-b border-gray-100">
-                <p className="text-sm font-semibold text-gray-700 mb-3">Урлагийн ур чадвар <span className="text-gray-400 font-normal">({selectedArt.length})</span></p>
+              <div className="mb-6 pb-6 border-b border-gray-100 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Урлагийн ур чадвар <span className="text-gray-400 dark:text-gray-500 font-normal">({selectedArt.length})</span></p>
                 <SkillToggle items={artSkills} selected={selectedArt} onToggle={function(s) { toggleSkill(selectedArt, setSelectedArt, s); }} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-700 mb-3">Спортын ур чадвар <span className="text-gray-400 font-normal">({selectedSport.length})</span></p>
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Спортын ур чадвар <span className="text-gray-400 dark:text-gray-500 font-normal">({selectedSport.length})</span></p>
                 <SkillToggle items={sportSkills} selected={selectedSport} onToggle={function(s) { toggleSkill(selectedSport, setSelectedSport, s); }} />
               </div>
             </div>
@@ -432,8 +442,8 @@ export default function CVBuilder() {
 
           {step === 8 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Гадаад хэлний мэдлэг</h2>
-              <p className="text-sm text-gray-500 mb-6">Мэддэг хэлээ нэмнэ үү.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Гадаад хэлний мэдлэг</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Мэддэг хэлээ нэмнэ үү.</p>
               {langList.map(function(l, i) {
                 return (
                   <div key={i} className="flex items-end gap-3 mb-3">
@@ -449,18 +459,18 @@ export default function CVBuilder() {
 
           {step === 9 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Сургалт, сертификат</h2>
-              <p className="text-sm text-gray-500 mb-6">Хамрагдсан сургалтаа нэмнэ үү.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Сургалт, сертификат</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Хамрагдсан сургалтаа нэмнэ үү.</p>
               {certs.map(function(c, i) {
                 return (
-                  <div key={i} className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
-                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
-                      <span className="text-sm font-semibold text-gray-800">Сургалт #{i + 1}</span>
+                  <div key={i} className="border border-gray-200 dark:border-gray-600 rounded-2xl p-5 mb-4 bg-gray-50 dark:bg-gray-700/50">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-600">
+                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Сургалт #{i + 1}</span>
                       {certs.length > 1 && <button type="button" onClick={function() { setCerts(removeAt(certs, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <Inp label="Сургалтын нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" />
-                      <Inp label="Сургалтын төв *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Pinecone" />
+                      <Inp label="Сургалтын дэлгэрэнгүй *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Pinecone" />
                       <Inp label="Эхэлсэн" value={c.start_date} onChange={function(v) { updList(certs, setCerts, i, "start_date", v); }} type="date" />
                       <Inp label="Дууссан" value={c.end_date} onChange={function(v) { updList(certs, setCerts, i, "end_date", v); }} type="date" />
                     </div>
@@ -490,13 +500,13 @@ export default function CVBuilder() {
 
           {step === 10 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Дадлага</h2>
-              <p className="text-sm text-gray-500 mb-6">Байхгүй бол алгасаж болно.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Дадлага</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Байхгүй бол алгасаж болно.</p>
               {interns.map(function(n, i) {
                 return (
-                  <div key={i} className="border border-gray-200 rounded-2xl p-5 mb-4 bg-gray-50">
-                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
-                      <span className="text-sm font-semibold text-gray-800">Дадлага #{i + 1}</span>
+                  <div key={i} className="border border-gray-200 dark:border-gray-600 rounded-2xl p-5 mb-4 bg-gray-50 dark:bg-gray-700/50">
+                    <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-600">
+                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Дадлага #{i + 1}</span>
                       {interns.length > 1 && <button type="button" onClick={function() { setInterns(removeAt(interns, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -518,8 +528,8 @@ export default function CVBuilder() {
 
           {step === 11 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Шагнал урамшуулал</h2>
-              <p className="text-sm text-gray-500 mb-6">Авсан шагнал урамшуулалаа нэмнэ үү.</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Шагнал урамшуулал</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Авсан шагнал урамшуулалаа нэмнэ үү.</p>
               {awards.map(function(a, i) {
                 return (
                   <div key={i} className="flex items-end gap-3 mb-3">
@@ -535,52 +545,52 @@ export default function CVBuilder() {
 
           {step === 12 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-1">Урьдчилан харах</h2>
-              <p className="text-sm text-gray-500 mb-6">Мэдээллээ шалгаад хадгална уу.</p>
-              <div className="border border-gray-200 rounded-2xl p-6 space-y-5 bg-gray-50">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Урьдчилан харах</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Мэдээллээ шалгаад хадгална уу.</p>
+              <div className="border border-gray-200 dark:border-gray-600 rounded-2xl p-6 space-y-5 bg-gray-50 dark:bg-gray-700/50">
                 <div className="flex gap-4">
-                  <div className="w-20 h-24 rounded-xl border border-gray-200 bg-white overflow-hidden flex-shrink-0">
-                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="flex items-center justify-center h-full text-gray-300 text-2xl">?</span>}
+                  <div className="w-20 h-24 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 overflow-hidden flex-shrink-0">
+                    {photoUrl ? <img src={photoUrl} className="w-full h-full object-cover" /> : <span className="flex items-center justify-center h-full text-gray-300 dark:text-gray-600 text-2xl">?</span>}
                   </div>
                   <div className="flex-1">
-                    <p className="text-xl font-bold text-gray-800">{info.lastName} {info.firstName}</p>
-                    <p className="text-sm text-gray-500">{contact.email} {contact.phone && "| " + contact.phone}</p>
-                    {contact.address && <p className="text-sm text-gray-400">{contact.address}</p>}
-                    <span className="text-xs bg-violet-50 text-violet-600 border border-violet-100 px-2 py-0.5 rounded-lg mt-1.5 inline-block font-medium">{template}</span>
+                    <p className="text-xl font-bold text-gray-800 dark:text-gray-200">{info.lastName} {info.firstName}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{contact.email} {contact.phone && "| " + contact.phone}</p>
+                    {contact.address && <p className="text-sm text-gray-400 dark:text-gray-500">{contact.address}</p>}
+                    <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border border-violet-100 dark:border-violet-700 px-2 py-0.5 rounded-lg mt-1.5 inline-block font-medium">{template}</span>
                   </div>
                 </div>
-                {info.about && <p className="text-sm text-gray-500 border-t border-gray-200 pt-3">{info.about}</p>}
+                {info.about && <p className="text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-600 pt-3">{info.about}</p>}
                 {educations.some(function(e) { return e.school; }) && (
-                  <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Боловсрол</p>
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
+                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">Боловсрол</p>
                     {educations.filter(function(e) { return e.school; }).map(function(e, i) {
-                      return <p key={i} className="text-sm text-gray-700">{e.school} — {e.major}</p>;
+                      return <p key={i} className="text-sm text-gray-700 dark:text-gray-300">{e.school} — {e.major}</p>;
                     })}
                   </div>
                 )}
                 {experiences.some(function(e) { return e.company; }) && (
-                  <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Ажлын туршлага</p>
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
+                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">Ажлын туршлага</p>
                     {experiences.filter(function(e) { return e.company; }).map(function(e, i) {
-                      return <p key={i} className="text-sm text-gray-700">{e.company} — {e.position}</p>;
+                      return <p key={i} className="text-sm text-gray-700 dark:text-gray-300">{e.company} — {e.position}</p>;
                     })}
                   </div>
                 )}
                 {selectedPersonal.length > 0 && (
-                  <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Ур чадвар</p>
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
+                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">Ур чадвар</p>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedPersonal.concat(selectedTech).concat(selectedProf).map(function(s) {
-                        return <span key={s} className="text-xs px-2 py-0.5 rounded-lg bg-white border border-gray-200 text-gray-700">{s}</span>;
+                        return <span key={s} className="text-xs px-2 py-0.5 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300">{s}</span>;
                       })}
                     </div>
                   </div>
                 )}
                 {awards.some(function(a) { return a.name; }) && (
-                  <div className="border-t border-gray-200 pt-3">
-                    <p className="text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">Шагнал</p>
+                  <div className="border-t border-gray-200 dark:border-gray-600 pt-3">
+                    <p className="text-xs font-bold text-gray-400 dark:text-gray-500 mb-2 uppercase tracking-wide">Шагнал</p>
                     {awards.filter(function(a) { return a.name; }).map(function(a, i) {
-                      return <p key={i} className="text-sm text-gray-700">{a.name} ({a.year})</p>;
+                      return <p key={i} className="text-sm text-gray-700 dark:text-gray-300">{a.name} ({a.year})</p>;
                     })}
                   </div>
                 )}
@@ -589,11 +599,11 @@ export default function CVBuilder() {
           )}
 
           {/* Footer actions */}
-          <div className="flex justify-between mt-8 pt-6 border-t border-gray-100">
+          <div className="flex justify-between mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
             {step > 1 ? (
-              <button type="button" onClick={function() { setStep(step - 1); }} className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">← Буцах</button>
+              <button type="button" onClick={function() { setStep(step - 1); }} className="px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition">← Буцах</button>
             ) : (
-              <Link to="/cv" className="px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Цуцлах</Link>
+              <Link to="/cv" className="px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition">Цуцлах</Link>
             )}
             {step < 12 ? (
               <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">Дараагийн →</button>

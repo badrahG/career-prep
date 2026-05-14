@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
+import SearchModal from "./SearchModal";
 
 function Icon({ d, size = 18 }) {
   return (
@@ -24,6 +26,8 @@ const ICONS = {
   logout:     "M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1",
   menu:       "M4 6h16M4 12h16M4 18h16",
   close:      "M6 18L18 6M6 6l12 12",
+  sun:        "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
+  moon:       "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z",
 };
 
 const NAV = [
@@ -38,13 +42,27 @@ const NAV = [
 
 export default function Layout({ children }) {
   var { user, logout } = useAuth();
+  var { theme, toggle } = useTheme();
   var location = useLocation();
   var [sidebarOpen, setSidebarOpen] = useState(false);
   var [userMenuOpen, setUserMenuOpen] = useState(false);
+  var [searchOpen, setSearchOpen] = useState(false);
 
   var isAdmin = user?.role === "admin";
   var firstName = user?.first_name || "Хэрэглэгч";
   var initial = firstName.charAt(0).toUpperCase();
+
+  var handleGlobalKey = useCallback(function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      e.preventDefault();
+      setSearchOpen(true);
+    }
+  }, []);
+
+  useEffect(function () {
+    window.addEventListener("keydown", handleGlobalKey);
+    return function () { window.removeEventListener("keydown", handleGlobalKey); };
+  }, [handleGlobalKey]);
 
   function isActive(link) {
     if (link === "/dashboard") return location.pathname === "/dashboard";
@@ -52,7 +70,7 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-[#f3f4f6] overflow-hidden">
+    <div className="flex h-screen bg-[#f3f4f6] dark:bg-gray-950 overflow-hidden">
 
       {/* Mobile overlay */}
       {sidebarOpen && (
@@ -61,7 +79,7 @@ export default function Layout({ children }) {
 
       {/* Sidebar */}
       <aside className={
-        "fixed top-0 left-0 h-full z-30 flex flex-col bg-white border-r border-gray-100 transition-transform duration-300 w-[220px] " +
+        "fixed top-0 left-0 h-full z-30 flex flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-700 transition-transform duration-300 w-[220px] " +
         (sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0")
       }>
         {/* Logo */}
@@ -70,10 +88,10 @@ export default function Layout({ children }) {
             <span className="text-white font-bold text-xs">CP</span>
           </div>
           <Link to="/dashboard" onClick={function () { setSidebarOpen(false); }}
-            className="text-[15px] font-bold text-gray-900 tracking-tight">
+            className="text-[15px] font-bold text-gray-900 dark:text-gray-100 tracking-tight">
             CareerPrep
           </Link>
-          <button className="lg:hidden ml-auto text-gray-400 hover:text-gray-600" onClick={function () { setSidebarOpen(false); }}>
+          <button className="lg:hidden ml-auto text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" onClick={function () { setSidebarOpen(false); }}>
             <Icon d={ICONS.close} size={16} />
           </button>
         </div>
@@ -86,10 +104,10 @@ export default function Layout({ children }) {
               <Link key={item.link} to={item.link} onClick={function () { setSidebarOpen(false); }}
                 className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition " +
                   (active
-                    ? "bg-gray-100 text-gray-900 font-semibold"
-                    : "text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-medium")}
+                    ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
+                    : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200 font-medium")}
               >
-                <span className={active ? "text-gray-800" : "text-gray-400"}>
+                <span className={active ? "text-gray-800 dark:text-gray-200" : "text-gray-400 dark:text-gray-500"}>
                   <Icon d={ICONS[item.icon]} size={18} />
                 </span>
                 {item.label}
@@ -100,10 +118,10 @@ export default function Layout({ children }) {
             <Link to="/admin/users" onClick={function () { setSidebarOpen(false); }}
               className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition " +
                 (location.pathname.startsWith("/admin")
-                  ? "bg-gray-100 text-gray-900 font-semibold"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-800 font-medium")}
+                  ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
+                  : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200 font-medium")}
             >
-              <span className="text-gray-400"><Icon d={ICONS.admin} size={18} /></span>
+              <span className="text-gray-400 dark:text-gray-500"><Icon d={ICONS.admin} size={18} /></span>
               Админ
             </Link>
           )}
@@ -112,9 +130,9 @@ export default function Layout({ children }) {
         {/* Help + Logout */}
         <div className="px-3 pb-5 space-y-0.5">
           <Link to="/profile" onClick={function () { setSidebarOpen(false); }}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200 transition"
           >
-            <span className="text-gray-400">
+            <span className="text-gray-400 dark:text-gray-500">
               <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -123,9 +141,9 @@ export default function Layout({ children }) {
           </Link>
           <button
             onClick={function () { logout(); window.location.href = "/login"; }}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-500 transition w-full text-left"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400 transition w-full text-left"
           >
-            <span className="text-gray-400">
+            <span className="text-gray-400 dark:text-gray-500">
               <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
@@ -139,50 +157,61 @@ export default function Layout({ children }) {
       <div className="flex-1 flex flex-col min-w-0 lg:ml-[220px]">
 
         {/* Top header */}
-        <header className="bg-white border-b border-gray-100 px-6 py-3.5 flex items-center gap-3 sticky top-0 z-10">
-          <button className="lg:hidden text-gray-500" onClick={function () { setSidebarOpen(true); }}>
+        <header className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 px-6 py-3.5 flex items-center gap-3 sticky top-0 z-10">
+          <button className="lg:hidden text-gray-500 dark:text-gray-400" onClick={function () { setSidebarOpen(true); }}>
             <Icon d={ICONS.menu} size={20} />
           </button>
 
           <div className="ml-auto flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 hover:border-violet-300 transition group cursor-default">
+            <button
+              onClick={function () { setSearchOpen(true); }}
+              className="hidden md:flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 shadow-sm hover:border-violet-300 hover:shadow-md transition group"
+            >
               <span className="text-gray-400 group-hover:text-violet-500 transition"><Icon d={ICONS.search} size={14} /></span>
               <span className="text-sm text-gray-400 w-24 text-left">Хайх...</span>
-              <kbd className="text-[10px] text-gray-300 bg-gray-100 px-1.5 py-0.5 rounded font-medium">Ctrl K</kbd>
-            </div>
+              <kbd className="text-[10px] text-gray-300 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded font-medium">Ctrl K</kbd>
+            </button>
 
-            <button className="w-9 h-9 bg-gray-50 hover:bg-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 transition border border-gray-200">
+            <button
+              onClick={toggle}
+              className="w-9 h-9 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition border border-gray-200 dark:border-gray-700"
+              title={theme === "dark" ? "Өдрийн горим" : "Шөнийн горим"}
+            >
+              <Icon d={theme === "dark" ? ICONS.sun : ICONS.moon} size={15} />
+            </button>
+
+            <button className="w-9 h-9 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition border border-gray-200 dark:border-gray-700">
               <Icon d={ICONS.bell} size={16} />
             </button>
 
             <div className="relative">
               <button onClick={function () { setUserMenuOpen(!userMenuOpen); }}
-                className="flex items-center gap-2 hover:bg-gray-50 px-2 py-1.5 rounded-xl transition">
+                className="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-800 px-2 py-1.5 rounded-xl transition">
                 <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
                   <span className="text-white font-bold text-sm">{initial}</span>
                 </div>
-                <span className="text-sm font-medium text-gray-700 hidden md:block">{firstName}</span>
-                <span className="text-gray-400 text-xs">▾</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden md:block">{firstName}</span>
+                <span className="text-gray-400 dark:text-gray-500 text-xs">▾</span>
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-100 rounded-2xl shadow-lg py-2 z-20">
-                  <div className="px-4 py-2.5 border-b border-gray-100 mb-1">
-                    <p className="text-sm font-semibold text-gray-800">{user?.last_name} {user?.first_name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{user?.email}</p>
-                    {isAdmin && <span className="text-xs px-2 py-0.5 mt-1.5 inline-block rounded-full bg-violet-100 text-violet-700 font-medium">Админ</span>}
+                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-2 z-20">
+                  <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 mb-1">
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{user?.last_name} {user?.first_name}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{user?.email}</p>
+                    {isAdmin && <span className="text-xs px-2 py-0.5 mt-1.5 inline-block rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400 font-medium">Админ</span>}
                   </div>
                   <Link to="/profile" onClick={function () { setUserMenuOpen(false); }}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <Icon d={ICONS.profile} size={15} /> Профайл
                   </Link>
                   <Link to="/cv" onClick={function () { setUserMenuOpen(false); }}
-                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <Icon d={ICONS.cv} size={15} /> Миний CV
                   </Link>
-                  <div className="border-t border-gray-100 my-1" />
+                  <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
                   <button onClick={function () { logout(); window.location.href = "/login"; }}
-                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition">
+                    className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <Icon d={ICONS.logout} size={15} /> Гарах
                   </button>
                 </div>
@@ -196,6 +225,8 @@ export default function Layout({ children }) {
           {children}
         </main>
       </div>
+
+      <SearchModal open={searchOpen} onClose={function () { setSearchOpen(false); }} />
     </div>
   );
 }

@@ -43,10 +43,10 @@ function BarChart({ data, color }) {
 
 function StatCard({ label, value, sub, color }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4">
-      <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-      <p className={"text-2xl font-bold " + (color || "text-gray-900")}>{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4">
+      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{label}</p>
+      <p className={"text-2xl font-bold " + (color || "text-gray-900 dark:text-gray-100")}>{value}</p>
+      {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -188,20 +188,20 @@ export default function AdminUsers() {
   var allSelected = users.length > 0 && selected.size === users.length;
   var someSelected = selected.size > 0 && !allSelected;
 
-  var inputCls = "px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
+  var inputCls = "px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 dark:text-gray-100";
 
   return (
     <Layout>
       <div className="p-5 md:p-6 space-y-6">
 
         {/* Admin tabs */}
-        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6">
           {ADMIN_TABS.map(function (tab) {
             var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
             return (
               <Link key={tab.to} to={tab.to}
                 className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
-                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {tab.label}
               </Link>
             );
@@ -211,8 +211,8 @@ export default function AdminUsers() {
         {/* Header */}
         <div>
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Админ</p>
-          <h1 className="text-xl font-bold text-gray-800">Хэрэглэгчдийн удирдлага</h1>
-          <p className="text-sm text-gray-500 mt-1">Бүх хэрэглэгчдийг харах, эрх өөрчлөх, түр хаах, устгах.</p>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Хэрэглэгчдийн удирдлага</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Бүх хэрэглэгчдийг харах, эрх өөрчлөх, түр хаах, устгах.</p>
 
           {/* Inner tabs */}
           <div className="flex gap-1 mt-4">
@@ -221,7 +221,7 @@ export default function AdminUsers() {
               return (
                 <button key={tab} onClick={function () { setActiveTab(tab); }}
                   className={"px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition " +
-                    (activeTab === tab ? "border-violet-600 text-violet-700 bg-violet-50" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                    (activeTab === tab ? "border-violet-600 text-violet-700 bg-violet-50 dark:bg-violet-900/30" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                   {labels[tab]}
                 </button>
               );
@@ -241,16 +241,16 @@ export default function AdminUsers() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-semibold text-gray-800">Шинэ бүртгэл</p>
-                  <p className="text-xs text-gray-400">Сүүлийн 30 хоног</p>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Шинэ бүртгэл</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Сүүлийн 30 хоног</p>
                 </div>
                 <p className="text-2xl font-bold text-violet-700 mb-3">
                   {stats?.daily_registrations ? stats.daily_registrations.reduce(function (s, d) { return s + d.count; }, 0) : "—"}
                 </p>
                 <BarChart data={stats?.daily_registrations} color="#7c3aed" />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
                   {stats?.daily_registrations && (
                     <>
                       <span>{stats.daily_registrations[0]?.date?.slice(5)}</span>
@@ -260,16 +260,16 @@ export default function AdminUsers() {
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-semibold text-gray-800">Шинэ CV</p>
-                  <p className="text-xs text-gray-400">Сүүлийн 30 хоног</p>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Шинэ CV</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">Сүүлийн 30 хоног</p>
                 </div>
                 <p className="text-2xl font-bold text-purple-700 mb-3">
                   {stats?.daily_cvs ? stats.daily_cvs.reduce(function (s, d) { return s + d.count; }, 0) : "—"}
                 </p>
                 <BarChart data={stats?.daily_cvs} color="#7c3aed" />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
                   {stats?.daily_cvs && (
                     <>
                       <span>{stats.daily_cvs[0]?.date?.slice(5)}</span>
@@ -295,7 +295,7 @@ export default function AdminUsers() {
             )}
 
             {/* Search + filters */}
-            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-4">
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4">
               <div className="flex flex-col md:flex-row gap-3">
                 <input
                   value={search}
@@ -340,10 +340,10 @@ export default function AdminUsers() {
             ) : users.length === 0 ? (
               <EmptyState illustration="inbox" title="Хэрэглэгч олдсонгүй" description="Хайлтын нөхцөл өөрчилж үзнэ үү." />
             ) : (
-              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
+                    <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
                       <tr>
                         <th className="px-4 py-3 w-8">
                           <input
@@ -354,22 +354,22 @@ export default function AdminUsers() {
                             className="rounded border-gray-300 accent-violet-600"
                           />
                         </th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Хэрэглэгч</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3 hidden md:table-cell">И-мэйл</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3 hidden lg:table-cell">Утас</th>
-                        <th className="text-center text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">CV</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Эрх</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Төлөв</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3 hidden md:table-cell">Бүртгэсэн</th>
-                        <th className="text-right text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Үйлдэл</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Хэрэглэгч</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3 hidden md:table-cell">И-мэйл</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3 hidden lg:table-cell">Утас</th>
+                        <th className="text-center text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">CV</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Эрх</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Төлөв</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3 hidden md:table-cell">Бүртгэсэн</th>
+                        <th className="text-right text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Үйлдэл</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {users.map(function (u) {
                         var isMe = u.id === me?.id;
                         var isSelected = selected.has(u.id);
                         return (
-                          <tr key={u.id} className={"transition " + (isSelected ? "bg-violet-50" : "hover:bg-gray-50")}>
+                          <tr key={u.id} className={"transition " + (isSelected ? "bg-violet-50 dark:bg-violet-900/20" : "hover:bg-gray-50 dark:hover:bg-gray-700/50")}>
                             <td className="px-4 py-3">
                               <input
                                 type="checkbox"
@@ -385,22 +385,22 @@ export default function AdminUsers() {
                                   <span className="text-white font-bold text-xs">{(u.first_name || "U").charAt(0).toUpperCase()}</span>
                                 </div>
                                 <div className="min-w-0">
-                                  <p className="text-sm font-semibold text-gray-900 truncate">
+                                  <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
                                     {u.last_name} {u.first_name}
-                                    {isMe && <span className="ml-2 text-xs text-gray-400">(Та)</span>}
+                                    {isMe && <span className="ml-2 text-xs text-gray-400 dark:text-gray-500">(Та)</span>}
                                   </p>
-                                  <p className="text-xs text-gray-500 md:hidden truncate">{u.email}</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400 md:hidden truncate">{u.email}</p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-700 hidden md:table-cell">{u.email}</td>
-                            <td className="px-4 py-3 text-sm text-gray-600 hidden lg:table-cell">{u.phone || "—"}</td>
+                            <td className="px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">{u.email}</td>
+                            <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hidden lg:table-cell">{u.phone || "—"}</td>
                             <td className="px-4 py-3 text-sm text-center">
-                              <span className="inline-block min-w-[24px] px-2 py-0.5 bg-gray-100 rounded-lg text-xs font-semibold text-gray-700">{u.cv_count}</span>
+                              <span className="inline-block min-w-[24px] px-2 py-0.5 bg-gray-100 dark:bg-gray-600 rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-300">{u.cv_count}</span>
                             </td>
                             <td className="px-4 py-3">
                               <span className={"text-xs px-2 py-0.5 rounded-lg font-medium border " +
-                                (u.role === "admin" ? "bg-violet-50 text-violet-700 border-violet-200" : "bg-gray-50 text-gray-700 border-gray-200")}>
+                                (u.role === "admin" ? "bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-800" : "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600")}>
                                 {u.role === "admin" ? "Админ" : "Хэрэглэгч"}
                               </span>
                             </td>
@@ -420,7 +420,7 @@ export default function AdminUsers() {
                               ) : (
                                 <div className="flex justify-end flex-wrap gap-1">
                                   <button onClick={function () { toggleRole(u); }}
-                                    className="text-xs px-2 py-1 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg font-medium transition whitespace-nowrap">
+                                    className="text-xs px-2 py-1 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition whitespace-nowrap">
                                     {u.role === "admin" ? "Хэрэглэгч" : "Админ"}
                                   </button>
                                   <button onClick={function () { toggleActive(u); }}
@@ -459,30 +459,30 @@ export default function AdminUsers() {
             ) : logs.length === 0 ? (
               <EmptyState illustration="inbox" title="Лог байхгүй" description="Одоогоор хандалтын бүртгэл алга байна." />
             ) : (
-              <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-100">
+                    <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
                       <tr>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Огноо / Цаг</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Хэрэглэгч</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3">Үйлдэл</th>
-                        <th className="text-left text-xs font-semibold text-gray-600 uppercase tracking-wide px-4 py-3 hidden md:table-cell">IP хаяг</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Огноо / Цаг</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Хэрэглэгч</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Үйлдэл</th>
+                        <th className="text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3 hidden md:table-cell">IP хаяг</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {logs.map(function (log) {
                         return (
-                          <tr key={log.id} className="hover:bg-gray-50 transition">
-                            <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">{new Date(log.created_at).toLocaleString("mn-MN")}</td>
+                          <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                            <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">{new Date(log.created_at).toLocaleString("mn-MN")}</td>
                             <td className="px-4 py-3">
                               {log.user ? (
                                 <div>
-                                  <p className="text-sm font-medium text-gray-900">{log.user.name}</p>
-                                  <p className="text-xs text-gray-500">{log.user.email}</p>
+                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{log.user.name}</p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">{log.user.email}</p>
                                 </div>
                               ) : (
-                                <span className="text-xs text-gray-400 italic">Устгагдсан хэрэглэгч</span>
+                                <span className="text-xs text-gray-400 dark:text-gray-500 italic">Устгагдсан хэрэглэгч</span>
                               )}
                             </td>
                             <td className="px-4 py-3">
@@ -490,12 +490,12 @@ export default function AdminUsers() {
                                 log.action === "login" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
                                 log.action === "password_change" ? "bg-amber-50 text-amber-700 border-amber-200" :
                                 log.action === "account_delete" ? "bg-red-50 text-red-700 border-red-200" :
-                                "bg-gray-50 text-gray-700 border-gray-200"
+                                "bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600"
                               )}>
                                 {ACTION_LABELS[log.action] || log.action}
                               </span>
                             </td>
-                            <td className="px-4 py-3 text-xs text-gray-500 hidden md:table-cell font-mono">{log.ip_address || "—"}</td>
+                            <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 hidden md:table-cell font-mono">{log.ip_address || "—"}</td>
                           </tr>
                         );
                       })}

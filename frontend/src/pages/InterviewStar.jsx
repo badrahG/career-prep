@@ -79,10 +79,10 @@ export default function InterviewStar() {
   var answeredCount = Object.keys(savedAnswers).length;
 
   var starFields = [
-    { key: "situation", letter: "S", name: "Situation (Нөхцөл байдал)", placeholder: "Ямар нөхцөлд байсан бэ? Хаана, хэзээ, ямар орчин байсан...", color: "bg-blue-50 border-blue-200 text-blue-700" },
-    { key: "task",      letter: "T", name: "Task (Үүрэг)",              placeholder: "Таны даалгавар, үүрэг, зорилт юу байсан бэ?...",               color: "bg-purple-50 border-purple-200 text-purple-700" },
-    { key: "action",    letter: "A", name: "Action (Хийсэн үйлдэл)",    placeholder: "Та тодорхой юу хийсэн бэ? Яаж шийдсэн бэ?...",                color: "bg-amber-50 border-amber-200 text-amber-700" },
-    { key: "result",    letter: "R", name: "Result (Үр дүн)",            placeholder: "Ямар үр дүн гарсан бэ? Тоон үзүүлэлт оруулж чадвал сайн...", color: "bg-emerald-50 border-emerald-200 text-emerald-700" },
+    { key: "situation", letter: "S", name: "Situation (Нөхцөл байдал)", placeholder: "Ямар нөхцөлд байсан бэ? Хаана, хэзээ, ямар орчин байсан...", color: "bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300" },
+    { key: "task",      letter: "T", name: "Task (Үүрэг)",              placeholder: "Таны даалгавар, үүрэг, зорилт юу байсан бэ?...",               color: "bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300" },
+    { key: "action",    letter: "A", name: "Action (Хийсэн үйлдэл)",    placeholder: "Та тодорхой юу хийсэн бэ? Яаж шийдсэн бэ?...",                color: "bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300" },
+    { key: "result",    letter: "R", name: "Result (Үр дүн)",            placeholder: "Ямар үр дүн гарсан бэ? Тоон үзүүлэлт оруулж чадвал сайн...", color: "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300" },
   ];
 
   if (loading) {
@@ -110,36 +110,36 @@ export default function InterviewStar() {
     <Layout>
       <div className="p-5 md:p-6">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-5">
+        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-5">
           <Link to="/interview" className="hover:text-violet-600 transition">Ярилцлага</Link>
           <span>/</span>
-          <span className="text-gray-600 font-medium">STAR дадлага</span>
-          <span className="ml-auto text-gray-400">Дуусгасан: <span className="font-semibold text-violet-600">{answeredCount}</span> / {questions.length}</span>
+          <span className="text-gray-600 dark:text-gray-300 font-medium">STAR дадлага</span>
+          <span className="ml-auto text-gray-400 dark:text-gray-500">Дуусгасан: <span className="font-semibold text-violet-600">{answeredCount}</span> / {questions.length}</span>
         </div>
 
         {/* Header */}
         <div className="mb-5">
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Дадлага горим</p>
-          <h1 className="text-xl font-bold text-gray-800">STAR арга</h1>
-          <p className="text-sm text-gray-500 mt-1">Зан үйлийн асуултад 4 хэсэгт хариулж, мэргэжилтний жишээтэй харьцуулна уу.</p>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">STAR арга</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Зан үйлийн асуултад 4 хэсэгт хариулж, мэргэжилтний жишээтэй харьцуулна уу.</p>
         </div>
 
         {/* Progress */}
         <div className="mb-4">
-          <div className="flex items-center justify-between mb-2 text-xs text-gray-400">
+          <div className="flex items-center justify-between mb-2 text-xs text-gray-400 dark:text-gray-500">
             <span>Асуулт {currentIndex + 1} / {questions.length}</span>
             <span>{progress}% бөглөсөн</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5">
+          <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
             <div className="bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full h-1.5 transition-all duration-300" style={{ width: progress + "%" }} />
           </div>
         </div>
 
         {/* Question */}
-        <div className="bg-white border-2 border-violet-400 rounded-2xl mb-5">
+        <div className="bg-white dark:bg-gray-800 border-2 border-violet-400 rounded-2xl mb-5">
           <div className="p-6">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Асуулт</p>
-            <h2 className="text-lg md:text-xl font-bold text-gray-800 leading-relaxed">{currentQuestion.question_mn}</h2>
+            <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Асуулт</p>
+            <h2 className="text-lg md:text-xl font-bold text-gray-800 dark:text-gray-200 leading-relaxed">{currentQuestion.question_mn}</h2>
           </div>
         </div>
 
@@ -147,8 +147,8 @@ export default function InterviewStar() {
         <div className="space-y-4 mb-5">
           {starFields.map(function (field) {
             return (
-              <div key={field.key} className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                <div className={"px-5 py-3 border-b border-gray-100 flex items-center gap-3 " + field.color}>
+              <div key={field.key} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+                <div className={"px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3 " + field.color}>
                   <div className="w-8 h-8 bg-white border-2 border-current rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
                     {field.letter}
                   </div>
@@ -161,7 +161,7 @@ export default function InterviewStar() {
                     onChange={function (e) { updStar(field.key, e.target.value); }}
                     placeholder={field.placeholder}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition resize-vertical"
+                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition resize-vertical bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                   />
                 </div>
               </div>
@@ -182,14 +182,14 @@ export default function InterviewStar() {
             </button>
             {totalChars > 0 && (
               <button onClick={clearAnswer}
-                className="px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
+                className="px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 Цэвэрлэх
               </button>
             )}
           </div>
           <div className="flex gap-2">
             <button onClick={goPrev} disabled={currentIndex === 0}
-              className="px-4 py-2.5 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition">
+              className="px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed transition">
               ← Өмнөх
             </button>
             <button onClick={goNext} disabled={currentIndex === questions.length - 1}
@@ -201,8 +201,8 @@ export default function InterviewStar() {
 
         {/* Expert sample */}
         {showSample && currentQuestion.sample_answer && (
-          <div className="bg-white border-2 border-amber-300 rounded-2xl shadow-sm mb-5 overflow-hidden">
-            <div className="px-6 py-4 bg-amber-50 border-b border-amber-200">
+          <div className="bg-white dark:bg-gray-800 border-2 border-amber-300 rounded-2xl shadow-sm mb-5 overflow-hidden">
+            <div className="px-6 py-4 bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800">
               <h3 className="text-base font-bold text-amber-900 flex items-center gap-2">
                 <span>💡</span>
                 <span>Мэргэжилтний жишээ хариулт</span>
@@ -210,7 +210,7 @@ export default function InterviewStar() {
               <p className="text-xs text-amber-800 mt-0.5">Өөрийн хариулттайгаа харьцуулж, сайжруулах боломжоо ол.</p>
             </div>
             <div className="p-6">
-              <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-line">{currentQuestion.sample_answer}</p>
+              <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line">{currentQuestion.sample_answer}</p>
               {currentQuestion.advice && (
                 <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
                   <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1.5">Зөвлөмж</p>
@@ -222,8 +222,8 @@ export default function InterviewStar() {
         )}
 
         {/* Question selector grid */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Асуулт сонгох</p>
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-5">
+          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-3">Асуулт сонгох</p>
           <div className="flex flex-wrap gap-2">
             {questions.map(function (q, i) {
               var isAnswered = savedAnswers[q.id];
@@ -232,18 +232,18 @@ export default function InterviewStar() {
                 <button key={q.id} onClick={function () { setCurrentIndex(i); }} title={q.question_mn}
                   className={"w-9 h-9 rounded-lg text-xs font-semibold transition " + (
                     isCurrent ? "bg-violet-600 text-white" :
-                    isAnswered ? "bg-emerald-100 text-emerald-700 border border-emerald-300" :
-                    "bg-gray-100 text-gray-500 border border-gray-200 hover:bg-gray-200"
+                    isAnswered ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800" :
+                    "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600"
                   )}>
                   {i + 1}
                 </button>
               );
             })}
           </div>
-          <div className="mt-3 flex gap-4 text-xs text-gray-400">
+          <div className="mt-3 flex gap-4 text-xs text-gray-400 dark:text-gray-500">
             <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-violet-600 rounded-sm" />Одоо</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-emerald-100 border border-emerald-300 rounded-sm" />Хадгалсан</span>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-100 border border-gray-200 rounded-sm" />Хоосон</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-800 rounded-sm" />Хадгалсан</span>
+            <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-sm" />Хоосон</span>
           </div>
         </div>
       </div>

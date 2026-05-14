@@ -16,11 +16,9 @@ export default function Profile() {
   });
   var [saving, setSaving] = useState(false);
 
-  // Password change state
   var [pwForm, setPwForm] = useState({ old_password: "", new_password: "", confirm_password: "" });
   var [pwSaving, setPwSaving] = useState(false);
 
-  // Delete account state
   var [showDeleteModal, setShowDeleteModal] = useState(false);
   var [deleteConfirm, setDeleteConfirm] = useState("");
   var [deleting, setDeleting] = useState(false);
@@ -93,35 +91,35 @@ export default function Profile() {
   }
 
   var initial = (user?.first_name || "U").charAt(0).toUpperCase();
-  var inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-300 transition";
-  var labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-300 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100";
+  var labelCls = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5";
 
   return (
     <Layout>
       <div className="p-5 md:p-6 max-w-3xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Миний профайл</h1>
-          <p className="text-sm text-gray-500 mt-1">Хувийн мэдээллээ харах, засах.</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Миний профайл</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Хувийн мэдээллээ харах, засах.</p>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-5">
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm mb-5">
           <div className="p-6 flex items-center gap-4">
             <div className="w-16 h-16 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow">
               <span className="text-white font-bold text-2xl">{initial}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold text-gray-800">{user?.last_name} {user?.first_name}</h2>
-              <p className="text-sm text-gray-500 truncate">{user?.email}</p>
-              <span className={"text-xs px-2 py-0.5 rounded-full font-medium mt-1.5 inline-block " + (user?.role === "admin" ? "bg-violet-100 text-violet-700" : "bg-gray-100 text-gray-600")}>
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">{user?.last_name} {user?.first_name}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+              <span className={"text-xs px-2 py-0.5 rounded-full font-medium mt-1.5 inline-block " + (user?.role === "admin" ? "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-400" : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400")}>
                 {user?.role === "admin" ? "Админ" : "Хэрэглэгч"}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-5">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-base font-semibold text-gray-800">Профайл засах</h2>
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm mb-5">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+            <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">Профайл засах</h2>
           </div>
           <form onSubmit={handleSave} className="p-6 space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -136,8 +134,8 @@ export default function Profile() {
             </div>
             <div>
               <label className={labelCls}>И-мэйл</label>
-              <input value={user?.email || ""} disabled className="w-full px-4 py-2.5 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
-              <p className="text-xs text-gray-400 mt-1">И-мэйл хаягийг өөрчлөх боломжгүй.</p>
+              <input value={user?.email || ""} disabled className="w-full px-4 py-2.5 border border-gray-100 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed" />
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">И-мэйл хаягийг өөрчлөх боломжгүй.</p>
             </div>
             <div>
               <label className={labelCls}>Утас</label>
@@ -145,9 +143,9 @@ export default function Profile() {
             </div>
             <div>
               <label className={labelCls}>Бүртгүүлсэн огноо</label>
-              <input value={user?.created_at ? new Date(user.created_at).toLocaleDateString("mn-MN") : ""} disabled className="w-full px-4 py-2.5 border border-gray-100 rounded-xl text-sm bg-gray-50 text-gray-400 cursor-not-allowed" />
+              <input value={user?.created_at ? new Date(user.created_at).toLocaleDateString("mn-MN") : ""} disabled className="w-full px-4 py-2.5 border border-gray-100 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed" />
             </div>
-            <div className="flex justify-end pt-4 border-t border-gray-100">
+            <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
               <button type="submit" disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
                 {saving ? "Хадгалж байна..." : "Хадгалах"}
               </button>
@@ -155,9 +153,9 @@ export default function Profile() {
           </form>
         </div>
 
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm mb-5">
-          <div className="px-6 py-4 border-b border-gray-100">
-            <h2 className="text-base font-semibold text-gray-800">Нууц үг солих</h2>
+        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm mb-5">
+          <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+            <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">Нууц үг солих</h2>
           </div>
           <form onSubmit={handlePasswordChange} className="p-6 space-y-4">
             <div>
@@ -172,7 +170,7 @@ export default function Profile() {
               <label className={labelCls}>Шинэ нууц үг давтах <span className="text-red-500">*</span></label>
               <input type="password" value={pwForm.confirm_password} onChange={function (e) { updPw("confirm_password", e.target.value); }} placeholder="Дахин оруулна уу" className={inputCls} autoComplete="new-password" />
             </div>
-            <div className="flex justify-end pt-4 border-t border-gray-100">
+            <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
               <button type="submit" disabled={pwSaving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
                 {pwSaving ? "Солиж байна..." : "Нууц үг солих"}
               </button>
@@ -180,17 +178,17 @@ export default function Profile() {
           </form>
         </div>
 
-        <div className="bg-white border border-red-100 rounded-2xl shadow-sm">
-          <div className="px-6 py-4 border-b border-red-100 bg-red-50 rounded-t-2xl">
-            <h2 className="text-base font-semibold text-red-700">Аюултай үйлдэл</h2>
+        <div className="bg-white dark:bg-gray-800 border border-red-100 dark:border-red-900/50 rounded-2xl shadow-sm">
+          <div className="px-6 py-4 border-b border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 rounded-t-2xl">
+            <h2 className="text-base font-semibold text-red-700 dark:text-red-400">Аюултай үйлдэл</h2>
           </div>
           <div className="p-6 flex items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-800">Бүртгэл устгах</p>
-              <p className="text-xs text-gray-500 mt-1">Таны бүх өгөгдөл бүрмөсөн устгагдана. Буцаах боломжгүй.</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Бүртгэл устгах</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Таны бүх өгөгдөл бүрмөсөн устгагдана. Буцаах боломжгүй.</p>
             </div>
             <button type="button" onClick={function () { setShowDeleteModal(true); }}
-              className="px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-semibold hover:bg-red-50 transition whitespace-nowrap">
+              className="px-4 py-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-xl text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition whitespace-nowrap">
               Бүртгэл устгах
             </button>
           </div>
@@ -199,22 +197,22 @@ export default function Profile() {
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl max-w-md w-full shadow-2xl">
-            <div className="p-6 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800">Бүртгэл устгахдаа итгэлтэй байна уу?</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full shadow-2xl">
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">Бүртгэл устгахдаа итгэлтэй байна уу?</h3>
             </div>
             <div className="p-6 space-y-4">
-              <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                <p className="text-sm text-red-700"><strong>Анхааруулга:</strong> Таны бүх CV, профайл, өгөгдөл бүрмөсөн устгагдана.</p>
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl p-4">
+                <p className="text-sm text-red-700 dark:text-red-400"><strong>Анхааруулга:</strong> Таны бүх CV, профайл, өгөгдөл бүрмөсөн устгагдана.</p>
               </div>
               <div>
                 <label className={labelCls}>Баталгаажуулахын тулд <span className="font-bold text-red-600">УСТГАХ</span> гэж бичнэ үү:</label>
                 <input value={deleteConfirm} onChange={function (e) { setDeleteConfirm(e.target.value); }} placeholder="УСТГАХ" className={inputCls} autoFocus />
               </div>
             </div>
-            <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+            <div className="p-6 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3">
               <button type="button" onClick={function () { setShowDeleteModal(false); setDeleteConfirm(""); }} disabled={deleting}
-                className="px-5 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                className="px-5 py-2 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                 Цуцлах
               </button>
               <button type="button" onClick={handleDeleteAccount} disabled={deleting || deleteConfirm !== "УСТГАХ"}

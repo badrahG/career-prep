@@ -43,13 +43,13 @@ export default function Home() {
       preview: "modern",
     },
     {
-      name: "Classic",
-      tagline: "Сонгодог, албан ёсны",
+      name: "Ази загвар",
+      tagline: "Цэгцтэй, бүрэн мэдээлэлтэй",
       desc: "Санхүү, эрх зүй, боловсролын салбарт тохиромжтой загвар.",
       preview: "classic",
     },
     {
-      name: "European CV",
+      name: "Европ загвар",
       tagline: "Цэвэр, achievement-focused",
       desc: "Олон улсын болон modern ажлын орчинд тохирох, агуулга төвтэй загвар.",
       preview: "minimal",
@@ -64,24 +64,24 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Nav */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-30">
+      <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
               <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
             <div>
-              <div className="text-base font-bold text-gray-900 leading-none">CareerPrep</div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">Career Platform</div>
+              <div className="text-base font-bold text-gray-900 dark:text-gray-100 leading-none">CareerPrep</div>
+              <div className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-0.5">Career Platform</div>
             </div>
           </Link>
 
           <div className="hidden md:flex items-center gap-6 text-sm">
-            <a href="#features" className="text-gray-500 hover:text-gray-900 font-medium transition">Боломжууд</a>
-            <a href="#templates" className="text-gray-500 hover:text-gray-900 font-medium transition">CV Загвар</a>
-            <a href="#how" className="text-gray-500 hover:text-gray-900 font-medium transition">Хэрхэн ажилладаг</a>
+            <a href="#features" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium transition">Боломжууд</a>
+            <a href="#templates" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium transition">CV Загвар</a>
+            <a href="#how" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 font-medium transition">Хэрхэн ажилладаг</a>
           </div>
 
           <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export default function Home() {
               </Link>
             ) : (
               <>
-                <Link to="/login" className="hidden md:inline-block px-4 py-2 text-gray-600 hover:text-gray-900 text-sm font-medium transition">Нэвтрэх</Link>
+                <Link to="/login" className="hidden md:inline-block px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium transition">Нэвтрэх</Link>
                 <Link to="/register" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition">
                   Эхлэх →
                 </Link>
@@ -102,7 +102,7 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="relative bg-gradient-to-br from-violet-50 via-white to-indigo-50 border-b border-gray-100 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-violet-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 border-b border-gray-100 dark:border-gray-800 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-violet-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
           <div className="absolute top-1/2 -left-32 w-80 h-80 bg-gradient-to-br from-indigo-400/15 to-violet-400/15 rounded-full blur-3xl"></div>
@@ -112,17 +112,17 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-16 md:py-24 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 bg-violet-50 border border-violet-200 text-violet-700 px-3 py-1.5 rounded-lg text-xs font-semibold mb-6">
+              <div className="inline-flex items-center gap-2 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-400 px-3 py-1.5 rounded-lg text-xs font-semibold mb-6">
                 <span className="w-1.5 h-1.5 bg-violet-600 rounded-full"></span>
                 Залуучуудад зориулсан платформ
               </div>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-5">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 leading-tight mb-5">
                 Ажилдаа бэлэн бол,<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">амжилтанд ойрхон</span>
               </h1>
 
-              <p className="text-base md:text-lg text-gray-500 leading-relaxed mb-8 max-w-lg">
+              <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-lg">
                 CV үүсгэх, ярилцлагад бэлтгэх, тэтгэлгийн мэдээлэл авах бүх зүйлсийг нэг газраас. Үнэгүй ашиглаарай.
               </p>
 
@@ -136,14 +136,14 @@ export default function Home() {
                     <Link to="/register" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
                       Үнэгүй эхлэх →
                     </Link>
-                    <a href="#features" className="border border-gray-200 text-gray-700 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 transition">
+                    <a href="#features" className="border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                       Дэлгэрэнгүй үзэх
                     </a>
                   </>
                 )}
               </div>
 
-              <div className="flex items-center gap-6 text-xs text-gray-400">
+              <div className="flex items-center gap-6 text-xs text-gray-400 dark:text-gray-500">
                 <div className="flex items-center gap-2">
                   <span className="text-emerald-500">✓</span>
                   <span>Үнэгүй</span>
@@ -162,45 +162,45 @@ export default function Home() {
             {/* Right: decorative CV mockup */}
             <div className="hidden lg:block">
               <div className="relative">
-                <div className="absolute top-8 right-8 bg-white border border-gray-100 rounded-xl shadow-sm w-72 opacity-40 transform rotate-3">
+                <div className="absolute top-8 right-8 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm w-72 opacity-40 transform rotate-3">
                   <div className="h-2 bg-gradient-to-r from-violet-300 to-indigo-300 rounded-t-xl"></div>
                   <div className="p-4 space-y-2">
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    <div className="h-2 bg-gray-100 rounded w-2/3"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/2"></div>
+                    <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded w-2/3"></div>
                   </div>
                 </div>
 
-                <div className="relative bg-white border border-gray-100 rounded-2xl shadow-lg w-80 mx-auto transform -rotate-1 hover:rotate-0 transition duration-500">
+                <div className="relative bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg w-80 mx-auto transform -rotate-1 hover:rotate-0 transition duration-500">
                   <div className="h-2 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-t-2xl"></div>
                   <div className="p-6">
-                    <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                       <div className="w-16 h-16 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center">
                         <span className="text-violet-400 text-xs font-bold">CP</span>
                       </div>
                       <div className="flex-1">
-                        <div className="h-4 bg-gray-800 rounded w-32 mb-1.5"></div>
-                        <div className="h-2 bg-gray-200 rounded w-20 mb-1"></div>
-                        <div className="h-2 bg-gray-100 rounded w-24"></div>
+                        <div className="h-4 bg-gray-800 dark:bg-gray-300 rounded w-32 mb-1.5"></div>
+                        <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-1"></div>
+                        <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded w-24"></div>
                       </div>
                     </div>
                     <div className="space-y-3">
                       <div>
                         <div className="h-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded w-16 mb-2"></div>
-                        <div className="h-1.5 bg-gray-100 rounded w-full mb-1"></div>
-                        <div className="h-1.5 bg-gray-100 rounded w-4/5"></div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-4/5"></div>
                       </div>
                       <div>
                         <div className="h-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded w-20 mb-2"></div>
-                        <div className="h-1.5 bg-gray-100 rounded w-full mb-1"></div>
-                        <div className="h-1.5 bg-gray-100 rounded w-3/4 mb-1"></div>
-                        <div className="h-1.5 bg-gray-100 rounded w-5/6"></div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-3/4 mb-1"></div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-5/6"></div>
                       </div>
                       <div>
                         <div className="h-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded w-14 mb-2"></div>
                         <div className="flex flex-wrap gap-1">
-                          <div className="h-4 bg-violet-50 border border-violet-100 rounded-lg px-2 w-12"></div>
-                          <div className="h-4 bg-violet-50 border border-violet-100 rounded-lg px-2 w-10"></div>
-                          <div className="h-4 bg-violet-50 border border-violet-100 rounded-lg px-2 w-14"></div>
+                          <div className="h-4 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-lg px-2 w-12"></div>
+                          <div className="h-4 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-lg px-2 w-10"></div>
+                          <div className="h-4 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-lg px-2 w-14"></div>
                         </div>
                       </div>
                     </div>
@@ -211,7 +211,7 @@ export default function Home() {
           </div>
 
           {/* Stats row */}
-          <div className="mt-16 pt-16 border-t border-gray-100 grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="mt-16 pt-16 border-t border-gray-100 dark:border-gray-700 grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { value: "3", label: "CV загвар" },
               { value: "25+", label: "Ярилцлагын асуулт" },
@@ -221,7 +221,7 @@ export default function Home() {
               return (
                 <div key={i} className="text-center">
                   <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">{s.value}</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wide mt-2">{s.label}</div>
+                  <div className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mt-2">{s.label}</div>
                 </div>
               );
             })}
@@ -230,12 +230,12 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-16 md:py-20 bg-white">
+      <section id="features" className="py-16 md:py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Боломжууд</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Бүх шаардлагатай зүйл нэг газар</h2>
-            <p className="text-base text-gray-500 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">Бүх шаардлагатай зүйл нэг газар</h2>
+            <p className="text-base text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
               Ажлын хайлтын бүх шатанд танд тус болох 4 гол модуль.
             </p>
           </div>
@@ -244,12 +244,12 @@ export default function Home() {
             {features.map(function (f, i) {
               return (
                 <Link key={i} to={f.link}
-                  className="bg-white border border-gray-100 rounded-2xl p-6 hover:border-violet-200 hover:shadow-md transition group shadow-sm">
+                  className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 hover:border-violet-200 dark:hover:border-violet-600 hover:shadow-md transition group shadow-sm">
                   <div className={"w-12 h-12 rounded-xl flex items-center justify-center mb-4 " + f.color}>
                     <span className="text-white font-bold text-sm">{f.icon}</span>
                   </div>
-                  <h3 className="text-base font-bold text-gray-800 mb-2 group-hover:text-violet-700 transition">{f.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">{f.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
                   <div className="mt-4 text-xs text-violet-600 font-semibold opacity-0 group-hover:opacity-100 transition">
                     Үзэх →
                   </div>
@@ -261,12 +261,12 @@ export default function Home() {
       </section>
 
       {/* CV Templates */}
-      <section id="templates" className="py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white border-t border-gray-100">
+      <section id="templates" className="py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 border-t border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">CV Загварууд</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">3 мэргэжлийн загвар</h2>
-            <p className="text-base text-gray-500 max-w-2xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">3 мэргэжлийн загвар</h2>
+            <p className="text-base text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
               Таны мэргэжилд тохирсон загвар сонгож, хувийн мэдээллээ оруулан CV үүсгэнэ.
             </p>
           </div>
@@ -274,8 +274,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {templates.map(function (t, i) {
               return (
-                <div key={i} className="bg-white border border-gray-100 rounded-2xl overflow-hidden hover:border-violet-200 hover:shadow-md transition group shadow-sm">
-                  <div className="aspect-[210/297] bg-white p-4 border-b border-gray-100 relative overflow-hidden">
+                <div key={i} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-violet-200 dark:hover:border-violet-600 hover:shadow-md transition group shadow-sm">
+                  <div className="aspect-[210/297] bg-white dark:bg-gray-800 p-4 border-b border-gray-100 dark:border-gray-700 relative overflow-hidden">
                     {t.preview === "modern" && (
                       <div className="h-full flex flex-col">
                         <div className="bg-gradient-to-r from-violet-600 to-indigo-600 -mx-4 -mt-4 px-4 py-3 mb-3">
@@ -285,22 +285,22 @@ export default function Home() {
                         <div className="space-y-3">
                           <div>
                             <div className="h-1.5 bg-violet-500 rounded w-14 mb-1.5"></div>
-                            <div className="h-1 bg-gray-100 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-4/6"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6 mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-4/6"></div>
                           </div>
                           <div>
                             <div className="h-1.5 bg-violet-500 rounded w-20 mb-1.5"></div>
-                            <div className="h-1 bg-gray-100 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-3/4"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6 mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-3/4"></div>
                           </div>
                           <div>
                             <div className="h-1.5 bg-violet-500 rounded w-12 mb-1.5"></div>
                             <div className="flex gap-1 flex-wrap">
-                              <div className="h-3 bg-violet-50 border border-violet-200 rounded px-2 w-10"></div>
-                              <div className="h-3 bg-violet-50 border border-violet-200 rounded px-2 w-12"></div>
-                              <div className="h-3 bg-violet-50 border border-violet-200 rounded px-2 w-8"></div>
+                              <div className="h-3 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 rounded px-2 w-10"></div>
+                              <div className="h-3 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 rounded px-2 w-12"></div>
+                              <div className="h-3 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 rounded px-2 w-8"></div>
                             </div>
                           </div>
                         </div>
@@ -308,30 +308,30 @@ export default function Home() {
                     )}
                     {t.preview === "classic" && (
                       <div className="h-full flex flex-col">
-                        <div className="text-center pb-3 mb-3 border-b-2 border-gray-800">
-                          <div className="h-3 bg-gray-800 rounded w-32 mx-auto mb-1"></div>
-                          <div className="h-1.5 bg-gray-400 rounded w-20 mx-auto"></div>
+                        <div className="text-center pb-3 mb-3 border-b-2 border-gray-800 dark:border-gray-300">
+                          <div className="h-3 bg-gray-800 dark:bg-gray-300 rounded w-32 mx-auto mb-1"></div>
+                          <div className="h-1.5 bg-gray-400 dark:bg-gray-500 rounded w-20 mx-auto"></div>
                         </div>
                         <div className="space-y-2.5">
                           <div>
-                            <div className="h-1.5 bg-gray-800 rounded w-14 mb-1"></div>
-                            <div className="border-b border-gray-200 mb-1.5"></div>
-                            <div className="h-1 bg-gray-200 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-200 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-200 rounded w-4/6"></div>
+                            <div className="h-1.5 bg-gray-800 dark:bg-gray-300 rounded w-14 mb-1"></div>
+                            <div className="border-b border-gray-200 dark:border-gray-600 mb-1.5"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-5/6 mb-1"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-4/6"></div>
                           </div>
                           <div>
-                            <div className="h-1.5 bg-gray-800 rounded w-20 mb-1"></div>
-                            <div className="border-b border-gray-200 mb-1.5"></div>
-                            <div className="h-1 bg-gray-200 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-200 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-200 rounded w-3/4"></div>
+                            <div className="h-1.5 bg-gray-800 dark:bg-gray-300 rounded w-20 mb-1"></div>
+                            <div className="border-b border-gray-200 dark:border-gray-600 mb-1.5"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-5/6 mb-1"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
                           </div>
                           <div>
-                            <div className="h-1.5 bg-gray-800 rounded w-16 mb-1"></div>
-                            <div className="border-b border-gray-200 mb-1.5"></div>
-                            <div className="h-1 bg-gray-200 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+                            <div className="h-1.5 bg-gray-800 dark:bg-gray-300 rounded w-16 mb-1"></div>
+                            <div className="border-b border-gray-200 dark:border-gray-600 mb-1.5"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-4/5"></div>
                           </div>
                         </div>
                       </div>
@@ -339,25 +339,25 @@ export default function Home() {
                     {t.preview === "minimal" && (
                       <div className="h-full flex flex-col">
                         <div className="pb-3 mb-3">
-                          <div className="h-4 bg-gray-900 rounded w-32 mb-1"></div>
-                          <div className="h-1 bg-gray-300 rounded w-24"></div>
+                          <div className="h-4 bg-gray-900 dark:bg-gray-200 rounded w-32 mb-1"></div>
+                          <div className="h-1 bg-gray-300 dark:bg-gray-500 rounded w-24"></div>
                         </div>
                         <div className="space-y-4">
                           <div>
-                            <div className="h-1 bg-gray-900 rounded w-14 mb-2"></div>
-                            <div className="h-1 bg-gray-100 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-5/6"></div>
+                            <div className="h-1 bg-gray-900 dark:bg-gray-200 rounded w-14 mb-2"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6"></div>
                           </div>
                           <div>
-                            <div className="h-1 bg-gray-900 rounded w-20 mb-2"></div>
-                            <div className="h-1 bg-gray-100 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-4/5 mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-3/4"></div>
+                            <div className="h-1 bg-gray-900 dark:bg-gray-200 rounded w-20 mb-2"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-4/5 mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-3/4"></div>
                           </div>
                           <div>
-                            <div className="h-1 bg-gray-900 rounded w-12 mb-2"></div>
-                            <div className="h-1 bg-gray-100 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 rounded w-5/6"></div>
+                            <div className="h-1 bg-gray-900 dark:bg-gray-200 rounded w-12 mb-2"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6"></div>
                           </div>
                         </div>
                       </div>
@@ -366,11 +366,11 @@ export default function Home() {
 
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-1">
-                      <h3 className="text-lg font-bold text-gray-800 group-hover:text-violet-700 transition">{t.name}</h3>
-                      <span className="text-xs bg-violet-50 text-violet-600 border border-violet-100 px-2 py-0.5 rounded-lg font-medium">Үнэгүй</span>
+                      <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">{t.name}</h3>
+                      <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-lg font-medium">Үнэгүй</span>
                     </div>
                     <p className="text-xs text-violet-600 font-semibold mb-2">{t.tagline}</p>
-                    <p className="text-sm text-gray-500 leading-relaxed">{t.desc}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{t.desc}</p>
                   </div>
                 </div>
               );
@@ -392,12 +392,12 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section id="how" className="py-16 md:py-20 bg-white border-t border-gray-100">
+      <section id="how" className="py-16 md:py-20 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Хэрхэн ажилладаг</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">4 алхамд ажилд ойртоно</h2>
-            <p className="text-base text-gray-500 max-w-2xl mx-auto">Энгийн бөгөөд үр дүнтэй үйл явц.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">4 алхамд ажилд ойртоно</h2>
+            <p className="text-base text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">Энгийн бөгөөд үр дүнтэй үйл явц.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -405,14 +405,14 @@ export default function Home() {
               return (
                 <div key={i} className="relative">
                   {i < steps.length - 1 && (
-                    <div className="hidden lg:block absolute top-6 left-[calc(50%+32px)] right-0 h-0.5 bg-gray-100"></div>
+                    <div className="hidden lg:block absolute top-6 left-[calc(50%+32px)] right-0 h-0.5 bg-gray-100 dark:bg-gray-700"></div>
                   )}
-                  <div className="bg-white border border-gray-100 rounded-2xl p-6 hover:border-violet-200 transition relative z-10 shadow-sm">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 hover:border-violet-200 dark:hover:border-violet-600 transition relative z-10 shadow-sm">
                     <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-4 shadow-sm">
                       {s.num}
                     </div>
-                    <h3 className="text-base font-bold text-gray-800 mb-2">{s.title}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+                    <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2">{s.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{s.desc}</p>
                   </div>
                 </div>
               );
@@ -422,16 +422,16 @@ export default function Home() {
       </section>
 
       {/* Why choose us */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white border-t border-gray-100">
+      <section className="py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 border-t border-gray-100 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Яагаад CareerPrep</p>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-5">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-5">
                 Залуучуудын карьерын замд<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">итгэлтэй түнш</span>
               </h2>
-              <p className="text-base text-gray-500 leading-relaxed mb-6">
+              <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                 Оюутан, шинэ төгсөгчдөд зориулсан бүрэн цогц платформ. Туршлагагүй байсан ч мэргэжлийн түвшинд CV үүсгэж, ярилцлагад итгэлтэйгээр орох боломжтой.
               </p>
               <ul className="space-y-3">
@@ -444,7 +444,7 @@ export default function Home() {
                   return (
                     <li key={i} className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 text-sm font-bold mt-0.5">✓</div>
-                      <span className="text-sm text-gray-600 leading-relaxed">{item}</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item}</span>
                     </li>
                   );
                 })}
@@ -453,10 +453,10 @@ export default function Home() {
 
             <div className="grid grid-cols-2 gap-4">
               {[
-                { num: "3", label: "CV загвар", color: "bg-violet-50 border-violet-200 text-violet-700" },
-                { num: "25+", label: "Ярилцлагын асуулт", color: "bg-indigo-50 border-indigo-200 text-indigo-700" },
-                { num: "16+", label: "Карьерын зөвлөмж", color: "bg-emerald-50 border-emerald-200 text-emerald-700" },
-                { num: "6+", label: "Дотоодын тэтгэлэг", color: "bg-amber-50 border-amber-200 text-amber-700" },
+                { num: "3", label: "CV загвар", color: "bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-700 text-violet-700 dark:text-violet-400" },
+                { num: "25+", label: "Ярилцлагын асуулт", color: "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-200 dark:border-indigo-700 text-indigo-700 dark:text-indigo-400" },
+                { num: "16+", label: "Карьерын зөвлөмж", color: "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400" },
+                { num: "6+", label: "Дотоодын тэтгэлэг", color: "bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-700 text-amber-700 dark:text-amber-400" },
               ].map(function (s, i) {
                 return (
                   <div key={i} className={"border rounded-2xl p-6 " + s.color}>
@@ -471,11 +471,11 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 md:py-20 bg-white border-t border-gray-100">
+      <section className="py-16 md:py-20 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-12">
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Түгээмэл асуулт</p>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Танд асуулт байна уу?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100">Танд асуулт байна уу?</h2>
           </div>
 
           <div className="space-y-3">
@@ -487,12 +487,12 @@ export default function Home() {
               { q: "Хэрхэн эхлэх вэ?", a: "Бүртгэгдээд и-мэйлээ баталгаажуулж, профайлаа бөглөөд шууд эхэлнэ. 2-3 минутын зөрөгтэй." },
             ].map(function (item, i) {
               return (
-                <details key={i} className="bg-white border border-gray-100 rounded-2xl group shadow-sm">
-                  <summary className="px-5 py-4 cursor-pointer text-sm font-semibold text-gray-800 flex items-center justify-between hover:bg-gray-50 rounded-2xl transition">
+                <details key={i} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl group shadow-sm">
+                  <summary className="px-5 py-4 cursor-pointer text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 rounded-2xl transition">
                     <span>{item.q}</span>
                     <span className="text-violet-600 group-open:rotate-45 transition-transform text-xl flex-shrink-0 ml-4">+</span>
                   </summary>
-                  <div className="px-5 pb-4 text-sm text-gray-500 leading-relaxed border-t border-gray-100 pt-3">
+                  <div className="px-5 pb-4 text-sm text-gray-500 dark:text-gray-400 leading-relaxed border-t border-gray-100 dark:border-gray-700 pt-3">
                     {item.a}
                   </div>
                 </details>

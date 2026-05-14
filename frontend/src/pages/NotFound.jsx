@@ -6,7 +6,7 @@ export default function NotFound() {
   var homeLink = token ? "/dashboard" : "/";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 flex flex-col items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 -left-32 w-80 h-80 bg-gradient-to-br from-emerald-400/15 to-blue-400/15 rounded-full blur-3xl"></div>
@@ -17,13 +17,13 @@ export default function NotFound() {
           <div className="w-9 h-9 bg-[#1e3a8a] flex items-center justify-center rounded">
             <span className="text-white font-bold text-sm tracking-wide">CP</span>
           </div>
-          <span className="text-base font-semibold text-slate-900">CareerPrep</span>
+          <span className="text-base font-semibold text-slate-900 dark:text-gray-100">CareerPrep</span>
         </Link>
 
-        <div className="bg-white/95 backdrop-blur-sm border border-slate-200 rounded-lg p-10 shadow-lg">
-          <p className="text-7xl font-extrabold text-[#1e3a8a] mb-2">404</p>
-          <h1 className="text-xl font-bold text-slate-900 mb-3">Хуудас олдсонгүй</h1>
-          <p className="text-sm text-slate-500 mb-8">
+        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-slate-200 dark:border-gray-700 rounded-lg p-10 shadow-lg">
+          <p className="text-7xl font-extrabold text-[#1e3a8a] dark:text-violet-400 mb-2">404</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-gray-100 mb-3">Хуудас олдсонгүй</h1>
+          <p className="text-sm text-slate-500 dark:text-gray-400 mb-8">
             Та хайж буй хуудас байхгүй эсвэл зөөгдсэн байна.
           </p>
           <Link

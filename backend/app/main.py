@@ -26,6 +26,7 @@ from app.models.cv import CV  # noqa
 from app.models.scholarship import Scholarship  # noqa
 from app.models.email_token import EmailToken  # noqa
 from app.models.interview import InterviewQuestion  # noqa
+from app.models.interview_case import InterviewCase  # noqa
 from app.models.advice import Advice  # noqa
 from app.models.progress import UserQuizResult, UserFlashcardProgress  # noqa
 from app.models.audit_log import AuditLog  # noqa
@@ -52,6 +53,25 @@ def run_migrations():
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER NOT NULL DEFAULT 0"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP WITH TIME ZONE"))
 
+        # Convert native questioncategory enum to VARCHAR to support new 'case' value
+        conn.execute(text("""
+            DO $$ BEGIN
+                IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'questioncategory') THEN
+                    ALTER TABLE interview_questions ALTER COLUMN category TYPE VARCHAR(50) USING category::text;
+                    DROP TYPE IF EXISTS questioncategory CASCADE;
+                END IF;
+            END $$
+        """))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS interview_cases (
+                id SERIAL PRIMARY KEY,
+                title VARCHAR(255) NOT NULL,
+                case_text TEXT NOT NULL,
+                difficulty VARCHAR(20) DEFAULT 'medium',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS case_id INTEGER REFERENCES interview_cases(id) ON DELETE SET NULL"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS difficulty VARCHAR(20) DEFAULT 'medium'"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS tags VARCHAR(255)"))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()"))

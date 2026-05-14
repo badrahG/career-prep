@@ -58,8 +58,8 @@ export default function Register() {
     }
   }
 
-  var inputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white";
-  var labelCls = "block text-sm font-semibold text-gray-700 mb-1.5";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500";
+  var labelCls = "block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5";
 
   function getPasswordStrength(pw) {
     if (!pw) return { score: 0, label: "", color: "" };
@@ -79,20 +79,20 @@ export default function Register() {
   var strength = getPasswordStrength(form.password);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-indigo-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 flex flex-col">
       {/* Nav */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30">
+      <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
               <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
             <div>
-              <div className="text-base font-bold text-gray-900 leading-none">CareerPrep</div>
-              <div className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">Career Platform</div>
+              <div className="text-base font-bold text-gray-900 dark:text-gray-100 leading-none">CareerPrep</div>
+              <div className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-0.5">Career Platform</div>
             </div>
           </Link>
-          <Link to="/login" className="text-sm text-gray-600 hover:text-violet-600 font-medium transition">
+          <Link to="/login" className="text-sm text-gray-600 dark:text-gray-400 hover:text-violet-600 font-medium transition">
             ← Нэвтрэх
           </Link>
         </div>
@@ -102,22 +102,22 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           {submitted ? (
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm text-center">
-              <div className="w-16 h-16 mx-auto mb-5 bg-emerald-100 rounded-2xl flex items-center justify-center">
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-8 md:p-10 shadow-sm text-center">
+              <div className="w-16 h-16 mx-auto mb-5 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl flex items-center justify-center">
                 <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">И-мэйлээ шалгана уу</h1>
-              <p className="text-sm text-gray-500 mb-6">
-                Бид <span className="font-semibold text-gray-800">{registeredEmail}</span> хаяг руу баталгаажуулах линк илгээлээ.
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">И-мэйлээ шалгана уу</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                Бид <span className="font-semibold text-gray-800 dark:text-gray-200">{registeredEmail}</span> хаяг руу баталгаажуулах линк илгээлээ.
               </p>
 
-              <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-5 text-left">
-                <p className="text-xs font-semibold text-gray-700 mb-2">Дараах зүйлсийг анхаараарай:</p>
-                <ul className="text-xs text-gray-500 space-y-1.5">
-                  <li>• Линкийн хүчинтэй хугацаа <strong className="text-gray-700">24 цаг</strong></li>
-                  <li>• И-мэйл ирэхгүй бол <strong className="text-gray-700">Spam/Junk</strong> хавтас шалгана уу</li>
+              <div className="bg-gray-50 dark:bg-gray-700 border border-gray-100 dark:border-gray-600 rounded-xl p-4 mb-5 text-left">
+                <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Дараах зүйлсийг анхаараарай:</p>
+                <ul className="text-xs text-gray-500 dark:text-gray-400 space-y-1.5">
+                  <li>• Линкийн хүчинтэй хугацаа <strong className="text-gray-700 dark:text-gray-300">24 цаг</strong></li>
+                  <li>• И-мэйл ирэхгүй бол <strong className="text-gray-700 dark:text-gray-300">Spam/Junk</strong> хавтас шалгана уу</li>
                   <li>• Буруу и-мэйл оруулсан бол дахин бүртгүүлнэ үү</li>
                 </ul>
               </div>
@@ -129,18 +129,18 @@ export default function Register() {
                 <button
                   onClick={handleResend}
                   disabled={resending}
-                  className="text-sm text-gray-500 hover:text-violet-600 font-medium py-2 disabled:opacity-50 transition"
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 font-medium py-2 disabled:opacity-50 transition"
                 >
                   {resending ? "Илгээж байна..." : "Баталгаажуулах линк дахин илгээх"}
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-white border border-gray-100 rounded-2xl p-8 md:p-10 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-8 md:p-10 shadow-sm">
               <div className="mb-8">
                 <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Бүртгүүлэх</p>
-                <h1 className="text-2xl font-bold text-gray-900">Шинээр бүртгүүлэх</h1>
-                <p className="text-sm text-gray-500 mt-2">Үнэгүй бүртгүүлж эхлээрэй.</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Шинээр бүртгүүлэх</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Үнэгүй бүртгүүлж эхлээрэй.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -180,7 +180,7 @@ export default function Register() {
                     placeholder="name@example.com"
                     className={inputCls}
                   />
-                  <p className="text-xs text-gray-400 mt-1">Баталгаажуулах линк энэ хаяг руу илгээгдэнэ.</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Баталгаажуулах линк энэ хаяг руу илгээгдэнэ.</p>
                 </div>
 
                 <div>
@@ -201,12 +201,12 @@ export default function Register() {
                           return (
                             <div
                               key={i}
-                              className={"h-1 flex-1 rounded-full transition-all duration-300 " + (i <= strength.score ? strength.color : "bg-gray-100")}
+                              className={"h-1 flex-1 rounded-full transition-all duration-300 " + (i <= strength.score ? strength.color : "bg-gray-100 dark:bg-gray-600")}
                             />
                           );
                         })}
                       </div>
-                      <p className="text-xs text-gray-400">{strength.label}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">{strength.label}</p>
                     </div>
                   )}
                 </div>
@@ -232,8 +232,8 @@ export default function Register() {
                 </button>
               </form>
 
-              <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-                <p className="text-sm text-gray-500">
+              <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Бүртгэлтэй юу?{" "}
                   <Link to="/login" className="text-violet-600 font-semibold hover:underline">
                     Нэвтрэх
@@ -243,11 +243,11 @@ export default function Register() {
             </div>
           )}
 
-          <p className="text-center text-xs text-gray-400 mt-6">
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-6">
             Бүртгүүлснээр та{" "}
-            <Link to="/terms" className="hover:text-gray-700 underline">Үйлчилгээний нөхцөл</Link>
+            <Link to="/terms" className="hover:text-gray-700 dark:hover:text-gray-300 underline">Үйлчилгээний нөхцөл</Link>
             {" "}ба{" "}
-            <Link to="/privacy" className="hover:text-gray-700 underline">Нууцлалын бодлого</Link>
+            <Link to="/privacy" className="hover:text-gray-700 dark:hover:text-gray-300 underline">Нууцлалын бодлого</Link>
             -г хүлээн зөвшөөрсөн болно.
           </p>
         </div>

@@ -12,9 +12,9 @@ var CATEGORY_MN = {
   interview: "Ярилцлага",
   job_search: "Ажил хайлт",
   career: "Карьер",
-  modern: "Modern",
-  classic: "Classic",
-  minimal: "European CV",
+  modern: "Монгол стандарт",
+  classic: "Ази загвар",
+  minimal: "Европ загвар",
 };
 
 var ACTION_MN = {
@@ -70,21 +70,21 @@ function BarChart({ data, color }) {
 
 function KpiCard({ label, value, sub, color, icon }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-1">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-1">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">{label}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">{label}</span>
         {icon && <span className="text-lg">{icon}</span>}
       </div>
-      <p className={"text-3xl font-bold " + (color || "text-gray-900")}>{value ?? "—"}</p>
-      {sub && <p className="text-xs text-gray-400">{sub}</p>}
+      <p className={"text-3xl font-bold " + (color || "text-gray-900 dark:text-gray-100")}>{value ?? "—"}</p>
+      {sub && <p className="text-xs text-gray-400 dark:text-gray-500">{sub}</p>}
     </div>
   );
 }
 
 function MiniDonut({ items, colors }) {
-  if (!items || items.length === 0) return <p className="text-sm text-gray-400">Өгөгдөл байхгүй</p>;
+  if (!items || items.length === 0) return <p className="text-sm text-gray-400 dark:text-gray-500">Өгөгдөл байхгүй</p>;
   var total = items.reduce(function (s, x) { return s + x.count; }, 0);
-  if (total === 0) return <p className="text-sm text-gray-400">Өгөгдөл байхгүй</p>;
+  if (total === 0) return <p className="text-sm text-gray-400 dark:text-gray-500">Өгөгдөл байхгүй</p>;
   return (
     <div className="space-y-2">
       {items.map(function (item, i) {
@@ -92,10 +92,10 @@ function MiniDonut({ items, colors }) {
         return (
           <div key={i}>
             <div className="flex justify-between text-xs mb-0.5">
-              <span className="text-gray-700">{CATEGORY_MN[item.category || item.template] || item.category || item.template}</span>
-              <span className="font-semibold text-gray-900">{item.count} <span className="text-gray-400 font-normal">({pct}%)</span></span>
+              <span className="text-gray-700 dark:text-gray-300">{CATEGORY_MN[item.category || item.template] || item.category || item.template}</span>
+              <span className="font-semibold text-gray-900 dark:text-gray-100">{item.count} <span className="text-gray-400 dark:text-gray-500 font-normal">({pct}%)</span></span>
             </div>
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
               <div className="h-full rounded-full transition-all" style={{ width: pct + "%", background: colors[i % colors.length] }} />
             </div>
           </div>
@@ -124,13 +124,13 @@ export default function AdminDashboard() {
       <div className="p-5 md:p-6 space-y-6">
 
         {/* Admin tabs */}
-        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
           {ADMIN_TABS.map(function (tab) {
             var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
             return (
               <Link key={tab.to} to={tab.to}
                 className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
-                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {tab.label}
               </Link>
             );
@@ -139,21 +139,21 @@ export default function AdminDashboard() {
 
         {/* Header */}
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Систем хяналтын самбар</h1>
-          <p className="text-sm text-gray-500 mt-0.5">CareerPrep платформын нэгдсэн статистик</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Систем хяналтын самбар</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">CareerPrep платформын нэгдсэн статистик</p>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[...Array(5)].map(function (_, i) {
-              return <div key={i} className="h-24 bg-white border border-gray-200 rounded-xl animate-pulse" />;
+              return <div key={i} className="h-24 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl animate-pulse" />;
             })}
           </div>
         ) : (
           <>
-            {/* KPI row 1 — users */}
+            {/* KPI row 1 */}
             <div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Хэрэглэгчид</p>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Хэрэглэгчид</p>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <KpiCard label="Нийт" value={c?.users} />
                 <KpiCard label="Идэвхтэй" value={c?.active_users} color="text-emerald-700"
@@ -164,9 +164,9 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* KPI row 2 — content */}
+            {/* KPI row 2 */}
             <div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Агуулга</p>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Агуулга</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <KpiCard label="CV нийт" value={c?.cvs} color="text-purple-700"
                   sub={c ? (c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : "") : ""} />
@@ -177,9 +177,9 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* KPI row 3 — engagement */}
+            {/* KPI row 3 */}
             <div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Идэвхжилт</p>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Идэвхжилт</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <KpiCard label="Quiz дүн нийт" value={c?.quiz_results} color="text-indigo-700" icon="" />
                 <KpiCard label="Тэтгэлэг хадгалсан" value={c?.bookmarks} color="text-pink-600" icon="" />
@@ -190,30 +190,30 @@ export default function AdminDashboard() {
 
             {/* Charts */}
             <div className="grid md:grid-cols-2 gap-5">
-              <div className="bg-white border border-gray-200 rounded-xl p-5">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-semibold text-gray-800">Шинэ бүртгэл</p>
-                  <span className="text-xs text-gray-400">Сүүлийн 30 хоног</span>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Шинэ бүртгэл</p>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">Сүүлийн 30 хоног</span>
                 </div>
                 <p className="text-2xl font-bold text-violet-700 mb-3">
                   {data?.daily_registrations?.reduce(function (s, d) { return s + d.count; }, 0)}
                 </p>
                 <BarChart data={data?.daily_registrations} color="#7C3AED" />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
                   <span>{data?.daily_registrations?.[0]?.date?.slice(5)}</span>
                   <span>{data?.daily_registrations?.[29]?.date?.slice(5)}</span>
                 </div>
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-5">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-semibold text-gray-800">Шинэ CV</p>
-                  <span className="text-xs text-gray-400">Сүүлийн 30 хоног</span>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Шинэ CV</p>
+                  <span className="text-xs text-gray-400 dark:text-gray-500">Сүүлийн 30 хоног</span>
                 </div>
                 <p className="text-2xl font-bold text-purple-700 mb-3">
                   {data?.daily_cvs?.reduce(function (s, d) { return s + d.count; }, 0)}
                 </p>
                 <BarChart data={data?.daily_cvs} color="#7c3aed" />
-                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
                   <span>{data?.daily_cvs?.[0]?.date?.slice(5)}</span>
                   <span>{data?.daily_cvs?.[29]?.date?.slice(5)}</span>
                 </div>
@@ -222,33 +222,33 @@ export default function AdminDashboard() {
 
             {/* Breakdown cards */}
             <div className="grid md:grid-cols-3 gap-5">
-              <div className="bg-white border border-gray-200 rounded-xl p-5">
-                <p className="text-sm font-semibold text-gray-800 mb-4">CV загварчлал</p>
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">CV загварчлал</p>
                 <MiniDonut items={data?.cv_by_template?.map(function (x) { return { category: x.template, count: x.count }; })}
                   colors={["#7C3AED", "#7c3aed", "#0891b2"]} />
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-5">
-                <p className="text-sm font-semibold text-gray-800 mb-4">Ярилцлагын асуулт</p>
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Ярилцлагын асуулт</p>
                 <MiniDonut items={data?.questions_by_category}
                   colors={["#0d9488", "#0891b2", "#6366f1"]} />
               </div>
-              <div className="bg-white border border-gray-200 rounded-xl p-5">
-                <p className="text-sm font-semibold text-gray-800 mb-4">Зөвлөмж ангилал</p>
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Зөвлөмж ангилал</p>
                 <MiniDonut items={data?.advice_by_category}
                   colors={["#ea580c", "#d97706", "#16a34a", "#7c3aed"]} />
               </div>
             </div>
 
-            {/* Bottom row: recent users + activity + upcoming scholarships */}
+            {/* Bottom row */}
             <div className="grid md:grid-cols-3 gap-5">
 
               {/* Recent users */}
-              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-800">Сүүлийн бүртгэл</p>
+              <div className="md:col-span-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Сүүлийн бүртгэл</p>
                   <Link to="/admin/users" className="text-xs text-violet-600 hover:underline">Бүгдийг харах →</Link>
                 </div>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700">
                   {data?.recent_users?.map(function (u) {
                     return (
                       <div key={u.id} className="flex items-center gap-3 px-5 py-3">
@@ -256,15 +256,15 @@ export default function AdminDashboard() {
                           <span className="text-white text-xs font-bold">{(u.name || "U").charAt(0)}</span>
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-gray-900 truncate">{u.name}</p>
-                          <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{u.name}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{u.email}</p>
                         </div>
                         <div className="flex flex-col items-end gap-1 flex-shrink-0">
                           {u.role === "admin" && (
-                            <span className="text-xs bg-violet-50 text-violet-700 px-1.5 py-0.5 rounded font-medium">Админ</span>
+                            <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 px-1.5 py-0.5 rounded font-medium">Админ</span>
                           )}
                           {!u.is_verified && (
-                            <span className="text-xs bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">Баталгааж.</span>
+                            <span className="text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded">Баталгааж.</span>
                           )}
                         </div>
                       </div>
@@ -274,12 +274,12 @@ export default function AdminDashboard() {
               </div>
 
               {/* Activity feed */}
-              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-800">Сүүлийн үйлдэл</p>
+              <div className="md:col-span-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Сүүлийн үйлдэл</p>
                   <Link to="/admin/users" className="text-xs text-violet-600 hover:underline">Бүгдийг харах →</Link>
                 </div>
-                <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700 max-h-80 overflow-y-auto">
                   {data?.recent_logs?.map(function (log) {
                     return (
                       <div key={log.id} className="flex items-start gap-3 px-5 py-2.5">
@@ -287,8 +287,8 @@ export default function AdminDashboard() {
                           {ACTION_MN[log.action] || log.action}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <p className="text-xs font-medium text-gray-700 truncate">{log.user_name || "Устгагдсан"}</p>
-                          <p className="text-xs text-gray-400">{log.created_at ? new Date(log.created_at).toLocaleString("mn-MN") : "—"}</p>
+                          <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">{log.user_name || "Устгагдсан"}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{log.created_at ? new Date(log.created_at).toLocaleString("mn-MN") : "—"}</p>
                         </div>
                       </div>
                     );
@@ -297,27 +297,27 @@ export default function AdminDashboard() {
               </div>
 
               {/* Upcoming scholarships */}
-              <div className="md:col-span-1 bg-white border border-gray-200 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-gray-800">Ойрын тэтгэлэг</p>
+              <div className="md:col-span-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Ойрын тэтгэлэг</p>
                   <Link to="/admin/scholarship" className="text-xs text-violet-600 hover:underline">Бүгдийг харах →</Link>
                 </div>
-                <div className="divide-y divide-gray-100">
+                <div className="divide-y divide-gray-100 dark:divide-gray-700">
                   {!data?.upcoming_scholarships?.length ? (
-                    <p className="px-5 py-4 text-sm text-gray-400">Ойрын тэтгэлэг байхгүй</p>
+                    <p className="px-5 py-4 text-sm text-gray-400 dark:text-gray-500">Ойрын тэтгэлэг байхгүй</p>
                   ) : data.upcoming_scholarships.map(function (s) {
                     var deadline = new Date(s.deadline);
                     var today = new Date();
                     var daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
                     return (
-                      <Link key={s.id} to={"/scholarship/" + s.id} className="flex items-start gap-3 px-5 py-3 hover:bg-gray-50 transition block">
+                      <Link key={s.id} to={"/scholarship/" + s.id} className="flex items-start gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition block">
                         <div className={"flex-shrink-0 w-10 text-center rounded-lg py-1 " + (daysLeft <= 7 ? "bg-red-50" : daysLeft <= 30 ? "bg-amber-50" : "bg-blue-50")}>
                           <p className={"text-lg font-bold leading-none " + (daysLeft <= 7 ? "text-red-600" : daysLeft <= 30 ? "text-amber-600" : "text-blue-700")}>{daysLeft}</p>
                           <p className={"text-xs " + (daysLeft <= 7 ? "text-red-400" : daysLeft <= 30 ? "text-amber-400" : "text-blue-400")}>хоног</p>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 truncate">{s.name}</p>
-                          <p className="text-xs text-gray-400">{s.organization || "—"} · {s.deadline}</p>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{s.name}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500">{s.organization || "—"} · {s.deadline}</p>
                         </div>
                       </Link>
                     );
@@ -328,15 +328,15 @@ export default function AdminDashboard() {
 
             {/* Quick links */}
             <div>
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Хурдан холбоос</p>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Хурдан холбоос</p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {ADMIN_LINKS.map(function (link) {
                   return (
                     <Link key={link.to} to={link.to}
-                      className="bg-white border border-gray-200 rounded-xl p-4 hover:border-violet-300 hover:bg-violet-50 transition group">
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/10 transition group">
                       <p className="text-2xl mb-2">{link.icon}</p>
-                      <p className="text-sm font-semibold text-gray-900 group-hover:text-violet-700">{link.label}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{link.desc}</p>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-violet-700 dark:group-hover:text-violet-400">{link.label}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{link.desc}</p>
                     </Link>
                   );
                 })}

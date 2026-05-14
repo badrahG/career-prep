@@ -168,21 +168,21 @@ export default function AdminAdvice() {
   }
 
   var categoryLabels = { cv: "CV", interview: "Ярилцлага", job_search: "Ажил олох", career: "Карьер" };
-  var inputCls = "w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition";
-  var labelCls = "block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide";
+  var inputCls = "w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500";
+  var labelCls = "block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 uppercase tracking-wide";
 
   return (
     <Layout>
       <div className="p-5 md:p-6 space-y-6">
 
         {/* Admin tabs */}
-        <div className="flex gap-1 border-b border-gray-200 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
           {ADMIN_TABS.map(function (tab) {
             var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
             return (
               <Link key={tab.to} to={tab.to}
                 className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
-                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 hover:text-gray-800")}>
+                  (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {tab.label}
               </Link>
             );
@@ -192,8 +192,8 @@ export default function AdminAdvice() {
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Карьерын зөвлөмжийн удирдлага</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Зөвлөмжүүдийг үүсгэж, засаж, нийтлэх/нуух.</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Карьерын зөвлөмжийн удирдлага</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Зөвлөмжүүдийг үүсгэж, засаж, нийтлэх/нуух.</p>
           </div>
           <button onClick={openCreate} className="bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition flex-shrink-0">
             + Зөвлөмж
@@ -201,7 +201,7 @@ export default function AdminAdvice() {
         </div>
 
         {/* Filter */}
-        <div className="bg-white border border-gray-200 rounded-xl p-4">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
           <div className="flex flex-col md:flex-row gap-3">
             <input
               value={search}
@@ -225,11 +225,11 @@ export default function AdminAdvice() {
         ) : articles.length === 0 ? (
           <EmptyState illustration="advice" title="Зөвлөмж олдсонгүй" description="Шинэ зөвлөмж нэмэхийн тулд дээрх товч дарна уу." />
         ) : (
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="divide-y divide-gray-200">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {articles.map(function (a) {
                 return (
-                  <div key={a.id} className="p-5 hover:bg-gray-50 transition">
+                  <div key={a.id} className="p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1.5">
@@ -249,8 +249,8 @@ export default function AdminAdvice() {
                           <span className="text-xs text-gray-500">Order: {a.sort_order}</span>
                         </div>
 
-                        <h3 className="text-base font-bold text-gray-900 mb-1">{a.title}</h3>
-                        {a.summary && <p className="text-sm text-gray-600 line-clamp-2">{a.summary}</p>}
+                        <h3 className="text-base font-bold text-gray-900 dark:text-gray-100 mb-1">{a.title}</h3>
+                        {a.summary && <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{a.summary}</p>}
                       </div>
 
                       <div className="flex gap-1.5 flex-shrink-0">
@@ -263,7 +263,7 @@ export default function AdminAdvice() {
                         </button>
                         <button
                           onClick={function () { openEdit(a); }}
-                          className="text-xs px-3 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition"
+                          className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition"
                         >
                           Засах
                         </button>
@@ -288,12 +288,12 @@ export default function AdminAdvice() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl max-w-3xl w-full my-8 max-h-[90vh] flex flex-col">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-bold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-3xl w-full my-8 max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
                 {editingId ? "Зөвлөмж засах" : "Шинэ зөвлөмж нэмэх"}
               </h3>
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-700 text-xl">✕</button>
+              <button onClick={closeModal} className="text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-xl">✕</button>
             </div>
 
             <div className="p-6 space-y-4 overflow-y-auto">
@@ -366,7 +366,7 @@ export default function AdminAdvice() {
               {/* External links editor */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                  <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
                     Гадаад холбоосууд (сонголтоор)
                   </label>
                   <button
@@ -384,7 +384,7 @@ export default function AdminAdvice() {
                   <div className="space-y-2">
                     {linksArr.map(function (link, i) {
                       return (
-                        <div key={i} className="flex gap-2 items-start bg-gray-50 border border-gray-200 rounded-lg p-2">
+                        <div key={i} className="flex gap-2 items-start bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg p-2">
                           <div className="flex-1 space-y-1.5">
                             <input
                               value={link.title}
@@ -413,7 +413,7 @@ export default function AdminAdvice() {
                 )}
               </div>
 
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -422,17 +422,17 @@ export default function AdminAdvice() {
                     className="w-4 h-4 accent-violet-600"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Нийтлэх</p>
-                    <p className="text-xs text-gray-500">Нэмэх бол зөвлөмж нийтийн нүдэнд харагдана. Шалгаагүй бол зөвхөн админд харагдана.</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Нийтлэх</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Нэмэх бол зөвлөмж нийтийн нүдэнд харагдана. Шалгаагүй бол зөвхөн админд харагдана.</p>
                   </div>
                 </label>
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 bg-gray-50">
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-800/50">
               <button
                 onClick={closeModal}
-                className="px-5 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-white transition"
+                className="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition"
               >
                 Цуцлах
               </button>

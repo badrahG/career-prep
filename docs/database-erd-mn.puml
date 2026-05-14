@@ -3,233 +3,252 @@ hide circle
 skinparam backgroundColor white
 skinparam shadowing false
 skinparam linetype ortho
-skinparam defaultFontName "Times New Roman"
+skinparam defaultFontName "Arial"
 skinparam defaultFontSize 13
-skinparam roundcorner 10
+skinparam roundcorner 8
 
 skinparam entity {
-    BackgroundColor #F6B26B
-    BorderColor #8A5A2B
-    FontColor #111111
+  BackgroundColor #FFF2CC
+  BorderColor #7F6000
+  FontColor #111111
 }
 
-title CareerPrep Database Overview ERD
+skinparam note {
+  BackgroundColor #F3F6FA
+  BorderColor #6C7A89
+}
 
-entity "Users\n(users)" as users {
-  * id : integer
+title CareerPrep системийн өгөгдлийн сангийн ерөнхий схем
+
+entity "Хэрэглэгч\n(users)" as users {
+  * ХэрэглэгчID : integer <<PK>>
   --
-  first_name : varchar(100)
-  last_name : varchar(100)
-  email : varchar(255)
-  password : varchar(255)
-  phone : varchar(20)
-  role : enum
-  is_active : boolean
-  is_verified : boolean
-  verified_at : datetime
-  failed_login_attempts : integer
-  locked_until : datetime
-  created_at : datetime
-  updated_at : datetime
+  * нэр : varchar(100)
+  * овог : varchar(100)
+  * email : varchar(255) <<unique>>
+  * нууц үг : varchar(255)
+  утас : varchar(20)
+  * эрх : varchar(10)
+  * идэвхтэй эсэх : bit
+  * баталгаажсан эсэх : bit
+  баталгаажсан огноо : timestamp
+  * амжилтгүй нэвтрэх тоо : integer
+  түгжээ дуусах хугацаа : timestamp
+  * үүсгэсэн огноо : timestamp
+  шинэчилсэн огноо : timestamp
 }
 
 entity "CV\n(cvs)" as cvs {
-  * id : integer
+  * CVID : integer <<PK>>
   --
-  user_id : integer
-  name : varchar(200)
-  template_type : varchar(50)
-  personal_info : text
-  created_at : datetime
-  updated_at : datetime
+  * ХэрэглэгчID : integer <<FK>>
+  * нэр : varchar(200)
+  загварын төрөл : varchar(50)
+  хувийн мэдээлэл : varchar(2000)
+  * үүсгэсэн огноо : timestamp
+  шинэчилсэн огноо : timestamp
 }
 
-entity "CV Templates\n(cv_templates)" as cv_templates {
-  * id : integer
+entity "Боловсрол\n(educations)" as educations {
+  * БоловсролID : integer <<PK>>
   --
-  key : varchar(50)
-  name : varchar(100)
-  description : text
-  preview_url : varchar(500)
-  is_active : boolean
-  sort_order : integer
-  created_at : datetime
-}
-
-entity "Educations\n(educations)" as educations {
-  * id : integer
-  --
-  cv_id : integer
-  school : varchar(200)
-  major : varchar(200)
-  start_year : integer
-  end_year : integer
+  * CVID : integer <<FK>>
+  * сургууль : varchar(200)
+  мэргэжил : varchar(200)
+  эхэлсэн он : integer
+  төгссөн он : integer
   gpa : float
 }
 
-entity "Work Experiences\n(work_experiences)" as work_experiences {
-  * id : integer
+entity "Ажлын туршлага\n(work_experiences)" as work_experiences {
+  * АжлынТуршлагаID : integer <<PK>>
   --
-  cv_id : integer
-  company : varchar(200)
-  position : varchar(200)
-  start_date : varchar(20)
-  end_date : varchar(20)
-  description : text
+  * CVID : integer <<FK>>
+  * байгууллага : varchar(200)
+  албан тушаал : varchar(200)
+  эхэлсэн огноо : varchar(20)
+  дууссан огноо : varchar(20)
+  тайлбар : varchar(4000)
 }
 
-entity "Skills\n(skills)" as skills {
-  * id : integer
+entity "Ур чадвар\n(skills)" as skills {
+  * УрЧадварID : integer <<PK>>
   --
-  cv_id : integer
-  skill_name : varchar(100)
-  skill_type : varchar(50)
-  level : varchar(50)
+  * CVID : integer <<FK>>
+  * ур чадварын нэр : varchar(100)
+  ур чадварын төрөл : varchar(50)
+  түвшин : varchar(50)
 }
 
-entity "Interview Questions\n(interview_questions)" as interview_questions {
-  * id : integer
+entity "CV загвар\n(cv_templates)" as cv_templates {
+  * CVЗагварID : integer <<PK>>
   --
-  question_mn : text
-  category : enum
-  sample_answer : text
-  advice : text
-  difficulty : varchar(20)
-  tags : varchar(255)
-  is_quiz : boolean
-  option_a : text
-  option_b : text
-  option_c : text
-  option_d : text
-  correct_option : varchar(1)
-  explanation : text
-  created_at : datetime
-  updated_at : datetime
+  * түлхүүр : varchar(50) <<unique>>
+  * нэр : varchar(100)
+  тайлбар : varchar(1000)
+  preview холбоос : varchar(500)
+  * идэвхтэй эсэх : bit
+  * эрэмбэ : integer
+  * үүсгэсэн огноо : timestamp
 }
 
-entity "User Quiz Results\n(user_quiz_results)" as user_quiz_results {
-  * id : integer
+entity "Ярилцлагын кейс\n(interview_cases)" as interview_cases {
+  * ЯрилцлагынКейсID : integer <<PK>>
   --
-  user_id : integer
-  total : integer
-  correct : integer
-  percentage : float
-  created_at : datetime
+  * гарчиг : varchar(255)
+  * case текст : varchar(4000)
+  хүндрэл : varchar(20)
+  * үүсгэсэн огноо : timestamp
 }
 
-entity "User Flashcard Progress\n(user_flashcard_progress)" as user_flashcard_progress {
-  * id : integer
+entity "Ярилцлагын асуулт\n(interview_questions)" as interview_questions {
+  * ЯрилцлагынАсуултID : integer <<PK>>
   --
-  user_id : integer
-  question_id : integer
-  viewed_at : datetime
+  ЯрилцлагынКейсID : integer <<FK>>
+  * асуулт : varchar(4000)
+  * ангилал : varchar(20)
+  жишээ хариулт : varchar(4000)
+  зөвлөгөө : varchar(2000)
+  хүндрэл : varchar(20)
+  шошгонууд : varchar(255)
+  * quiz эсэх : bit
+  A сонголт : varchar(1000)
+  B сонголт : varchar(1000)
+  C сонголт : varchar(1000)
+  D сонголт : varchar(1000)
+  зөв сонголт : varchar(1)
+  тайлбар : varchar(2000)
+  * үүсгэсэн огноо : timestamp
+  шинэчилсэн огноо : timestamp
 }
 
-entity "Scholarships\n(scholarships)" as scholarships {
-  * id : integer
+entity "Quiz үр дүн\n(user_quiz_results)" as user_quiz_results {
+  * QuizҮрДүнID : integer <<PK>>
   --
-  name : varchar(300)
-  organization : varchar(300)
-  target : varchar(100)
-  requirements : text
-  deadline : date
-  website_url : varchar(500)
-  description : text
-  image_url : varchar(500)
+  * ХэрэглэгчID : integer <<FK>>
+  * нийт асуулт : integer
+  * зөв хариулт : integer
+  * хувь : float
+  * үүсгэсэн огноо : timestamp
+}
+
+entity "Flashcard явц\n(user_flashcard_progress)" as user_flashcard_progress {
+  * FlashcardЯвцID : integer <<PK>>
+  --
+  * ХэрэглэгчID : integer <<FK>>
+  * ЯрилцлагынАсуултID : integer <<FK>>
+  * үзсэн огноо : timestamp
+}
+
+entity "Тэтгэлэг\n(scholarships)" as scholarships {
+  * ТэтгэлэгID : integer <<PK>>
+  --
+  * нэр : varchar(300)
+  байгууллага : varchar(300)
+  зорилтот бүлэг : varchar(100)
+  шаардлага : varchar(4000)
+  эцсийн хугацаа : date
+  веб холбоос : varchar(500)
+  тайлбар : varchar(4000)
+  зургийн холбоос : varchar(500)
   gpa : varchar(50)
-  duration : varchar(200)
+  үргэлжлэх хугацаа : varchar(200)
 }
 
-entity "Scholarship Checklists\n(user_scholarship_checklists)" as user_scholarship_checklists {
-  * id : integer
+entity "Тэтгэлгийн шалгах жагсаалт\n(user_scholarship_checklists)" as user_scholarship_checklists {
+  * ТэтгэлгийнЖагсаалтID : integer <<PK>>
   --
-  user_id : integer
-  scholarship_id : integer
-  items : text
-  updated_at : datetime
-}
-
-entity "Scholarship Bookmarks\n(scholarship_bookmarks)" as scholarship_bookmarks {
-  * id : integer
+  * ХэрэглэгчID : integer <<FK>>
+  * ТэтгэлэгID : integer <<FK>>
+  * жагсаалтын зүйлс : varchar(4000)
+  * шинэчилсэн огноо : timestamp
   --
-  user_id : integer
-  scholarship_id : integer
-  created_at : datetime
+  unique(ХэрэглэгчID, ТэтгэлэгID)
 }
 
-entity "Advices\n(advices)" as advices {
-  * id : integer
+entity "Хадгалсан тэтгэлэг\n(scholarship_bookmarks)" as scholarship_bookmarks {
+  * ХадгалсанТэтгэлэгID : integer <<PK>>
   --
-  category : enum
-  title : varchar(255)
-  summary : text
-  content : text
-  youtube_url : varchar(500)
-  external_links : text
-  sort_order : integer
-  is_published : boolean
-  created_at : datetime
-  updated_at : datetime
-}
-
-entity "Email Tokens\n(email_tokens)" as email_tokens {
-  * id : integer
+  * ХэрэглэгчID : integer <<FK>>
+  * ТэтгэлэгID : integer <<FK>>
+  * үүсгэсэн огноо : timestamp
   --
-  user_id : integer
-  token : varchar(255)
-  token_type : enum
-  expires_at : datetime
-  used_at : datetime
-  created_at : datetime
+  unique(ХэрэглэгчID, ТэтгэлэгID)
 }
 
-entity "Refresh Tokens\n(refresh_tokens)" as refresh_tokens {
-  * id : integer
+entity "Зөвлөгөө\n(advices)" as advices {
+  * ЗөвлөгөөID : integer <<PK>>
   --
-  user_id : integer
-  token_hash : varchar(64)
-  expires_at : datetime
-  revoked_at : datetime
-  created_at : datetime
+  * ангилал : varchar(20)
+  * гарчиг : varchar(255)
+  хураангуй : varchar(2000)
+  * агуулга : varchar(4000)
+  youtube холбоос : varchar(500)
+  гадаад холбоосууд : varchar(4000)
+  * эрэмбэ : integer
+  * нийтлэгдсэн эсэх : bit
+  * үүсгэсэн огноо : timestamp
+  шинэчилсэн огноо : timestamp
 }
 
-entity "Audit Logs\n(audit_logs)" as audit_logs {
-  * id : integer
+entity "Имэйл токен\n(email_tokens)" as email_tokens {
+  * ИмэйлТокенID : integer <<PK>>
   --
-  user_id : integer
-  action : varchar(100)
-  ip_address : varchar(45)
-  details : text
-  created_at : datetime
+  * ХэрэглэгчID : integer <<FK>>
+  * token : varchar(255) <<unique>>
+  * token төрөл : varchar(30)
+  * дуусах хугацаа : timestamp
+  ашигласан огноо : timestamp
+  * үүсгэсэн огноо : timestamp
 }
 
-users ||--o{ cvs
-cvs ||--o{ educations
-cvs ||--o{ work_experiences
-cvs ||--o{ skills
-cv_templates .. cvs : template_type/key
+entity "Сэргээх токен\n(refresh_tokens)" as refresh_tokens {
+  * СэргээхТокенID : integer <<PK>>
+  --
+  * ХэрэглэгчID : integer <<FK>>
+  * token hash : varchar(64) <<unique>>
+  * дуусах хугацаа : timestamp
+  хүчингүй болгосон огноо : timestamp
+  * үүсгэсэн огноо : timestamp
+}
 
-users ||--o{ user_quiz_results
-users ||--o{ user_flashcard_progress
-interview_questions ||--o{ user_flashcard_progress
+entity "Аудит лог\n(audit_logs)" as audit_logs {
+  * АудитЛогID : integer <<PK>>
+  --
+  ХэрэглэгчID : integer <<FK>>
+  * үйлдэл : varchar(100)
+  IP хаяг : varchar(45)
+  дэлгэрэнгүй : varchar(2000)
+  * үүсгэсэн огноо : timestamp
+}
 
-users ||--o{ email_tokens
-users ||--o{ refresh_tokens
-users |o--o{ audit_logs
+' ── FK холбоосууд ──────────────────────────────────────────
+users ||--o{ cvs : "үүсгэнэ"
+cvs ||--o{ educations : "агуулна"
+cvs ||--o{ work_experiences : "агуулна"
+cvs ||--o{ skills : "агуулна"
 
-users ||--o{ user_scholarship_checklists
-scholarships ||--o{ user_scholarship_checklists
+interview_cases ||--o{ interview_questions : "кейсийн асуулт"
+users ||--o{ user_quiz_results : "quiz өгнө"
+users ||--o{ user_flashcard_progress : "үзсэн"
+interview_questions ||--o{ user_flashcard_progress : "асуултын явц"
 
-users ||--o{ scholarship_bookmarks
-scholarships ||--o{ scholarship_bookmarks
-users .. advices : reads
-advices .. cvs : CV advice content
-advices .. interview_questions : interview advice content
-advices .. scholarships : career guidance
+users ||--o{ user_scholarship_checklists : "бөглөнө"
+scholarships ||--o{ user_scholarship_checklists : "шалгах жагсаалт"
+users ||--o{ scholarship_bookmarks : "хадгална"
+scholarships ||--o{ scholarship_bookmarks : "хадгалсан"
 
-note bottom
-Logical dotted links are used for tables that are related at
-application level but do not have a direct foreign key in the database.
+users ||--o{ email_tokens : "баталгаажуулалт / сэргээх"
+users ||--o{ refresh_tokens : "нэвтрэлт"
+users |o--o{ audit_logs : "үйлдэл"
+
+' ── Логик холбоос (FK биш) ────────────────────────────────
+cv_templates ..> cvs : "загварын төрөл\n(түлхүүр → template_type)"
+
+note right of advices
+  Өгөгдлийн санд FK байхгүй.
+  Ангилалаараа CV, ярилцлага,
+  тэтгэлгийн сэдэвт хамаарна.
 end note
 
 @enduml

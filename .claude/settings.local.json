@@ -18,7 +18,8 @@
       "Bash(git stash *)",
       "Bash(Remove-Item -Recurse -Force \"C:\\\\career-platform\\\\backend\\\\app\\\\routers\\\\__pycache__\" -ErrorAction SilentlyContinue)",
       "Bash(Remove-Item -Recurse -Force \"C:\\\\career-platform\\\\backend\\\\app\\\\__pycache__\" -ErrorAction SilentlyContinue)",
-      "Bash(Write-Host \"Cache cleared\")"
+      "Bash(Write-Host \"Cache cleared\")",
+      "Bash(Get-ChildItem *)"
     ]
   }
 }

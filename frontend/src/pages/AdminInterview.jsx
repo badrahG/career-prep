@@ -33,6 +33,12 @@ export default function AdminInterview() {
   var [editingCId, setEditingCId] = useState(null);
   var [cForm, setCForm] = useState(emptyCForm());
 
+  var [majors, setMajors] = useState([]);
+  var [mLoading, setMLoading] = useState(false);
+  var [showMModal, setShowMModal] = useState(false);
+  var [editingMId, setEditingMId] = useState(null);
+  var [mForm, setMForm] = useState(emptyMForm());
+
   function emptyQForm() {
     return {
       question_mn: "",
@@ -42,6 +48,7 @@ export default function AdminInterview() {
       difficulty: "medium",
       tags: "",
       case_id: null,
+      major_id: null,
       is_quiz: false,
       option_a: "",
       option_b: "",
@@ -54,6 +61,10 @@ export default function AdminInterview() {
 
   function emptyCForm() {
     return { title: "", case_text: "", difficulty: "medium" };
+  }
+
+  function emptyMForm() {
+    return { name: "", description: "", is_active: true };
   }
 
   function loadQuestions() {
@@ -88,7 +99,16 @@ export default function AdminInterview() {
 
   useEffect(function () {
     loadCases();
+    loadMajors();
   }, []);
+
+  function loadMajors() {
+    setMLoading(true);
+    API.get("/interview/majors", { params: { active_only: false } })
+      .then(function (res) { setMajors(res.data); })
+      .catch(function () { toast.error("Мэргэжил ачаалахад алдаа"); })
+      .finally(function () { setMLoading(false); });
+  }
 
   function openCreateQ() {
     setEditingQId(null);
@@ -106,6 +126,7 @@ export default function AdminInterview() {
       difficulty: q.difficulty || "medium",
       tags: q.tags || "",
       case_id: q.case_id || null,
+      major_id: q.major_id || null,
       is_quiz: q.is_quiz || false,
       option_a: q.option_a || "",
       option_b: q.option_b || "",
@@ -206,6 +227,43 @@ export default function AdminInterview() {
     }
   }
 
+  function openCreateM() { setEditingMId(null); setMForm(emptyMForm()); setShowMModal(true); }
+  function openEditM(m) {
+    setEditingMId(m.id);
+    setMForm({ name: m.name || "", description: m.description || "", is_active: m.is_active !== false });
+    setShowMModal(true);
+  }
+  function updM(field, value) { setMForm(function (p) { return { ...p, [field]: value }; }); }
+
+  async function handleSaveM() {
+    if (!mForm.name.trim()) { toast.error("Мэргэжлийн нэр заавал бичих ёстой"); return; }
+    try {
+      if (editingMId) {
+        await API.put("/interview/majors/" + editingMId, mForm);
+        toast.success("Шинэчлэгдлээ");
+      } else {
+        await API.post("/interview/majors", mForm);
+        toast.success("Нэмэгдлээ");
+      }
+      setShowMModal(false);
+      setEditingMId(null);
+      loadMajors();
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Алдаа гарлаа");
+    }
+  }
+
+  async function handleDeleteM(m) {
+    if (!window.confirm('"' + m.name + '" мэргэжлийг устгах уу?')) return;
+    try {
+      await API.delete("/interview/majors/" + m.id);
+      toast.success("Устгагдлаа");
+      setMajors(majors.filter(function (x) { return x.id !== m.id; }));
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Алдаа");
+    }
+  }
+
   var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн", case: "Кейс асуулт" };
   var difficultyLabels = { easy: "Хялбар", medium: "Дундаж", hard: "Хүнд" };
   var inputCls = "w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100";
@@ -236,9 +294,9 @@ export default function AdminInterview() {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Flashcard, Quiz асуулт болон Кейс удирдана.</p>
           </div>
           <button
-            onClick={activeTab === "questions" ? openCreateQ : openCreateC}
+            onClick={activeTab === "questions" ? openCreateQ : activeTab === "cases" ? openCreateC : openCreateM}
             className="bg-violet-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-violet-700 transition flex-shrink-0">
-            {activeTab === "questions" ? "+ Асуулт" : "+ Кейс"}
+            {activeTab === "questions" ? "+ Асуулт" : activeTab === "cases" ? "+ Кейс" : "+ Мэргэжил"}
           </button>
         </div>
 
@@ -247,14 +305,18 @@ export default function AdminInterview() {
           {[
             { key: "questions", label: "Асуултууд" },
             { key: "cases", label: "Кейсүүд" },
+            { key: "majors", label: "Мэргэжлүүд" },
           ].map(function (t) {
             return (
               <button key={t.key} onClick={function () { setActiveTab(t.key); }}
                 className={"px-5 py-2 text-sm font-medium border-b-2 -mb-px transition " +
-                  (activeTab === t.key ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
+                  (activeTab === t.key ? "border-violet-600 text-violet-700 dark:text-violet-400" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {t.label}
                 {t.key === "cases" && cases.length > 0 && (
                   <span className="ml-1.5 text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400 px-1.5 py-0.5 rounded-full">{cases.length}</span>
+                )}
+                {t.key === "majors" && majors.length > 0 && (
+                  <span className="ml-1.5 text-xs bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">{majors.length}</span>
                 )}
               </button>
             );
@@ -312,11 +374,18 @@ export default function AdminInterview() {
                               {q.tags && <span className="text-xs text-gray-400 dark:text-gray-500 italic">#{q.tags}</span>}
                             </div>
 
-                            {caseInfo && (
-                              <div className="flex items-center gap-1.5 mb-1.5">
-                                <span className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-700 px-2 py-0.5 rounded-lg font-medium">
-                                  Кейс: {caseInfo.title}
-                                </span>
+                            {(q.major_name || caseInfo) && (
+                              <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                                {caseInfo && (
+                                  <span className="text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-700 px-2 py-0.5 rounded-lg font-medium">
+                                    Кейс: {caseInfo.title}
+                                  </span>
+                                )}
+                                {q.major_name && (
+                                  <span className="text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-700 px-2 py-0.5 rounded-lg font-medium">
+                                    {q.major_name}
+                                  </span>
+                                )}
                               </div>
                             )}
 
@@ -399,6 +468,52 @@ export default function AdminInterview() {
             <p className="text-xs text-gray-400 dark:text-gray-500">Нийт {cases.length} кейс байна.</p>
           </>
         )}
+
+        {/* MAJORS TAB */}
+        {activeTab === "majors" && (
+          <>
+            {mLoading ? (
+              <ListSkeleton count={4} />
+            ) : majors.length === 0 ? (
+              <EmptyState illustration="interview" title="Мэргэжил олдсонгүй" description='Техникийн болон кейс асуултыг мэргэжилээр ангилахын тулд "+ Мэргэжил" товчоор нэмнэ үү.' />
+            ) : (
+              <div className="space-y-3">
+                {majors.map(function (m) {
+                  return (
+                    <div key={m.id} className={"bg-white dark:bg-gray-800 border rounded-xl p-5 transition " +
+                      (m.is_active ? "border-gray-200 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-700" : "border-gray-200 dark:border-gray-700 opacity-60")}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{m.name}</p>
+                            <span className={"text-xs px-2 py-0.5 rounded-full font-medium border " +
+                              (m.is_active
+                                ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700"
+                                : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600")}>
+                              {m.is_active ? "Идэвхтэй" : "Идэвхгүй"}
+                            </span>
+                          </div>
+                          {m.description && <p className="text-xs text-gray-500 dark:text-gray-400">{m.description}</p>}
+                        </div>
+                        <div className="flex gap-2 flex-shrink-0">
+                          <button onClick={function () { openEditM(m); }}
+                            className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition">
+                            Засах
+                          </button>
+                          <button onClick={function () { handleDeleteM(m); }}
+                            className="text-xs px-3 py-1.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-medium transition">
+                            Устгах
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <p className="text-xs text-gray-400 dark:text-gray-500">Нийт {majors.length} мэргэжил байна.</p>
+          </>
+        )}
       </div>
 
       {/* Question Modal */}
@@ -456,6 +571,27 @@ export default function AdminInterview() {
                         return (
                           <option key={c.id} value={c.id}>{c.title} ({c.question_count} асуулт)</option>
                         );
+                      })}
+                    </select>
+                  )}
+                </div>
+              )}
+
+              {(qForm.category === "technical" || qForm.category === "case") && (
+                <div className="border-l-4 border-emerald-500 pl-4 bg-emerald-50/30 dark:bg-emerald-900/10 p-4 rounded-r-lg">
+                  <label className={labelCls}>Мэргэжил <span className="text-red-500">*</span></label>
+                  {majors.filter(function (m) { return m.is_active; }).length === 0 ? (
+                    <div className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg px-3 py-2">
+                      Мэргэжил байхгүй байна. Эхлээд "Мэргэжлүүд" tab-д мэргэжил үүсгэнэ үү.
+                    </div>
+                  ) : (
+                    <select
+                      value={qForm.major_id || ""}
+                      onChange={function (e) { updQ("major_id", e.target.value ? parseInt(e.target.value) : null); }}
+                      className={inputCls}>
+                      <option value="">— Мэргэжил сонгоно уу —</option>
+                      {majors.filter(function (m) { return m.is_active; }).map(function (m) {
+                        return <option key={m.id} value={m.id}>{m.name}</option>;
                       })}
                     </select>
                   )}
@@ -583,6 +719,49 @@ export default function AdminInterview() {
               <button onClick={handleSaveC}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
                 {editingCId ? "Шинэчлэх" : "Кейс үүсгэх"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Major Modal */}
+      {showMModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full flex flex-col border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                {editingMId ? "Мэргэжил засах" : "Шинэ мэргэжил нэмэх"}
+              </h3>
+              <button onClick={function () { setShowMModal(false); setEditingMId(null); }} className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xl">✕</button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div>
+                <label className={labelCls}>Мэргэжлийн нэр <span className="text-red-500">*</span></label>
+                <input value={mForm.name} onChange={function (e) { updM("name", e.target.value); }}
+                  placeholder="Жишээ: Мэдээллийн технологи" className={inputCls} />
+              </div>
+              <div>
+                <label className={labelCls}>Тайлбар</label>
+                <textarea value={mForm.description} onChange={function (e) { updM("description", e.target.value); }}
+                  rows={2} placeholder="Мэргэжлийн товч тайлбар..." className={inputCls} />
+              </div>
+              <div className="flex items-center gap-3">
+                <input type="checkbox" id="m-active" checked={mForm.is_active}
+                  onChange={function (e) { updM("is_active", e.target.checked); }}
+                  className="w-4 h-4 accent-violet-600" />
+                <label htmlFor="m-active" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">Идэвхтэй (хэрэглэгчид харагдана)</label>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-800/50">
+              <button onClick={function () { setShowMModal(false); setEditingMId(null); }}
+                className="px-5 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition">
+                Цуцлах
+              </button>
+              <button onClick={handleSaveM}
+                className="px-6 py-2 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 transition">
+                {editingMId ? "Шинэчлэх" : "Нэмэх"}
               </button>
             </div>
           </div>

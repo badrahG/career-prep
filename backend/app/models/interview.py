@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, Enum, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import relationship as sa_relationship
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 import enum
@@ -25,6 +26,8 @@ class InterviewQuestion(Base):
     tags = Column(String(255), nullable=True)
     case_id = Column(Integer, ForeignKey("interview_cases.id", ondelete="SET NULL"), nullable=True)
     case = relationship("InterviewCase", back_populates="questions")
+    major_id = Column(Integer, ForeignKey("majors.id", ondelete="SET NULL"), nullable=True)
+    major = sa_relationship("Major", foreign_keys=[major_id])
 
     # Quiz-specific fields
     is_quiz = Column(Boolean, default=False, nullable=False)

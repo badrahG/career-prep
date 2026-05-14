@@ -7,12 +7,14 @@ import random
 from app.database import get_db
 from app.models.interview import InterviewQuestion
 from app.models.interview_case import InterviewCase
+from app.models.major import Major
 from app.models.user import User
 from app.models.progress import UserQuizResult, UserFlashcardProgress
 from app.schemas.interview import (
     QuestionCreate, QuestionResponse, CategoryStats,
     QuizQuestionPublic, QuizSubmission, QuizResult, QuizResultItem,
     CaseCreate, CaseResponse,
+    MajorCreate, MajorResponse,
 )
 from app.services.auth import get_current_user, get_optional_user
 
@@ -30,16 +32,20 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
 @router.get("/questions", response_model=List[QuestionResponse])
 def get_questions(
     category: Optional[str] = None,
+    major_id: Optional[int] = None,
     search: Optional[str] = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
 ):
     """List all questions for flashcard mode"""
-    query = db.query(InterviewQuestion)
+    query = db.query(InterviewQuestion).options(joinedload(InterviewQuestion.major))
 
     if category and category != "all":
         query = query.filter(InterviewQuestion.category == category)
+
+    if major_id is not None:
+        query = query.filter(InterviewQuestion.major_id == major_id)
 
     if search:
         like = f"%{search.lower()}%"
@@ -50,7 +56,21 @@ def get_questions(
             )
         )
 
-    return query.order_by(InterviewQuestion.id).offset(skip).limit(limit).all()
+    questions = query.order_by(InterviewQuestion.id).offset(skip).limit(limit).all()
+    result = []
+    for q in questions:
+        d = {
+            "id": q.id, "question_mn": q.question_mn, "category": q.category,
+            "sample_answer": q.sample_answer, "advice": q.advice,
+            "difficulty": q.difficulty, "tags": q.tags,
+            "case_id": q.case_id, "major_id": q.major_id,
+            "major_name": q.major.name if q.major else None,
+            "is_quiz": q.is_quiz, "option_a": q.option_a, "option_b": q.option_b,
+            "option_c": q.option_c, "option_d": q.option_d,
+            "correct_option": q.correct_option, "explanation": q.explanation,
+        }
+        result.append(d)
+    return result
 
 
 @router.get("/stats", response_model=CategoryStats)
@@ -66,10 +86,19 @@ def get_stats(db: Session = Depends(get_db)):
 
 @router.get("/questions/{qid}", response_model=QuestionResponse)
 def get_question(qid: int, db: Session = Depends(get_db)):
-    q = db.query(InterviewQuestion).filter(InterviewQuestion.id == qid).first()
+    q = db.query(InterviewQuestion).options(joinedload(InterviewQuestion.major)).filter(InterviewQuestion.id == qid).first()
     if not q:
         raise HTTPException(status_code=404, detail="Асуулт олдсонгүй")
-    return q
+    return {
+        "id": q.id, "question_mn": q.question_mn, "category": q.category,
+        "sample_answer": q.sample_answer, "advice": q.advice,
+        "difficulty": q.difficulty, "tags": q.tags,
+        "case_id": q.case_id, "major_id": q.major_id,
+        "major_name": q.major.name if q.major else None,
+        "is_quiz": q.is_quiz, "option_a": q.option_a, "option_b": q.option_b,
+        "option_c": q.option_c, "option_d": q.option_d,
+        "correct_option": q.correct_option, "explanation": q.explanation,
+    }
 
 
 # ---------- Quiz endpoints ----------
@@ -77,6 +106,7 @@ def get_question(qid: int, db: Session = Depends(get_db)):
 @router.get("/quiz/questions", response_model=List[QuizQuestionPublic])
 def get_quiz_questions(
     category: Optional[str] = None,
+    major_id: Optional[int] = None,
     limit: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
 ):
@@ -95,6 +125,9 @@ def get_quiz_questions(
 
     if category and category != "all":
         query = query.filter(InterviewQuestion.category == category)
+
+    if major_id is not None:
+        query = query.filter(InterviewQuestion.major_id == major_id)
 
     all_questions = query.all()
 
@@ -342,5 +375,52 @@ def delete_question(qid: int, db: Session = Depends(get_db), admin: User = Depen
     if not q:
         raise HTTPException(status_code=404, detail="Асуулт олдсонгүй")
     db.delete(q)
+    db.commit()
+    return {"message": "Устгагдлаа"}
+
+
+# ---------- Major endpoints ----------
+
+@router.get("/majors", response_model=List[MajorResponse])
+def get_majors(active_only: bool = True, db: Session = Depends(get_db)):
+    q = db.query(Major)
+    if active_only:
+        q = q.filter(Major.is_active == True)
+    return q.order_by(Major.name).all()
+
+
+@router.post("/majors", response_model=MajorResponse)
+def create_major(data: MajorCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    existing = db.query(Major).filter(Major.name == data.name).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Ийм нэртэй мэргэжил аль хэдийн байна")
+    m = Major(**data.model_dump())
+    db.add(m)
+    db.commit()
+    db.refresh(m)
+    return m
+
+
+@router.put("/majors/{mid}", response_model=MajorResponse)
+def update_major(mid: int, data: MajorCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    m = db.query(Major).filter(Major.id == mid).first()
+    if not m:
+        raise HTTPException(status_code=404, detail="Мэргэжил олдсонгүй")
+    duplicate = db.query(Major).filter(Major.name == data.name, Major.id != mid).first()
+    if duplicate:
+        raise HTTPException(status_code=400, detail="Ийм нэртэй мэргэжил аль хэдийн байна")
+    for key, val in data.model_dump().items():
+        setattr(m, key, val)
+    db.commit()
+    db.refresh(m)
+    return m
+
+
+@router.delete("/majors/{mid}")
+def delete_major(mid: int, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    m = db.query(Major).filter(Major.id == mid).first()
+    if not m:
+        raise HTTPException(status_code=404, detail="Мэргэжил олдсонгүй")
+    db.delete(m)
     db.commit()
     return {"message": "Устгагдлаа"}

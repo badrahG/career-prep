@@ -100,7 +100,7 @@ export default function Dashboard() {
               <p className="font-bold text-sm">CareerPrep-д тавтай морилно уу!</p>
               <p className="text-xs opacity-80 mt-0.5">Эхлэхийн тулд CV үүсгэж, ярилцлагын бэлтгэлээ эхлүүлнэ үү.</p>
             </div>
-            <Link to="/cv/new" className="bg-white text-violet-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-violet-50 transition whitespace-nowrap flex-shrink-0">
+            <Link to="/cv/start" className="bg-white text-violet-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-violet-50 transition whitespace-nowrap flex-shrink-0">
               CV үүсгэх →
             </Link>
           </div>
@@ -257,7 +257,7 @@ export default function Dashboard() {
                   <span className="text-violet-400"><Icon d={ICONS.cv} size={22} /></span>
                 </div>
                 <p className="text-sm text-gray-400 dark:text-gray-500 mb-3">CV байхгүй байна</p>
-                <Link to="/cv/new" className="text-xs font-semibold text-violet-600 hover:underline">+ CV үүсгэх</Link>
+                <Link to="/cv/start" className="text-xs font-semibold text-violet-600 hover:underline">+ CV үүсгэх</Link>
               </div>
             ) : (
               <div className="flex-1 space-y-1">
@@ -288,7 +288,7 @@ export default function Dashboard() {
             )}
 
             {cvs.length > 0 && (
-              <Link to="/cv/new"
+              <Link to="/cv/start"
                 className="mt-3 w-full text-center text-xs font-semibold text-violet-600 hover:text-violet-700 bg-violet-50 dark:bg-violet-900/20 hover:bg-violet-100 dark:hover:bg-violet-900/30 transition rounded-xl py-2.5"
               >
                 + Шинэ CV үүсгэх

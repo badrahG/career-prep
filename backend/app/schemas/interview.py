@@ -3,6 +3,23 @@ from typing import Optional, List
 from datetime import datetime
 
 
+class MajorCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    is_active: Optional[bool] = True
+
+
+class MajorResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    is_active: bool = True
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class CaseCreate(BaseModel):
     title: str
     case_text: str
@@ -29,6 +46,7 @@ class QuestionCreate(BaseModel):
     difficulty: Optional[str] = "medium"
     tags: Optional[str] = None
     case_id: Optional[int] = None
+    major_id: Optional[int] = None
     # Quiz fields
     is_quiz: Optional[bool] = False
     option_a: Optional[str] = None
@@ -48,6 +66,8 @@ class QuestionResponse(BaseModel):
     difficulty: Optional[str] = None
     tags: Optional[str] = None
     case_id: Optional[int] = None
+    major_id: Optional[int] = None
+    major_name: Optional[str] = None
     is_quiz: bool = False
     option_a: Optional[str] = None
     option_b: Optional[str] = None

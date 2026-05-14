@@ -40,7 +40,7 @@ def global_search(
             "id": a.id,
             "title": a.title,
             "subtitle": a.summary[:80] if a.summary else "",
-            "url": f"/advice/{a.category}/{a.id}",
+            "url": f"/advice/detail/{a.id}",
             "category": a.category,
         })
 

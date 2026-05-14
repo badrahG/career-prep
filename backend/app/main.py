@@ -33,6 +33,7 @@ from app.models.audit_log import AuditLog  # noqa
 from app.models.scholarship_checklist import UserScholarshipChecklist  # noqa
 from app.models.scholarship_bookmark import ScholarshipBookmark  # noqa
 from app.models.refresh_token import RefreshToken  # noqa
+from app.models.major import Major  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice
 from app.routers import cv_analysis
@@ -155,6 +156,19 @@ def run_migrations():
         """))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_rt_user ON refresh_tokens(user_id)"))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_rt_hash ON refresh_tokens(token_hash)"))
+
+        # ── Majors ─────────────────────────────────────────────────────────────
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS majors (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(100) NOT NULL UNIQUE,
+                description TEXT,
+                is_active BOOLEAN NOT NULL DEFAULT TRUE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS major_id INTEGER REFERENCES majors(id) ON DELETE SET NULL"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_iq_major ON interview_questions(major_id)"))
 
         conn.commit()
     print("✓ Migrations applied")

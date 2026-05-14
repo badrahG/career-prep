@@ -11,6 +11,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import CVList from "./pages/CVList";
+import CVStart from "./pages/CVStart";
 import CVBuilder from "./pages/CVBuilder";
 import CVEdit from "./pages/CVEdit";
 import CVDetail from "./pages/CVDetail";
@@ -64,6 +65,7 @@ function AppRoutes() {
       <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       <Route path="/cv" element={<PrivateRoute><CVList /></PrivateRoute>} />
       <Route path="/cv-analysis" element={<PrivateRoute><CVAnalysis /></PrivateRoute>} />
+      <Route path="/cv/start" element={<PrivateRoute><CVStart /></PrivateRoute>} />
       <Route path="/cv/new" element={<PrivateRoute><CVBuilder /></PrivateRoute>} />
       <Route path="/cv/:id" element={<PrivateRoute><CVDetail /></PrivateRoute>} />
       <Route path="/cv/:id/edit" element={<PrivateRoute><CVEdit /></PrivateRoute>} />

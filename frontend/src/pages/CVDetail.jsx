@@ -13,6 +13,7 @@ export default function CVDetail() {
   var [loading, setLoading] = useState(true);
   var [downloading, setDownloading] = useState(false);
   var [notFound, setNotFound] = useState(false);
+  var [printStamp, setPrintStamp] = useState("");
   var printRef = useRef(null);
   var defaultTitleRef = useRef(typeof document !== "undefined" ? document.title : "CareerPrep");
 
@@ -26,15 +27,9 @@ export default function CVDetail() {
   useEffect(function () {
     if (!cv) return;
 
-    function getPrintableName() {
-      var baseName = (cv.name || "CV").trim() || "CV";
-      return "CV_" + baseName.replace(/[\\/:*?\"<>|]/g, "_");
-    }
-
-    function applyPrintTitle() { document.title = getPrintableName(); }
+    function applyPrintTitle() { document.title = " "; }
     function restoreTitle() { document.title = defaultTitleRef.current; }
 
-    applyPrintTitle();
     window.addEventListener("beforeprint", applyPrintTitle);
     window.addEventListener("afterprint", restoreTitle);
 
@@ -61,9 +56,10 @@ export default function CVDetail() {
     if (downloading) return;
     setDownloading(true);
     try {
-      var baseName = (cv.name || "CV").trim() || "CV";
-      document.title = "CV_" + baseName.replace(/[\\/:*?\"<>|]/g, "_");
-      window.print();
+      var stamp = new Date().toLocaleString("mn-MN", { year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" });
+      setPrintStamp(stamp);
+      document.title = " ";
+      setTimeout(function () { window.print(); }, 0);
     } catch (err) {
       console.error(err);
       toast.error("PDF бэлтгэх үед алдаа гарлаа");
@@ -146,7 +142,7 @@ export default function CVDetail() {
         {/* CV preview */}
         <div className="cv-print-shell shadow-xl rounded-2xl overflow-hidden">
           <div ref={printRef} className="cv-print-root" style={{ width: "210mm", maxWidth: "100%", margin: "0 auto" }}>
-            <CVPreview cv={cv} info={info} template={template} />
+            <CVPreview cv={cv} info={info} template={template} printStamp={printStamp} />
           </div>
         </div>
 

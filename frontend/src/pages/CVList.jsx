@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import { CardSkeleton } from "../components/Skeleton";
@@ -14,6 +14,32 @@ export default function CVList() {
   var [loading, setLoading] = useState(true);
   var [previewCv, setPreviewCv] = useState(null);
   var [previewLoading, setPreviewLoading] = useState(false);
+  var [uploading, setUploading] = useState(false);
+  var fileRef = useRef(null);
+  var navigate = useNavigate();
+
+  function handleUploadFile(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+      toast.error("Зөвхөн PDF файл зөвшөөрнө");
+      e.target.value = "";
+      return;
+    }
+    setUploading(true);
+    var form = new FormData();
+    form.append("file", file);
+    API.post("/cv/parse-upload", form, { headers: { "Content-Type": "multipart/form-data" } })
+      .then(function (res) {
+        toast.success("CV-ийн мэдээлэл амжилттай уншигдлаа!");
+        navigate("/cv/new", { state: { prefilled: res.data } });
+      })
+      .catch(function (err) {
+        toast.error(err.response?.data?.detail || "CV уншиж чадсангүй");
+        setUploading(false);
+        if (fileRef.current) fileRef.current.value = "";
+      });
+  }
 
   useEffect(function () {
     API.get("/cv")
@@ -61,23 +87,63 @@ export default function CVList() {
               {loading ? "Ачааллаж байна..." : cvs.length + " CV үүсгэсэн"}
             </p>
           </div>
-          <Link to="/cv/new" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition whitespace-nowrap">
-            + Шинэ CV
-          </Link>
+          <div className="flex items-center gap-2">
+            <input ref={fileRef} type="file" accept=".pdf" className="hidden" onChange={handleUploadFile} />
+            <button
+              onClick={function () { if (!uploading) fileRef.current?.click(); }}
+              disabled={uploading}
+              className="border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-400 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-900/20 transition whitespace-nowrap disabled:opacity-60 flex items-center gap-2"
+            >
+              {uploading ? (
+                <>
+                  <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity=".3" />
+                    <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  Уншиж байна...
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                  </svg>
+                  CV байршуулах
+                </>
+              )}
+            </button>
+            <Link to="/cv/start" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition whitespace-nowrap">
+              + Шинэ CV
+            </Link>
+          </div>
         </div>
 
         {loading ? (
           <CardSkeleton count={3} />
         ) : cvs.length === 0 ? (
-          <EmptyState
-            illustration="cv"
-            title="CV үүсгээгүй байна"
-            description="Эхний CV-гээ үүсгэж, ажилд орох бэлтгэлээ эхлүүлцгааe."
-            actionLabel="Шинэ CV үүсгэх"
-            actionLink="/cv/new"
-            secondaryLabel="Зөвлөмж унших"
-            secondaryLink="/advice/cv"
-          />
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-12 flex flex-col items-center text-center">
+            <div className="w-24 h-24 mb-6 bg-violet-50 dark:bg-violet-900/20 rounded-full flex items-center justify-center">
+              <svg className="w-12 h-12 text-violet-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">CV үүсгээгүй байна</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-xs">Эхний CV-гээ үүсгэж, ажилд орох бэлтгэлээ эхлүүлцгааe.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link to="/cv/start" className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+                + Шинэ CV үүсгэх
+              </Link>
+              <button
+                onClick={function () { if (!uploading) fileRef.current?.click(); }}
+                disabled={uploading}
+                className="px-6 py-2.5 border border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-400 rounded-xl text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-900/20 transition disabled:opacity-60 flex items-center justify-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                Бэлэн CV байршуулах
+              </button>
+            </div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {cvs.map(function (cv) {

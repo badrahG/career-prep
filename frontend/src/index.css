@@ -4,7 +4,11 @@
 
 @page {
   size: A4;
-  margin: 8mm;
+  margin: 10mm 0 10mm;
+}
+
+@page :first {
+  margin: 0 0 10mm;
 }
 
 @media print {
@@ -32,12 +36,14 @@
   }
 
   .cv-print-root {
-    width: auto !important;
-    max-width: none !important;
-    margin: 0 !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    margin: 0 auto !important;
   }
 
   .cv-print-document {
+    width: 210mm !important;
+    box-sizing: border-box !important;
     min-height: auto !important;
     break-inside: auto;
     page-break-inside: auto;

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import CVPreview from "../components/CVPreview";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import Layout from "../components/Layout";
@@ -155,26 +156,49 @@ function SkillToggle(props) {
 
 export default function CVBuilder() {
   var navigate = useNavigate();
+  var location = useLocation();
+  var prefilled = (location.state && location.state.prefilled) ? location.state.prefilled : null;
+  var pSkills = prefilled && prefilled.skills ? prefilled.skills.map(function (s) { return s.toLowerCase(); }) : [];
+
   var [step, setStep] = useState(1);
   var [saving, setSaving] = useState(false);
   var [cvName, setCvName] = useState("");
-  var [template, setTemplate] = useState("modern");
+  var [template, setTemplate] = useState(location.state?.template || "modern");
   var [photoUrl, setPhotoUrl] = useState("");
   var [photoUploading, setPhotoUploading] = useState(false);
-  var [info, setInfo] = useState({ lastName: "", firstName: "", birthDate: "", gender: "", regNo: "", license: "", marital: "", about: "", salaryExpect: "" });
-  var [contact, setContact] = useState({ email: "", phone: "", phone2: "", address: "", linkedin: "" });
-  var [educations, setEducations] = useState([{ level: "", school: "", major: "", major_field: "", gpa: "", start_year: "", end_year: "", currently: false }]);
-  var [experiences, setExperiences] = useState([{ category: "", position: "", company: "", description: "", start_date: "", end_date: "", currently: false }]);
-  var [selectedPersonal, setSelectedPersonal] = useState([]);
-  var [selectedTech, setSelectedTech] = useState([]);
-  var [selectedProf, setSelectedProf] = useState([]);
-  var [selectedArt, setSelectedArt] = useState([]);
-  var [selectedSport, setSelectedSport] = useState([]);
-  var [langList, setLangList] = useState([{ name: "", level: "" }]);
+  var [info, setInfo] = useState(prefilled ? {
+    lastName: prefilled.last_name || "", firstName: prefilled.first_name || "",
+    birthDate: "", gender: "", regNo: "", license: "", marital: "",
+    about: prefilled.about || "", salaryExpect: ""
+  } : { lastName: "", firstName: "", birthDate: "", gender: "", regNo: "", license: "", marital: "", about: "", salaryExpect: "" });
+  var [contact, setContact] = useState(prefilled ? {
+    email: prefilled.email || "", phone: prefilled.phone || "", phone2: "", address: prefilled.address || "", linkedin: ""
+  } : { email: "", phone: "", phone2: "", address: "", linkedin: "" });
+  var [educations, setEducations] = useState(
+    prefilled && prefilled.educations && prefilled.educations.length > 0
+      ? prefilled.educations.map(function (e) { return { level: e.level || "", school: e.school || "", major: e.major || "", major_field: "", gpa: e.gpa || "", start_year: e.start_year || "", end_year: e.end_year || "", currently: e.is_current || false }; })
+      : [{ level: "", school: "", major: "", major_field: "", gpa: "", start_year: "", end_year: "", currently: false }]
+  );
+  var [experiences, setExperiences] = useState(
+    prefilled && prefilled.work_experiences && prefilled.work_experiences.length > 0
+      ? prefilled.work_experiences.map(function (e) { return { category: "", position: e.position || "", company: e.company || "", description: e.description || "", start_date: e.start_date || "", end_date: e.end_date || "", currently: e.is_current || false }; })
+      : [{ category: "", position: "", company: "", description: "", start_date: "", end_date: "", currently: false }]
+  );
+  var [selectedPersonal, setSelectedPersonal] = useState(personalSkills.filter(function (s) { return pSkills.includes(s.toLowerCase()); }));
+  var [selectedTech, setSelectedTech] = useState(techSkills.filter(function (s) { return pSkills.includes(s.toLowerCase()); }));
+  var [selectedProf, setSelectedProf] = useState(profSkills.filter(function (s) { return pSkills.includes(s.toLowerCase()); }));
+  var [selectedArt, setSelectedArt] = useState(artSkills.filter(function (s) { return pSkills.includes(s.toLowerCase()); }));
+  var [selectedSport, setSelectedSport] = useState(sportSkills.filter(function (s) { return pSkills.includes(s.toLowerCase()); }));
+  var [langList, setLangList] = useState(
+    prefilled && prefilled.languages && prefilled.languages.length > 0
+      ? prefilled.languages.map(function (l) { return { name: l.name || "", level: l.level || "" }; })
+      : [{ name: "", level: "" }]
+  );
   var [certs, setCerts] = useState([{ name: "", organization: "", start_date: "", end_date: "", file_url: "" }]);
   var [certUploading, setCertUploading] = useState({});
   var [interns, setInterns] = useState([{ company: "", title: "", description: "", start_date: "", end_date: "" }]);
   var [awards, setAwards] = useState([{ name: "", year: "" }]);
+  var [showFullPreview, setShowFullPreview] = useState(false);
 
   function removeAt(arr, idx) { var f = []; for (var j = 0; j < arr.length; j++) { if (j !== idx) f.push(arr[j]); } return f; }
   function toggleSkill(arr, setArr, val) { if (arr.includes(val)) { setArr(removeAt(arr, arr.indexOf(val))); } else { setArr([].concat(arr, [val])); } }
@@ -231,6 +255,30 @@ export default function CVBuilder() {
       .finally(function() { setSaving(false); });
   }
 
+  var previewInfo = {
+    lastName: info.lastName, firstName: info.firstName,
+    birthDate: info.birthDate, gender: info.gender, regNo: info.regNo,
+    license: info.license, marital: info.marital, about: info.about, salaryExpect: info.salaryExpect,
+    email: contact.email, phone: contact.phone, phone2: contact.phone2,
+    address: contact.address, linkedin: contact.linkedin,
+    photoUrl: photoUrl,
+    personalSkills: selectedPersonal, techSkills: selectedTech,
+    profSkills: selectedProf, artSkills: selectedArt, sportSkills: selectedSport,
+    languages: langList.filter(function(l) { return l.name; }),
+    certs: certs.filter(function(c) { return c.name; }),
+    internships: interns.filter(function(n) { return n.company; }),
+    awards: awards.filter(function(a) { return a.name; }),
+  };
+  var previewCv = {
+    educations: educations.filter(function(e) { return e.school; }).map(function(e) {
+      return { school: e.school, level: e.level, degree: e.level, major: e.major || e.major_field, gpa: e.gpa, start_year: e.start_year, end_year: e.currently ? "" : e.end_year };
+    }),
+    experiences: experiences.filter(function(e) { return e.company; }).map(function(e) {
+      return { company: e.company, position: e.position, start_date: e.start_date, end_date: e.currently ? "Одоо" : e.end_date, description: e.description };
+    }),
+    skills: [],
+  };
+
   var stepNames = ["Загвар", "Ерөнхий", "Холбоо барих", "Боловсрол", "Туршлага", "Хувийн чадвар", "Мэргэжлийн чадвар", "Хэл", "Сургалт", "Дадлага", "Шагнал", "Хадгалах"];
   var totalSteps = stepNames.length;
   var progressPct = Math.round((step / totalSteps) * 100);
@@ -262,6 +310,8 @@ export default function CVBuilder() {
         <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-5">
           <Link to="/cv" className="hover:text-violet-600 transition">CV</Link>
           <span>/</span>
+          <Link to="/cv/start" className="hover:text-violet-600 transition">Шинэ CV</Link>
+          <span>/</span>
           <span className="text-gray-600 dark:text-gray-300 font-medium">Шинэ CV үүсгэх</span>
           <span className="ml-auto text-gray-400 dark:text-gray-500">Алхам {step}/{totalSteps}</span>
         </div>
@@ -271,6 +321,16 @@ export default function CVBuilder() {
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">CV үүсгэх</p>
           <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Шинэ CV</h1>
         </div>
+
+        {/* Pre-filled notice */}
+        {prefilled && (
+          <div className="mb-5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl px-4 py-3 flex items-center gap-3">
+            <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            <p className="text-xs text-blue-700 dark:text-blue-300">CV-ийн мэдээлэл автоматаар уншигдлаа. Мэдээллүүдийг шалгаж, засварлана уу.</p>
+          </div>
+        )}
 
         {/* Progress bar */}
         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-5">
@@ -295,6 +355,8 @@ export default function CVBuilder() {
           })}
         </div>
 
+        <div className="flex gap-6 items-start">
+        <div className="flex-1 min-w-0">
         <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 md:p-8">
 
           {step === 1 && (
@@ -612,7 +674,50 @@ export default function CVBuilder() {
             )}
           </div>
         </div>
+        </div>
+
+        {/* Right: Live preview panel */}
+        <div className="hidden xl:flex flex-col w-64 flex-shrink-0 sticky top-6 self-start gap-2">
+          <p className="text-xs text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider text-center">Урьдчилан харах</p>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-600 shadow-md overflow-hidden">
+            <div className="relative overflow-hidden" style={{ height: "360px" }}>
+              <div style={{ position: "absolute", top: 0, left: 0, width: "210mm", transform: "scale(0.322)", transformOrigin: "top left", pointerEvents: "none" }}>
+                <CVPreview cv={previewCv} info={previewInfo} template={template} />
+              </div>
+            </div>
+            <div className="px-3 py-2.5 border-t border-gray-100 dark:border-gray-700 flex justify-center">
+              <button
+                type="button"
+                onClick={function() { setShowFullPreview(true); }}
+                className="flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Preview
+              </button>
+            </div>
+          </div>
+        </div>
+
+        </div>
       </div>
+
+      {showFullPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={function() { setShowFullPreview(false); }}>
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col" style={{ width: "min(900px, 95vw)", maxHeight: "92vh" }} onClick={function(e) { e.stopPropagation(); }}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-gray-700 flex-shrink-0">
+              <p className="font-semibold text-slate-900 dark:text-gray-100 text-sm">CV урьдчилан харах</p>
+              <button type="button" onClick={function() { setShowFullPreview(false); }} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-gray-700 text-slate-500 dark:text-gray-400 transition text-xl">×</button>
+            </div>
+            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4">
+              <div className="bg-white shadow-lg mx-auto" style={{ width: "210mm", maxWidth: "100%", transform: "scale(0.72)", transformOrigin: "top center", marginBottom: "calc((0.72 - 1) * 100%)" }}>
+                <CVPreview cv={previewCv} info={previewInfo} template={template} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../services/api";
 import toast from "react-hot-toast";
@@ -17,15 +17,26 @@ export default function InterviewQuiz() {
 
   var [caseIntro, setCaseIntro] = useState(null);
   var [showCaseRef, setShowCaseRef] = useState(false);
+  var [majors, setMajors] = useState([]);
+  var [selectedMajorId, setSelectedMajorId] = useState(null);
+
+  useEffect(function () {
+    API.get("/interview/majors")
+      .then(function (res) { setMajors(res.data); })
+      .catch(function () {});
+  }, []);
 
   function getCaseQuestionCount(qs, caseId) {
     return qs.filter(function (q) { return q.case_id === caseId; }).length;
   }
 
+  var needsMajor = category === "technical" || category === "case";
+
   function startQuiz() {
     setLoading(true);
     var params = { limit: limit };
     if (category !== "all") params.category = category;
+    if (needsMajor && selectedMajorId) params.major_id = selectedMajorId;
     API.get("/interview/quiz/questions", { params: params })
       .then(function (res) {
         if (res.data.length === 0) {
@@ -109,7 +120,7 @@ export default function InterviewQuiz() {
       var res = await API.post("/interview/quiz/submit", payload);
       setResult(res.data);
       setStage("result");
-    } catch (err) {
+    } catch {
       toast.error("Илгээхэд алдаа гарлаа");
     } finally {
       setSubmitting(false);
@@ -124,6 +135,7 @@ export default function InterviewQuiz() {
     setResult(null);
     setCaseIntro(null);
     setShowCaseRef(false);
+    setSelectedMajorId(null);
   }
 
   var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн", case: "Кейс асуулт", all: "Бүгд" };
@@ -159,7 +171,7 @@ export default function InterviewQuiz() {
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                   {["all", "general", "technical", "behavioral", "case"].map(function (c) {
                     return (
-                      <button key={c} onClick={function () { setCategory(c); }}
+                      <button key={c} onClick={function () { setCategory(c); setSelectedMajorId(null); }}
                         className={"px-3 py-2 rounded-xl text-sm font-medium transition " +
                           (category === c ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                         {categoryLabels[c]}
@@ -168,6 +180,28 @@ export default function InterviewQuiz() {
                   })}
                 </div>
               </div>
+
+              {needsMajor && majors.length > 0 && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Мэргэжил сонгох <span className="text-emerald-600 font-normal text-xs">(заавал)</span>
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
+                    {majors.map(function (m) {
+                      return (
+                        <button key={m.id}
+                          onClick={function () { setSelectedMajorId(m.id === selectedMajorId ? null : m.id); }}
+                          className={"px-4 py-2 rounded-xl text-sm font-medium transition " +
+                            (selectedMajorId === m.id
+                              ? "bg-emerald-600 text-white"
+                              : "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40")}>
+                          {m.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Асуултын тоо</label>
                 <div className="flex gap-2">
@@ -190,9 +224,9 @@ export default function InterviewQuiz() {
                   <li>• Дуусахад оноо, зөв/буруу хариулт харагдана</li>
                 </ul>
               </div>
-              <button onClick={startQuiz} disabled={loading}
-                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
-                {loading ? "Ачаалж байна..." : "Quiz эхлүүлэх →"}
+              <button onClick={startQuiz} disabled={loading || (needsMajor && !selectedMajorId)}
+                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition">
+                {loading ? "Ачаалж байна..." : (needsMajor && !selectedMajorId) ? "Мэргэжил сонгоно уу" : "Quiz эхлүүлэх →"}
               </button>
             </div>
           </div>

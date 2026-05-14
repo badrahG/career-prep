@@ -80,11 +80,10 @@ export default function SearchModal({ open, onClose }) {
   function go(url) { navigate(url); onClose(); }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4"
-      onClick={function (e) { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-50" onClick={onClose}>
 
-      <div className="relative w-full max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+      <div className="absolute top-[62px] right-6 w-[480px] max-w-[calc(100vw-1.5rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700"
+        onClick={function (e) { e.stopPropagation(); }}>
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100 dark:border-gray-700">
           <span className="text-gray-400 flex-shrink-0">

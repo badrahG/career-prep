@@ -16,6 +16,14 @@ export default function InterviewFlashcard() {
   var [currentIndex, setCurrentIndex] = useState(0);
   var [flipped, setFlipped] = useState(false);
   var [studied, setStudied] = useState(new Set());
+  var [majors, setMajors] = useState([]);
+  var [selectedMajorId, setSelectedMajorId] = useState(null);
+
+  useEffect(function () {
+    API.get("/interview/majors")
+      .then(function (res) { setMajors(res.data); })
+      .catch(function () {});
+  }, []);
 
   useEffect(function () {
     if (authLoading) return;
@@ -32,33 +40,34 @@ export default function InterviewFlashcard() {
     }
   }, [authLoading, user?.id]);
 
-  useEffect(function () {
+  var needsMajor = category === "technical" || category === "case";
+
+  function loadQuestions(cat, majId, q) {
     setLoading(true);
     var params = {};
-    if (category !== "all") params.category = category;
-    if (search.trim()) params.search = search.trim();
+    if (cat !== "all") params.category = cat;
+    if (q && q.trim()) params.search = q.trim();
+    if (majId) params.major_id = majId;
     API.get("/interview/questions", { params: params })
       .then(function (res) {
-        setQuestions(res.data.filter(function (q) { return q.category !== "case"; }));
+        setQuestions(res.data);
         setCurrentIndex(0); setFlipped(false);
       })
       .catch(function () { toast.error("Ачаалахад алдаа"); })
       .finally(function () { setLoading(false); });
-  }, [category]);
+  }
+
+  useEffect(function () {
+    if (needsMajor && !selectedMajorId) {
+      setQuestions([]); setLoading(false); return;
+    }
+    loadQuestions(category, selectedMajorId, search);
+  }, [category, selectedMajorId]);
 
   useEffect(function () {
     var timer = setTimeout(function () {
-      setLoading(true);
-      var params = {};
-      if (category !== "all") params.category = category;
-      if (search.trim()) params.search = search.trim();
-      API.get("/interview/questions", { params: params })
-        .then(function (res) {
-          setQuestions(res.data.filter(function (q) { return q.category !== "case"; }));
-          setCurrentIndex(0); setFlipped(false);
-        })
-        .catch(function () { toast.error("Ачаалахад алдаа"); })
-        .finally(function () { setLoading(false); });
+      if (needsMajor && !selectedMajorId) return;
+      loadQuestions(category, selectedMajorId, search);
     }, 350);
     return function () { clearTimeout(timer); };
   }, [search]);
@@ -114,8 +123,9 @@ export default function InterviewFlashcard() {
     { key: "general", label: "Ерөнхий" },
     { key: "technical", label: "Техникийн" },
     { key: "behavioral", label: "Зан үйлийн" },
+    { key: "case", label: "Кейс" },
   ];
-  var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн" };
+  var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн", case: "Кейс" };
 
   var currentQuestion = questions[currentIndex];
   var studiedCount = studied.size;
@@ -152,7 +162,7 @@ export default function InterviewFlashcard() {
             <div className="flex gap-1 flex-wrap">
               {categories.map(function (c) {
                 return (
-                  <button key={c.key} onClick={function () { setCategory(c.key); }}
+                  <button key={c.key} onClick={function () { setCategory(c.key); setSelectedMajorId(null); }}
                     className={"px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
                       (category === c.key ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                     {c.label}
@@ -162,6 +172,31 @@ export default function InterviewFlashcard() {
             </div>
           </div>
         </div>
+
+        {/* Major picker (shown when technical or case is selected) */}
+        {needsMajor && (
+          <div className="bg-white dark:bg-gray-800 border border-emerald-100 dark:border-emerald-800 rounded-2xl shadow-sm p-4 mb-5">
+            <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-3">Мэргэжил сонгоно уу</p>
+            {majors.length === 0 ? (
+              <p className="text-sm text-gray-400 dark:text-gray-500">Мэргэжил нэмэгдээгүй байна. Adminтай холбогдоно уу.</p>
+            ) : (
+              <div className="flex gap-2 flex-wrap">
+                {majors.map(function (m) {
+                  return (
+                    <button key={m.id}
+                      onClick={function () { setSelectedMajorId(m.id === selectedMajorId ? null : m.id); }}
+                      className={"px-4 py-2 rounded-xl text-sm font-medium transition " +
+                        (selectedMajorId === m.id
+                          ? "bg-emerald-600 text-white"
+                          : "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40")}>
+                      {m.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Progress bar */}
         {questions.length > 0 && (
@@ -178,8 +213,18 @@ export default function InterviewFlashcard() {
 
         {loading ? (
           <QuestionSkeleton />
+        ) : needsMajor && !selectedMajorId ? (
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-12 flex flex-col items-center text-center">
+            <div className="w-16 h-16 mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+              </svg>
+            </div>
+            <p className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-1">Мэргэжлээ сонгоно уу</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">Дээрх сонголтоос мэргэжлээ сонгон асуултуудаа харна уу.</p>
+          </div>
         ) : questions.length === 0 ? (
-          <EmptyState illustration="interview" title="Асуулт олдсонгүй" description="Шүүлтүүрийг өөрчилж үзнэ үү." />
+          <EmptyState illustration="interview" title="Асуулт олдсонгүй" description="Энэ мэргэжилд асуулт нэмэгдээгүй байна." />
         ) : currentQuestion ? (
           <>
             <div className="mb-5" style={{ perspective: "1000px" }}>

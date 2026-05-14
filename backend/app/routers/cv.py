@@ -5,6 +5,10 @@ from pathlib import Path
 import uuid
 import aiofiles
 import os
+import io
+import json
+import pdfplumber
+from groq import Groq
 
 from app.database import get_db
 from app.models.user import User
@@ -53,6 +57,108 @@ async def upload_photo(
         await f.write(contents)
 
     return {"photo_url": f"{API_BASE}/uploads/{filename}"}
+
+
+_PARSE_PROMPT = """You are a CV parser. Extract all information from this CV text and return ONLY valid JSON.
+
+CV Text:
+{cv_text}
+
+Return JSON with this exact structure (use empty string for missing fields, empty arrays for missing lists):
+{{
+  "first_name": "",
+  "last_name": "",
+  "email": "",
+  "phone": "",
+  "address": "",
+  "about": "",
+  "educations": [
+    {{
+      "school": "",
+      "major": "",
+      "level": "",
+      "start_year": "",
+      "end_year": "",
+      "gpa": "",
+      "is_current": false
+    }}
+  ],
+  "work_experiences": [
+    {{
+      "company": "",
+      "position": "",
+      "start_date": "",
+      "end_date": "",
+      "is_current": false,
+      "description": ""
+    }}
+  ],
+  "skills": [],
+  "languages": [
+    {{
+      "name": "",
+      "level": ""
+    }}
+  ]
+}}
+
+Rules:
+- For start_date/end_date use YYYY-MM-DD format if possible, otherwise just YYYY-MM or YYYY
+- For start_year/end_year use 4-digit year string (e.g. "2022")
+- If currently working/studying, set is_current=true and leave end_date/end_year empty
+- skills must be an array of plain skill name strings
+- Return ONLY the JSON object, no explanation or other text"""
+
+
+@router.post("/parse-upload")
+async def parse_cv_upload(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    if not file.filename or not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Зөвхөн PDF файл зөвшөөрнө")
+
+    data = await file.read()
+    if len(data) > 20 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Файлын хэмжээ 20MB-аас хэтэрч байна")
+
+    try:
+        with pdfplumber.open(io.BytesIO(data)) as pdf:
+            pages_text = [page.extract_text() for page in pdf.pages[:10] if page.extract_text()]
+        cv_text = "\n\n".join(pages_text).strip()
+    except Exception:
+        raise HTTPException(status_code=422, detail="PDF-ээс текст гаргаж авах боломжгүй байна")
+
+    if not cv_text or len(cv_text) < 30:
+        raise HTTPException(status_code=422, detail="PDF-д уншигдах текст олдсонгүй. Скан хийсэн PDF байж болно.")
+
+    api_key = os.getenv("GROQ_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=503, detail="CV parse үйлчилгээ одоогоор боломжгүй байна")
+
+    client = Groq(api_key=api_key)
+    try:
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            max_tokens=2048,
+            messages=[{"role": "user", "content": _PARSE_PROMPT.format(cv_text=cv_text[:8000])}],
+        )
+        raw = completion.choices[0].message.content.strip()
+        start = raw.find("{")
+        end = raw.rfind("}") + 1
+        if start == -1 or end == 0:
+            raise ValueError("JSON олдсонгүй")
+        result = json.loads(raw[start:end])
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=502, detail="CV-ийн мэдээллийг задлах боломжгүй байна")
+    except Exception as e:
+        err_name = type(e).__name__
+        err_msg = str(e)
+        if "RateLimit" in err_name or "rate_limit" in err_msg.lower() or "429" in err_msg:
+            raise HTTPException(status_code=429, detail="Groq API-ийн өдрийн хязгаар дүүрлээ. Маргааш дахин оролдоно уу.")
+        raise HTTPException(status_code=502, detail=f"CV уншихад алдаа: {err_msg[:300]}")
+
+    return result
 
 
 @router.post("/upload-certificate")

@@ -1,11 +1,11 @@
-export default function CVPreview({ cv, info, template }) {
+export default function CVPreview({ cv, info, template, printStamp }) {
   var educations = Array.isArray(cv.educations) ? cv.educations : [];
   var experiences = Array.isArray(cv.experiences) ? cv.experiences : [];
   var skills = Array.isArray(cv.skills) ? cv.skills : [];
-  var props = { cv, info, educations, experiences, skills };
+  var props = { cv, info, educations, experiences, skills, printStamp };
   if (template === "classic") return <AsianTemplate {...props} />;
   if (template === "minimal") return <MinimalTemplate {...props} />;
-  return <ModernMongolianTemplate {...props} />;
+  return <BestMongolianTemplate {...props} />;
 }
 
 var skillTagBaseStyle = {
@@ -53,6 +53,262 @@ function parseSkillsFromInfo(info) {
     internships: info.internships || [],
     awards: info.awards || [],
   };
+}
+
+function BestMongolianTemplate({ info, educations, experiences, skills, printStamp }) {
+  var { personalSkills, techSkills, profSkills, artSkills, sportSkills, languages, certs, internships, awards } = parseSkillsFromInfo(info);
+  var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
+  var fallbackSkills = skills.map(function (s) { return s.skill_name; }).filter(Boolean);
+  var leftSkillGroups = [];
+  if (personalSkills.length > 0) leftSkillGroups.push({ title: "Хувийн ур чадвар", items: personalSkills });
+  if (techSkills.length > 0) leftSkillGroups.push({ title: "Компьютер", items: techSkills });
+  if (leftSkillGroups.length === 0 && fallbackSkills.length > 0) leftSkillGroups.push({ title: "Ур чадвар", items: fallbackSkills });
+  var rightSkillGroups = [];
+  if (profSkills.length > 0) rightSkillGroups.push({ title: "Мэргэжлийн ур чадвар", items: profSkills });
+  if (artSkills.length > 0) rightSkillGroups.push({ title: "Урлагийн чадвар", items: artSkills });
+  if (sportSkills.length > 0) rightSkillGroups.push({ title: "Спортын чадвар", items: sportSkills });
+  var contactItems = [
+    info.phone ? { label: "Утас", value: info.phone + (info.phone2 ? " / " + info.phone2 : "") } : null,
+    info.email ? { label: "И-мэйл", value: info.email } : null,
+    info.address ? { label: "Хаяг", value: info.address } : null,
+    info.linkedin ? { label: "Профайл", value: info.linkedin } : null,
+  ].filter(Boolean);
+  var personalInfo = [
+    info.birthDate ? { label: "Төрсөн огноо", value: info.birthDate } : null,
+    info.gender ? { label: "Хүйс", value: info.gender } : null,
+    info.regNo ? { label: "Регистр", value: info.regNo } : null,
+    info.marital ? { label: "Гэрлэлтийн байдал", value: info.marital } : null,
+    info.license ? { label: "Жолооны үнэмлэх", value: info.license } : null,
+    info.salaryExpect ? { label: "Цалингийн хүлээлт", value: info.salaryExpect } : null,
+  ].filter(Boolean);
+
+  return (
+    <div className="cv-print-document" style={{ background: "#fff", color: "#283044", fontFamily: "'Inter', 'Segoe UI', Arial, sans-serif", minHeight: "297mm", padding: "34px 34px 30px", boxSizing: "border-box" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "190px minmax(0, 1fr)", gap: "34px", alignItems: "start" }}>
+        <aside>
+          {printStamp && <p className="cv-print-section" style={{ fontSize: "9.4px", color: "#98a2b3", lineHeight: 1.35, margin: "0 0 6px", fontWeight: "650" }}>Татсан: {printStamp}</p>}
+          <div className="cv-print-section" style={{ width: "110px", height: "110px", borderRadius: "7px", background: "#eef3f7", overflow: "hidden", border: "1px solid #e2e8f0", marginBottom: "14px" }}>
+            {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#8a96a8", fontSize: "10px", fontWeight: "700" }}>Зураг</div>}
+          </div>
+
+          <BestSideBlock title="Холбоо барих">
+            {contactItems.length > 0 ? contactItems.map(function (item, i) {
+              return <BestInfoLine key={i} label={item.label} value={item.value} />;
+            }) : <p style={{ fontSize: "10.4px", color: "#7b8494", lineHeight: 1.5, margin: 0 }}>Утас, и-мэйл, хаягаа оруулна уу.</p>}
+          </BestSideBlock>
+
+          {personalInfo.length > 0 && (
+            <BestSideBlock title="Ерөнхий мэдээлэл">
+              {personalInfo.map(function (item, i) {
+                return <BestInfoLine key={i} label={item.label} value={item.value} />;
+              })}
+            </BestSideBlock>
+          )}
+
+          {leftSkillGroups.length > 0 && (
+            <BestSideBlock title="Ур чадвар">
+              {leftSkillGroups.map(function (group, i) {
+                return <BestSkillGroup key={i} title={group.title} items={group.items} compact />;
+              })}
+            </BestSideBlock>
+          )}
+
+          {languages.length > 0 && (
+            <BestSideBlock title="Гадаад хэл">
+              {languages.map(function (l, i) {
+                return <BestLanguageLine key={i} name={l.name} level={l.level} />;
+              })}
+            </BestSideBlock>
+          )}
+
+        </aside>
+
+        <main>
+          <div className="cv-print-section" style={{ marginBottom: "20px" }}>
+            <h1 style={{ fontSize: "30px", lineHeight: 1.05, fontWeight: "850", color: "#23283a", margin: 0, letterSpacing: 0 }}>{fullName || "Овог нэр"}</h1>
+            <p style={{ fontSize: "11px", color: "#1d75b9", fontWeight: "700", margin: "7px 0 0" }}>Монголын компаниудад зориулсан CV</p>
+          </div>
+
+          <BestSection title="Товч танилцуулга">
+            <p style={{ fontSize: "11.4px", lineHeight: 1.62, color: "#667085", margin: 0, whiteSpace: "pre-line" }}>
+              {info.about || "Өөрийн туршлага, зорилго, давуу талаа 3-4 өгүүлбэрээр товч, тодорхой бичнэ үү."}
+            </p>
+          </BestSection>
+
+          {experiences.length > 0 && (
+            <BestSection title="Ажлын туршлага">
+              {experiences.map(function (exp, i) {
+                return (
+                  <BestExperienceItem
+                    key={i}
+                    title={exp.position}
+                    company={exp.company}
+                    date={exp.start_date ? exp.start_date + " - " + (exp.end_date || "Одоо") : ""}
+                    description={exp.description}
+                    last={i === experiences.length - 1}
+                  />
+                );
+              })}
+            </BestSection>
+          )}
+
+          {educations.length > 0 && (
+            <BestSection title="Боловсрол">
+              {educations.map(function (edu, i) {
+                return (
+                  <BestCompactItem
+                    key={i}
+                    title={edu.school}
+                    subtitle={[edu.level || edu.degree, edu.major, edu.gpa ? "Голч: " + edu.gpa : ""].filter(Boolean).join(" | ")}
+                    date={edu.start_year ? edu.start_year + " - " + (edu.end_year || "Одоо") : ""}
+                    last={i === educations.length - 1}
+                  />
+                );
+              })}
+            </BestSection>
+          )}
+
+          {internships.length > 0 && (
+            <BestSection title="Дадлага, төсөл">
+              {internships.map(function (n, i) {
+                return <BestCompactItem key={i} title={n.title} subtitle={n.company} date={n.start_date ? n.start_date + " - " + (n.end_date || "") : ""} description={n.description} last={i === internships.length - 1} />;
+              })}
+            </BestSection>
+          )}
+
+          {awards.length > 0 && (
+            <BestSection title="Шагнал, амжилт">
+              {awards.map(function (a, i) {
+                return <BestAwardItem key={i} title={a.name} date={a.year || ""} last={i === awards.length - 1} />;
+              })}
+            </BestSection>
+          )}
+
+          {certs.length > 0 && (
+            <BestSection title="Сертификат">
+              {certs.map(function (c, i) {
+                return (
+                  <BestCompactItem
+                    key={i}
+                    title={c.name}
+                    subtitle={c.organization}
+                    date={c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : ""}
+                    last={i === certs.length - 1}
+                  />
+                );
+              })}
+            </BestSection>
+          )}
+
+          {rightSkillGroups.length > 0 && (
+            <BestSection title="Нэмэлт ур чадвар">
+              <div style={{ display: "grid", gridTemplateColumns: rightSkillGroups.length > 1 ? "1fr 1fr" : "1fr", gap: "12px 18px" }}>
+                {rightSkillGroups.map(function (group, i) {
+                  return <BestSkillGroup key={i} title={group.title} items={group.items} />;
+                })}
+              </div>
+            </BestSection>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function BestSection({ title, children }) {
+  return (
+    <section style={{ marginBottom: "20px" }}>
+      <h2 className="cv-print-section" style={{ fontSize: "15px", color: "#2a3042", margin: "0 0 9px", lineHeight: 1.15, fontWeight: "820", paddingBottom: "7px", borderBottom: "1px solid #d9e0e8", pageBreakAfter: "avoid" }}>{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function BestSideBlock({ title, children }) {
+  return (
+    <section className="cv-print-section" style={{ marginBottom: "13px" }}>
+      <h3 style={{ fontSize: "13.2px", color: "#2a3042", margin: "0 0 7px", lineHeight: 1.15, fontWeight: "820", paddingBottom: "5px", borderBottom: "1px solid #d9e0e8" }}>{title}</h3>
+      {children}
+    </section>
+  );
+}
+
+function BestExperienceItem({ title, company, date, description, last }) {
+  return (
+    <div style={{ marginBottom: last ? 0 : "15px", pageBreakInside: "avoid" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 118px", gap: "14px", alignItems: "start" }}>
+        <div>
+          <p style={{ fontSize: "12.5px", fontWeight: "820", color: "#293044", margin: 0, lineHeight: 1.25 }}>{title}</p>
+          {company && <p style={{ fontSize: "11.2px", color: "#1d75b9", fontWeight: "700", margin: "2px 0 0", lineHeight: 1.25 }}>{company}</p>}
+        </div>
+        {date && <p style={{ fontSize: "10.2px", color: "#7b8494", margin: 0, textAlign: "right", lineHeight: 1.35 }}>{date}</p>}
+      </div>
+      {description && <div style={{ fontSize: "10.8px", color: "#667085", marginTop: "7px", lineHeight: 1.55, whiteSpace: "pre-line" }}>{description}</div>}
+    </div>
+  );
+}
+
+function BestCompactItem({ title, subtitle, date, description, last }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 138px", gap: "10px", marginBottom: last ? 0 : "13px", pageBreakInside: "avoid" }}>
+      <div style={{ minWidth: 0 }}>
+        <p style={{ fontSize: "12.2px", fontWeight: "820", color: "#293044", margin: 0, lineHeight: 1.3, overflowWrap: "break-word" }}>{title}</p>
+        {subtitle && <p style={{ fontSize: "10.8px", color: "#667085", margin: "2px 0 0", lineHeight: 1.4, overflowWrap: "break-word" }}>{subtitle}</p>}
+        {description && <p style={{ fontSize: "10.8px", color: "#667085", margin: "5px 0 0", lineHeight: 1.5, whiteSpace: "pre-line", overflowWrap: "break-word" }}>{description}</p>}
+      </div>
+      {date && <p style={{ fontSize: "10px", color: "#7b8494", margin: 0, textAlign: "right", lineHeight: 1.35, whiteSpace: "nowrap" }}>{date}</p>}
+    </div>
+  );
+}
+
+function BestAwardItem({ title, date, last }) {
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 118px", gap: "14px", marginBottom: last ? 0 : "10px", pageBreakInside: "avoid" }}>
+      <p style={{ fontSize: "10.8px", fontWeight: "400", color: "#7b8494", margin: 0, lineHeight: 1.5 }}>{title}</p>
+      {date && <p style={{ fontSize: "10px", color: "#a0a8b5", margin: 0, textAlign: "right", lineHeight: 1.35 }}>{date}</p>}
+    </div>
+  );
+}
+
+function BestInfoLine({ label, value }) {
+  return (
+    <div style={{ marginBottom: "6px", pageBreakInside: "avoid" }}>
+      <p style={{ fontSize: "8.8px", color: "#98a2b3", fontWeight: "760", textTransform: "uppercase", letterSpacing: "0.3px", margin: "0 0 1px" }}>{label}</p>
+      <p style={{ fontSize: "10.5px", color: "#596579", lineHeight: 1.35, margin: 0, wordBreak: "break-word" }}>{value}</p>
+    </div>
+  );
+}
+
+function BestSkillPill({ text, muted }) {
+  return <span style={{ display: "inline-block", maxWidth: "100%", fontSize: "9.6px", lineHeight: 1.22, color: muted ? "#596579" : "#1d75b9", background: muted ? "#f4f6f8" : "#edf7ff", borderRadius: "5px", padding: "4px 6px", fontWeight: "650", whiteSpace: "normal", overflowWrap: "anywhere", wordBreak: "break-word", hyphens: "auto" }}>{text}</span>;
+}
+
+function BestSkillGroup({ title, items, compact }) {
+  return (
+    <div style={{ marginBottom: compact ? "7px" : 0, pageBreakInside: "avoid" }}>
+      <p style={{ fontSize: compact ? "8.8px" : "10.4px", color: "#98a2b3", fontWeight: "760", textTransform: "uppercase", letterSpacing: "0.3px", margin: "0 0 4px", overflowWrap: "anywhere", wordBreak: "break-word" }}>{title}</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: compact ? "4px" : "7px", alignItems: "flex-start" }}>
+        {items.map(function (s, i) { return <BestSkillPill key={i} text={s} muted={compact && title !== "Компьютер"} />; })}
+      </div>
+    </div>
+  );
+}
+
+function BestLanguageLine({ name, level }) {
+  var filled = level === "Бүрэн эзэмшсэн" ? 5 : level === "Ахисан дунд шат" ? 4 : level === "Дунд шат" ? 3 : level ? 2 : 0;
+  return (
+    <div style={{ marginBottom: "10px", pageBreakInside: "avoid" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", alignItems: "center" }}>
+        <p style={{ fontSize: "10.6px", color: "#596579", margin: 0, fontWeight: "650" }}>{name}</p>
+        <div style={{ display: "flex", gap: "3px" }}>
+          {[1, 2, 3, 4, 5].map(function (n) {
+            return <span key={n} style={{ width: "7px", height: "7px", borderRadius: "50%", background: n <= filled ? "#1d75b9" : "#d8e4ef", display: "inline-block" }} />;
+          })}
+        </div>
+      </div>
+      {level && <p style={{ fontSize: "9.4px", color: "#98a2b3", margin: "2px 0 0", textAlign: "right" }}>{level}</p>}
+    </div>
+  );
 }
 
 function ModernMongolianTemplate({ info, educations, experiences, skills }) {

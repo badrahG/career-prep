@@ -1,8 +1,181 @@
-export default function CVPreview({ cv, info, template, printStamp }) {
+var MN = {
+  about: "Товч танилцуулга",
+  aboutObjective: "Товч танилцуулга / Зорилго",
+  experience: "Ажлын туршлага",
+  education: "Боловсрол",
+  internships: "Дадлага, төсөл",
+  internshipsSlash: "Дадлага / Төсөл",
+  awards: "Шагнал, амжилт",
+  awardsSlash: "Шагнал / Нэмэлт мэдээлэл",
+  certificates: "Сертификат",
+  certificatesSlash: "Сургалт / Сертификат",
+  additionalSkills: "Нэмэлт ур чадвар",
+  overview: "Үндсэн мэдээлэл",
+  contact: "Холбоо барих",
+  personalInfo: "Ерөнхий мэдээлэл",
+  personalInfoAlt: "Хувийн мэдээлэл",
+  skills: "Ур чадвар",
+  languages: "Гадаад хэл",
+  info: "Мэдээлэл",
+  phone: "Утас",
+  email: "И-мэйл",
+  address: "Хаяг",
+  profile: "Профайл",
+  birthDate: "Төрсөн огноо",
+  gender: "Хүйс",
+  regNo: "Регистр",
+  regNoFull: "Регистрийн дугаар",
+  marital: "Гэрлэлтийн байдал",
+  license: "Жолооны үнэмлэх",
+  licenseSt: "Жолоо",
+  salary: "Цалингийн хүлээлт",
+  salarySt: "Цалин",
+  personalSkills: "Хувийн ур чадвар",
+  techSkills: "Компьютер",
+  techSkillsFull: "Компьютерын ур чадвар",
+  profSkills: "Мэргэжлийн ур чадвар",
+  profSkillsSt: "Мэргэжлийн",
+  artSkills: "Урлагийн чадвар",
+  sportSkills: "Спортын чадвар",
+  otherSkills: "Бусад",
+  mainSkills: "Үндсэн",
+  present: "Одоо",
+  photo: "Зураг",
+  noName: "Овог нэр",
+  noNameAlt: "Нэр оруулаагүй",
+  gpa: "Голч: ",
+  cvTitle: "Монголын компаниудад зориулсан CV",
+  byType: "Төрлөөр",
+  level: "Түвшин",
+  extra: "Нэмэлт",
+  langLabel: "Хэл",
+  openCert: "Гэрчилгээ нээх",
+  certAlt: "Гэрчилгээ",
+  cvPositionFallback: "Анкет / CV",
+  printed: "Татсан: ",
+};
+
+var JA = {
+  about: "自己紹介",
+  aboutObjective: "プロフィール / 目標",
+  experience: "職務経歴",
+  education: "学歴",
+  internships: "インターンシップ・プロジェクト",
+  internshipsSlash: "インターンシップ / プロジェクト",
+  awards: "受賞歴・実績",
+  awardsSlash: "受賞歴 / その他",
+  certificates: "資格・認定",
+  certificatesSlash: "研修 / 資格",
+  additionalSkills: "その他のスキル",
+  overview: "基本情報",
+  contact: "連絡先",
+  personalInfo: "個人情報",
+  personalInfoAlt: "個人情報",
+  skills: "スキル",
+  languages: "語学力",
+  info: "情報",
+  phone: "電話番号",
+  email: "メール",
+  address: "住所",
+  profile: "プロフィール",
+  birthDate: "生年月日",
+  gender: "性別",
+  regNo: "ID",
+  regNoFull: "ID番号",
+  marital: "婚姻状況",
+  license: "運転免許",
+  licenseSt: "免許",
+  salary: "希望年収",
+  salarySt: "年収",
+  personalSkills: "対人スキル",
+  techSkills: "ITスキル",
+  techSkillsFull: "コンピュータスキル",
+  profSkills: "専門スキル",
+  profSkillsSt: "専門",
+  artSkills: "芸術・創作",
+  sportSkills: "スポーツ",
+  otherSkills: "その他",
+  mainSkills: "主なスキル",
+  present: "現在",
+  photo: "写真",
+  noName: "氏名",
+  noNameAlt: "名前未入力",
+  gpa: "GPA: ",
+  cvTitle: "履歴書",
+  byType: "種類別",
+  level: "レベル",
+  extra: "追加情報",
+  langLabel: "言語",
+  openCert: "証明書を開く",
+  certAlt: "証明書",
+  cvPositionFallback: "履歴書 / CV",
+  printed: "印刷日: ",
+};
+
+var EN = {
+  about: "About Me",
+  aboutObjective: "Profile / Objective",
+  experience: "Work Experience",
+  education: "Education",
+  internships: "Internships & Projects",
+  internshipsSlash: "Internships / Projects",
+  awards: "Awards & Achievements",
+  awardsSlash: "Awards / Additional Info",
+  certificates: "Certificates",
+  certificatesSlash: "Training / Certificates",
+  additionalSkills: "Additional Skills",
+  overview: "Overview",
+  contact: "Contact",
+  personalInfo: "Personal Info",
+  personalInfoAlt: "Personal Info",
+  skills: "Skills",
+  languages: "Languages",
+  info: "Info",
+  phone: "Phone",
+  email: "Email",
+  address: "Address",
+  profile: "Profile",
+  birthDate: "Date of Birth",
+  gender: "Gender",
+  regNo: "ID",
+  regNoFull: "ID Number",
+  marital: "Marital Status",
+  license: "Driver's License",
+  licenseSt: "License",
+  salary: "Expected Salary",
+  salarySt: "Salary",
+  personalSkills: "Personal Skills",
+  techSkills: "Computer Skills",
+  techSkillsFull: "Computer Skills",
+  profSkills: "Professional Skills",
+  profSkillsSt: "Professional",
+  artSkills: "Art Skills",
+  sportSkills: "Sports Skills",
+  otherSkills: "Other",
+  mainSkills: "Main",
+  present: "Present",
+  photo: "Photo",
+  noName: "Full Name",
+  noNameAlt: "No Name",
+  gpa: "GPA: ",
+  cvTitle: "International CV",
+  byType: "By Type",
+  level: "Level",
+  extra: "Additional",
+  langLabel: "Languages",
+  openCert: "Open certificate",
+  certAlt: "Certificate",
+  cvPositionFallback: "Resumé / CV",
+  printed: "Printed: ",
+};
+
+export default function CVPreview({ cv, info, template, printStamp, lang }) {
+  var L = lang === "en" ? EN : lang === "ja" ? JA : MN;
   var educations = Array.isArray(cv.educations) ? cv.educations : [];
   var experiences = Array.isArray(cv.experiences) ? cv.experiences : [];
   var skills = Array.isArray(cv.skills) ? cv.skills : [];
-  var props = { cv, info, educations, experiences, skills, printStamp };
+  var jaFont = lang === "ja" ? "'Meiryo', 'Yu Gothic', 'MS PGothic', " : "";
+  var props = { cv, info, educations, experiences, skills, printStamp, L, jaFont };
   if (template === "classic") return <AsianTemplate {...props} />;
   if (template === "minimal") return <MinimalTemplate {...props} />;
   return <BestMongolianTemplate {...props} />;
@@ -22,21 +195,21 @@ var skillTagBaseStyle = {
   wordBreak: "break-word",
 };
 
-function CertFilePreview({ url }) {
+function CertFilePreview({ url, openLabel, altLabel }) {
   if (!url) return null;
   var lower = url.toLowerCase();
   var isImage = lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png");
   if (isImage) {
     return (
       <a href={url} target="_blank" rel="noreferrer" style={{ display: "block", marginTop: "6px" }}>
-        <img src={url} alt="Гэрчилгээ" style={{ width: "130px", height: "92px", objectFit: "cover", borderRadius: "4px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.10)", display: "block" }} />
+        <img src={url} alt={altLabel || "Гэрчилгээ"} style={{ width: "130px", height: "92px", objectFit: "cover", borderRadius: "4px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.10)", display: "block" }} />
       </a>
     );
   }
   return (
     <a href={url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", padding: "5px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "4px", textDecoration: "none" }}>
       <span style={{ fontSize: "15px" }}>📄</span>
-      <span style={{ fontSize: "10.5px", color: "#c2410c", fontWeight: "600" }}>Гэрчилгээ нээх</span>
+      <span style={{ fontSize: "10.5px", color: "#c2410c", fontWeight: "600" }}>{openLabel || "Гэрчилгээ нээх"}</span>
     </a>
   );
 }
@@ -55,50 +228,50 @@ function parseSkillsFromInfo(info) {
   };
 }
 
-function BestMongolianTemplate({ info, educations, experiences, skills, printStamp }) {
+function BestMongolianTemplate({ info, educations, experiences, skills, printStamp, L, jaFont = "" }) {
   var { personalSkills, techSkills, profSkills, artSkills, sportSkills, languages, certs, internships, awards } = parseSkillsFromInfo(info);
   var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
   var fallbackSkills = skills.map(function (s) { return s.skill_name; }).filter(Boolean);
   var leftSkillGroups = [];
-  if (personalSkills.length > 0) leftSkillGroups.push({ title: "Хувийн ур чадвар", items: personalSkills });
-  if (techSkills.length > 0) leftSkillGroups.push({ title: "Компьютер", items: techSkills });
-  if (leftSkillGroups.length === 0 && fallbackSkills.length > 0) leftSkillGroups.push({ title: "Ур чадвар", items: fallbackSkills });
+  if (personalSkills.length > 0) leftSkillGroups.push({ title: L.personalSkills, items: personalSkills, isTech: false });
+  if (techSkills.length > 0) leftSkillGroups.push({ title: L.techSkills, items: techSkills, isTech: true });
+  if (leftSkillGroups.length === 0 && fallbackSkills.length > 0) leftSkillGroups.push({ title: L.skills, items: fallbackSkills });
   var rightSkillGroups = [];
-  if (profSkills.length > 0) rightSkillGroups.push({ title: "Мэргэжлийн ур чадвар", items: profSkills });
-  if (artSkills.length > 0) rightSkillGroups.push({ title: "Урлагийн чадвар", items: artSkills });
-  if (sportSkills.length > 0) rightSkillGroups.push({ title: "Спортын чадвар", items: sportSkills });
+  if (profSkills.length > 0) rightSkillGroups.push({ title: L.profSkills, items: profSkills });
+  if (artSkills.length > 0) rightSkillGroups.push({ title: L.artSkills, items: artSkills });
+  if (sportSkills.length > 0) rightSkillGroups.push({ title: L.sportSkills, items: sportSkills });
   var contactItems = [
-    info.phone ? { label: "Утас", value: info.phone + (info.phone2 ? " / " + info.phone2 : "") } : null,
-    info.email ? { label: "И-мэйл", value: info.email } : null,
-    info.address ? { label: "Хаяг", value: info.address } : null,
-    info.linkedin ? { label: "Профайл", value: info.linkedin } : null,
+    info.phone ? { label: L.phone, value: info.phone + (info.phone2 ? " / " + info.phone2 : "") } : null,
+    info.email ? { label: L.email, value: info.email } : null,
+    info.address ? { label: L.address, value: info.address } : null,
+    info.linkedin ? { label: L.profile, value: info.linkedin } : null,
   ].filter(Boolean);
   var personalInfo = [
-    info.birthDate ? { label: "Төрсөн огноо", value: info.birthDate } : null,
-    info.gender ? { label: "Хүйс", value: info.gender } : null,
-    info.regNo ? { label: "Регистр", value: info.regNo } : null,
-    info.marital ? { label: "Гэрлэлтийн байдал", value: info.marital } : null,
-    info.license ? { label: "Жолооны үнэмлэх", value: info.license } : null,
-    info.salaryExpect ? { label: "Цалингийн хүлээлт", value: info.salaryExpect } : null,
+    info.birthDate ? { label: L.birthDate, value: info.birthDate } : null,
+    info.gender ? { label: L.gender, value: info.gender } : null,
+    info.regNo ? { label: L.regNo, value: info.regNo } : null,
+    info.marital ? { label: L.marital, value: info.marital } : null,
+    info.license ? { label: L.license, value: info.license } : null,
+    info.salaryExpect ? { label: L.salary, value: info.salaryExpect } : null,
   ].filter(Boolean);
 
   return (
-    <div className="cv-print-document" style={{ background: "#fff", color: "#283044", fontFamily: "'Inter', 'Segoe UI', Arial, sans-serif", minHeight: "297mm", padding: "34px 34px 30px", boxSizing: "border-box" }}>
+    <div className="cv-print-document" style={{ background: "#fff", color: "#283044", fontFamily: jaFont + "'Inter', 'Segoe UI', Arial, sans-serif", minHeight: "297mm", padding: "34px 34px 30px", boxSizing: "border-box" }}>
       <div style={{ display: "grid", gridTemplateColumns: "190px minmax(0, 1fr)", gap: "34px", alignItems: "start" }}>
         <aside>
-          {printStamp && <p className="cv-print-section" style={{ fontSize: "9.4px", color: "#98a2b3", lineHeight: 1.35, margin: "0 0 6px", fontWeight: "650" }}>Татсан: {printStamp}</p>}
+          {printStamp && <p className="cv-print-section" style={{ fontSize: "9.4px", color: "#98a2b3", lineHeight: 1.35, margin: "0 0 6px", fontWeight: "650" }}>{L.printed}{printStamp}</p>}
           <div className="cv-print-section" style={{ width: "110px", height: "110px", borderRadius: "7px", background: "#eef3f7", overflow: "hidden", border: "1px solid #e2e8f0", marginBottom: "14px" }}>
-            {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#8a96a8", fontSize: "10px", fontWeight: "700" }}>Зураг</div>}
+            {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#8a96a8", fontSize: "10px", fontWeight: "700" }}>{L.photo}</div>}
           </div>
 
-          <BestSideBlock title="Холбоо барих">
+          <BestSideBlock title={L.contact}>
             {contactItems.length > 0 ? contactItems.map(function (item, i) {
               return <BestInfoLine key={i} label={item.label} value={item.value} />;
             }) : <p style={{ fontSize: "10.4px", color: "#7b8494", lineHeight: 1.5, margin: 0 }}>Утас, и-мэйл, хаягаа оруулна уу.</p>}
           </BestSideBlock>
 
           {personalInfo.length > 0 && (
-            <BestSideBlock title="Ерөнхий мэдээлэл">
+            <BestSideBlock title={L.personalInfo}>
               {personalInfo.map(function (item, i) {
                 return <BestInfoLine key={i} label={item.label} value={item.value} />;
               })}
@@ -106,15 +279,15 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
 
           {leftSkillGroups.length > 0 && (
-            <BestSideBlock title="Ур чадвар">
+            <BestSideBlock title={L.skills}>
               {leftSkillGroups.map(function (group, i) {
-                return <BestSkillGroup key={i} title={group.title} items={group.items} compact />;
+                return <BestSkillGroup key={i} title={group.title} items={group.items} compact isTech={group.isTech} />;
               })}
             </BestSideBlock>
           )}
 
           {languages.length > 0 && (
-            <BestSideBlock title="Гадаад хэл">
+            <BestSideBlock title={L.languages}>
               {languages.map(function (l, i) {
                 return <BestLanguageLine key={i} name={l.name} level={l.level} />;
               })}
@@ -125,25 +298,25 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
 
         <main>
           <div className="cv-print-section" style={{ marginBottom: "20px" }}>
-            <h1 style={{ fontSize: "30px", lineHeight: 1.05, fontWeight: "850", color: "#23283a", margin: 0, letterSpacing: 0 }}>{fullName || "Овог нэр"}</h1>
-            <p style={{ fontSize: "11px", color: "#1d75b9", fontWeight: "700", margin: "7px 0 0" }}>Монголын компаниудад зориулсан CV</p>
+            <h1 style={{ fontSize: "30px", lineHeight: 1.05, fontWeight: "850", color: "#23283a", margin: 0, letterSpacing: 0 }}>{fullName || L.noName}</h1>
+            <p style={{ fontSize: "11px", color: "#1d75b9", fontWeight: "700", margin: "7px 0 0" }}>{L.cvTitle}</p>
           </div>
 
-          <BestSection title="Товч танилцуулга">
+          <BestSection title={L.about}>
             <p style={{ fontSize: "11.4px", lineHeight: 1.62, color: "#667085", margin: 0, whiteSpace: "pre-line" }}>
               {info.about || "Өөрийн туршлага, зорилго, давуу талаа 3-4 өгүүлбэрээр товч, тодорхой бичнэ үү."}
             </p>
           </BestSection>
 
           {experiences.length > 0 && (
-            <BestSection title="Ажлын туршлага">
+            <BestSection title={L.experience}>
               {experiences.map(function (exp, i) {
                 return (
                   <BestExperienceItem
                     key={i}
                     title={exp.position}
                     company={exp.company}
-                    date={exp.start_date ? exp.start_date + " - " + (exp.end_date || "Одоо") : ""}
+                    date={exp.start_date ? exp.start_date + " - " + (exp.end_date || L.present) : ""}
                     description={exp.description}
                     last={i === experiences.length - 1}
                   />
@@ -153,14 +326,14 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
 
           {educations.length > 0 && (
-            <BestSection title="Боловсрол">
+            <BestSection title={L.education}>
               {educations.map(function (edu, i) {
                 return (
                   <BestCompactItem
                     key={i}
                     title={edu.school}
-                    subtitle={[edu.level || edu.degree, edu.major, edu.gpa ? "Голч: " + edu.gpa : ""].filter(Boolean).join(" | ")}
-                    date={edu.start_year ? edu.start_year + " - " + (edu.end_year || "Одоо") : ""}
+                    subtitle={[edu.level || edu.degree, edu.major, edu.gpa ? L.gpa + edu.gpa : ""].filter(Boolean).join(" | ")}
+                    date={edu.start_year ? edu.start_year + " - " + (edu.end_year || L.present) : ""}
                     last={i === educations.length - 1}
                   />
                 );
@@ -169,7 +342,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
 
           {internships.length > 0 && (
-            <BestSection title="Дадлага, төсөл">
+            <BestSection title={L.internships}>
               {internships.map(function (n, i) {
                 return <BestCompactItem key={i} title={n.title} subtitle={n.company} date={n.start_date ? n.start_date + " - " + (n.end_date || "") : ""} description={n.description} last={i === internships.length - 1} />;
               })}
@@ -177,7 +350,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
 
           {awards.length > 0 && (
-            <BestSection title="Шагнал, амжилт">
+            <BestSection title={L.awards}>
               {awards.map(function (a, i) {
                 return <BestAwardItem key={i} title={a.name} date={a.year || ""} last={i === awards.length - 1} />;
               })}
@@ -185,7 +358,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
 
           {certs.length > 0 && (
-            <BestSection title="Сертификат">
+            <BestSection title={L.certificates}>
               {certs.map(function (c, i) {
                 return (
                   <BestCompactItem
@@ -201,12 +374,18 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
 
           {rightSkillGroups.length > 0 && (
-            <BestSection title="Нэмэлт ур чадвар">
+            <BestSection title={L.additionalSkills}>
               <div style={{ display: "grid", gridTemplateColumns: rightSkillGroups.length > 1 ? "1fr 1fr" : "1fr", gap: "12px 18px" }}>
                 {rightSkillGroups.map(function (group, i) {
                   return <BestSkillGroup key={i} title={group.title} items={group.items} />;
                 })}
               </div>
+            </BestSection>
+          )}
+
+          {experiences.length === 0 && educations.length === 0 && (
+            <BestSection title={L.overview}>
+              <p style={{ fontSize: "11.5px", color: "#526276", lineHeight: 1.65, margin: 0 }}>Боловсрол, ажлын туршлага, ур чадвараа бөглөснөөр CV автоматаар бүрдэнэ.</p>
             </BestSection>
           )}
         </main>
@@ -283,12 +462,12 @@ function BestSkillPill({ text, muted }) {
   return <span style={{ display: "inline-block", maxWidth: "100%", fontSize: "9.6px", lineHeight: 1.22, color: muted ? "#596579" : "#1d75b9", background: muted ? "#f4f6f8" : "#edf7ff", borderRadius: "5px", padding: "4px 6px", fontWeight: "650", whiteSpace: "normal", overflowWrap: "anywhere", wordBreak: "break-word", hyphens: "auto" }}>{text}</span>;
 }
 
-function BestSkillGroup({ title, items, compact }) {
+function BestSkillGroup({ title, items, compact, isTech = false }) {
   return (
     <div style={{ marginBottom: compact ? "7px" : 0, pageBreakInside: "avoid" }}>
       <p style={{ fontSize: compact ? "8.8px" : "10.4px", color: "#98a2b3", fontWeight: "760", textTransform: "uppercase", letterSpacing: "0.3px", margin: "0 0 4px", overflowWrap: "anywhere", wordBreak: "break-word" }}>{title}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: compact ? "4px" : "7px", alignItems: "flex-start" }}>
-        {items.map(function (s, i) { return <BestSkillPill key={i} text={s} muted={compact && title !== "Компьютер"} />; })}
+        {items.map(function (s, i) { return <BestSkillPill key={i} text={s} muted={compact && !isTech} />; })}
       </div>
     </div>
   );
@@ -406,7 +585,7 @@ function ModernMongolianTemplate({ info, educations, experiences, skills }) {
                       </div>
                       <p style={{ fontSize: "10.5px", color: "#7b8aa1", whiteSpace: "nowrap", margin: 0 }}>{c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : ""}</p>
                     </div>
-                    <CertFilePreview url={c.file_url} />
+                    <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                   </div>
                 );
               })}
@@ -597,7 +776,7 @@ function ModernTemplate({ info, educations, experiences, skills }) {
                     </div>
                     <p style={{ fontSize: "11px", color: "#94a3b8", whiteSpace: "nowrap", marginLeft: "12px" }}>{c.start_date ? c.start_date + (c.end_date ? " – " + c.end_date : "") : ""}</p>
                   </div>
-                  <CertFilePreview url={c.file_url} />
+                  <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                 </div>
               );
             })}
@@ -663,30 +842,30 @@ function ModernSection({ title, children }) {
   );
 }
 
-function AsianTemplate({ info, educations, experiences, skills }) {
+function AsianTemplate({ info, educations, experiences, skills, L, jaFont = "" }) {
   var { personalSkills, techSkills, profSkills, artSkills, sportSkills, languages, certs, internships, awards } = parseSkillsFromInfo(info);
   var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
   var fallbackSkills = skills.map(function (s) { return s.skill_name; }).filter(Boolean);
   var coreSkills = personalSkills.length > 0 ? personalSkills : fallbackSkills;
   var additionalSkills = artSkills.concat(sportSkills);
   var contactItems = [
-    info.phone ? { label: "Утас", value: info.phone + (info.phone2 ? ", " + info.phone2 : "") } : null,
-    info.email ? { label: "И-мэйл", value: info.email } : null,
-    info.address ? { label: "Хаяг", value: info.address } : null,
+    info.phone ? { label: L.phone, value: info.phone + (info.phone2 ? ", " + info.phone2 : "") } : null,
+    info.email ? { label: L.email, value: info.email } : null,
+    info.address ? { label: L.address, value: info.address } : null,
     info.linkedin ? { label: "LinkedIn", value: info.linkedin } : null,
   ].filter(Boolean);
   var hasPersonalInfo = info.birthDate || info.gender || info.marital || info.regNo || info.license || info.salaryExpect;
 
   return (
-    <div className="cv-print-document" style={{ background: "#fff", fontFamily: "'Inter', 'Segoe UI', Arial, sans-serif", color: "#172033", minHeight: "297mm" }}>
+    <div className="cv-print-document" style={{ background: "#fff", fontFamily: jaFont + "'Inter', 'Segoe UI', Arial, sans-serif", color: "#172033", minHeight: "297mm" }}>
       <div className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr 190px", gap: "18px", alignItems: "center", background: "#12233f", color: "#fff", padding: "22px 30px 18px", borderBottom: "5px solid #5d7899" }}>
         <div style={{ width: "92px", height: "116px", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.35)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-          {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.65)", textTransform: "uppercase", letterSpacing: "0.8px" }}>Зураг</span>}
+          {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.65)", textTransform: "uppercase", letterSpacing: "0.8px" }}>{L.photo}</span>}
         </div>
         <div>
-          <h1 style={{ fontSize: "27px", lineHeight: 1.08, fontWeight: "800", letterSpacing: "0.4px", textTransform: "uppercase", margin: 0 }}>{fullName || "Овог нэр"}</h1>
+          <h1 style={{ fontSize: "27px", lineHeight: 1.08, fontWeight: "800", letterSpacing: "0.4px", textTransform: "uppercase", margin: 0 }}>{fullName || L.noName}</h1>
           <div style={{ width: "68px", height: "2px", background: "#8ea9c6", margin: "9px 0 8px" }} />
-          <p style={{ fontSize: "12px", lineHeight: 1.45, color: "#dbe7f4", margin: 0, fontWeight: "600" }}>{info.position || "Анкет / CV"}</p>
+          <p style={{ fontSize: "12px", lineHeight: 1.45, color: "#dbe7f4", margin: 0, fontWeight: "600" }}>{info.position || L.cvPositionFallback}</p>
           {info.about && <p style={{ fontSize: "10.5px", lineHeight: 1.5, color: "#c8d6e6", margin: "7px 0 0", maxHeight: "32px", overflow: "hidden" }}>{info.about}</p>}
         </div>
         <div style={{ borderLeft: "1px solid rgba(255,255,255,0.22)", paddingLeft: "14px" }}>
@@ -703,45 +882,45 @@ function AsianTemplate({ info, educations, experiences, skills }) {
       <div style={{ display: "flex", alignItems: "stretch" }}>
         <aside style={{ width: "31%", background: "#f2f5f8", padding: "18px 16px 20px 22px", borderRight: "1px solid #d8e0e9", minHeight: "210mm", boxSizing: "border-box" }}>
           {hasPersonalInfo && (
-            <AsianSideSection title="Хувийн мэдээлэл">
+            <AsianSideSection title={L.personalInfoAlt}>
               <AsianInfoList>
-                {info.birthDate && <AsianInfoItem label="Төрсөн огноо" value={info.birthDate} />}
-                {info.gender && <AsianInfoItem label="Хүйс" value={info.gender} />}
-                {info.marital && <AsianInfoItem label="Гэрлэлтийн байдал" value={info.marital} />}
-                {info.regNo && <AsianInfoItem label="Регистрийн дугаар" value={info.regNo} />}
-                {info.license && <AsianInfoItem label="Жолооны үнэмлэх" value={info.license} />}
-                {info.salaryExpect && <AsianInfoItem label="Цалингийн хүлээлт" value={info.salaryExpect} />}
+                {info.birthDate && <AsianInfoItem label={L.birthDate} value={info.birthDate} />}
+                {info.gender && <AsianInfoItem label={L.gender} value={info.gender} />}
+                {info.marital && <AsianInfoItem label={L.marital} value={info.marital} />}
+                {info.regNo && <AsianInfoItem label={L.regNoFull} value={info.regNo} />}
+                {info.license && <AsianInfoItem label={L.license} value={info.license} />}
+                {info.salaryExpect && <AsianInfoItem label={L.salary} value={info.salaryExpect} />}
               </AsianInfoList>
             </AsianSideSection>
           )}
-          {languages.length > 0 && <AsianSideSection title="Гадаад хэл">{languages.map(function (l, i) { return <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: "8px", fontSize: "10.8px", marginBottom: "5px", lineHeight: 1.35 }}><b>{l.name}</b>{l.level ? <span style={{ color: "#64748b", textAlign: "right" }}>{l.level}</span> : ""}</div>; })}</AsianSideSection>}
-          {coreSkills.length > 0 && <AsianSideSection title="Хувийн ур чадвар"><AsianBulletList items={coreSkills} /></AsianSideSection>}
-          {techSkills.length > 0 && <AsianSideSection title="Компьютерын ур чадвар"><AsianBulletList items={techSkills} /></AsianSideSection>}
-          {profSkills.length > 0 && <AsianSideSection title="Мэргэжлийн ур чадвар"><AsianBulletList items={profSkills} /></AsianSideSection>}
-          {additionalSkills.length > 0 && <AsianSideSection title="Нэмэлт ур чадвар"><AsianBulletList items={additionalSkills} /></AsianSideSection>}
+          {languages.length > 0 && <AsianSideSection title={L.languages}>{languages.map(function (l, i) { return <div key={i} style={{ display: "flex", justifyContent: "space-between", gap: "8px", fontSize: "10.8px", marginBottom: "5px", lineHeight: 1.35 }}><b>{l.name}</b>{l.level ? <span style={{ color: "#64748b", textAlign: "right" }}>{l.level}</span> : ""}</div>; })}</AsianSideSection>}
+          {coreSkills.length > 0 && <AsianSideSection title={L.personalSkills}><AsianBulletList items={coreSkills} /></AsianSideSection>}
+          {techSkills.length > 0 && <AsianSideSection title={L.techSkillsFull}><AsianBulletList items={techSkills} /></AsianSideSection>}
+          {profSkills.length > 0 && <AsianSideSection title={L.profSkills}><AsianBulletList items={profSkills} /></AsianSideSection>}
+          {additionalSkills.length > 0 && <AsianSideSection title={L.additionalSkills}><AsianBulletList items={additionalSkills} /></AsianSideSection>}
         </aside>
         <main style={{ flex: 1, padding: "18px 28px 22px 24px", boxSizing: "border-box" }}>
-          {info.about && <AsianMainSection title="Товч танилцуулга / Зорилго"><p style={{ fontSize: "11.2px", lineHeight: 1.65, color: "#334155", margin: 0, whiteSpace: "pre-line" }}>{info.about}</p></AsianMainSection>}
+          {info.about && <AsianMainSection title={L.aboutObjective}><p style={{ fontSize: "11.2px", lineHeight: 1.65, color: "#334155", margin: 0, whiteSpace: "pre-line" }}>{info.about}</p></AsianMainSection>}
           {educations.length > 0 && (
-            <AsianMainSection title="Боловсрол">
+            <AsianMainSection title={L.education}>
               {educations.map(function (edu, i) {
                 return (
                   <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 96px", gap: "12px", marginBottom: i < educations.length - 1 ? "11px" : 0, paddingBottom: i < educations.length - 1 ? "10px" : 0, borderBottom: i < educations.length - 1 ? "1px solid #e8edf3" : "none", pageBreakInside: "avoid" }}>
                     <div><p style={{ fontWeight: "800", fontSize: "12.5px", margin: 0, color: "#172033" }}>{edu.school}</p><p style={{ fontSize: "10.8px", color: "#526176", margin: "3px 0 0", lineHeight: 1.45 }}>{[edu.level || edu.degree, edu.major, edu.gpa ? "GPA " + edu.gpa : ""].filter(Boolean).join(" / ")}</p></div>
-                    <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{edu.start_year ? edu.start_year + " - " + (edu.end_year || "Одоо") : ""}</p>
+                    <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{edu.start_year ? edu.start_year + " - " + (edu.end_year || L.present) : ""}</p>
                   </div>
                 );
               })}
             </AsianMainSection>
           )}
           {experiences.length > 0 && (
-            <AsianMainSection title="Ажлын туршлага">
+            <AsianMainSection title={L.experience}>
               {experiences.map(function (exp, i) {
                 return (
                   <div key={i} style={{ marginBottom: i < experiences.length - 1 ? "13px" : 0, paddingBottom: i < experiences.length - 1 ? "12px" : 0, borderBottom: i < experiences.length - 1 ? "1px solid #e8edf3" : "none", pageBreakInside: "avoid" }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 112px", gap: "12px" }}>
                       <div><p style={{ fontWeight: "800", fontSize: "12.5px", margin: 0, color: "#172033" }}>{exp.position}</p><p style={{ fontSize: "11.2px", color: "#335f8f", margin: "2px 0 0", fontWeight: "700" }}>{exp.company}</p></div>
-                      <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{exp.start_date ? exp.start_date + " - " + (exp.end_date || "Одоо") : ""}</p>
+                      <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{exp.start_date ? exp.start_date + " - " + (exp.end_date || L.present) : ""}</p>
                     </div>
                     {exp.description && <p style={{ fontSize: "11px", color: "#3f4d63", margin: "6px 0 0", lineHeight: 1.55, whiteSpace: "pre-line" }}>{exp.description}</p>}
                   </div>
@@ -750,7 +929,7 @@ function AsianTemplate({ info, educations, experiences, skills }) {
             </AsianMainSection>
           )}
           {internships.length > 0 && (
-            <AsianMainSection title="Дадлага / Төсөл">
+            <AsianMainSection title={L.internshipsSlash}>
               {internships.map(function (n, i) {
                 return (
                   <div key={i} style={{ marginBottom: i < internships.length - 1 ? "11px" : 0, pageBreakInside: "avoid" }}>
@@ -762,7 +941,7 @@ function AsianTemplate({ info, educations, experiences, skills }) {
             </AsianMainSection>
           )}
           {certs.length > 0 && (
-            <AsianMainSection title="Сургалт / Сертификат">
+            <AsianMainSection title={L.certificatesSlash}>
               {certs.map(function (c, i) {
                 return (
                   <div key={i} style={{ marginBottom: i < certs.length - 1 ? "11px" : 0, pageBreakInside: "avoid" }}>
@@ -773,14 +952,14 @@ function AsianTemplate({ info, educations, experiences, skills }) {
                       </div>
                       <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : ""}</p>
                     </div>
-                    <CertFilePreview url={c.file_url} />
+                    <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                   </div>
                 );
               })}
             </AsianMainSection>
           )}
           {awards.length > 0 && (
-            <AsianMainSection title="Шагнал / Нэмэлт мэдээлэл">
+            <AsianMainSection title={L.awardsSlash}>
               {awards.map(function (a, i) {
                 return (
                   <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 72px", gap: "12px", marginBottom: i < awards.length - 1 ? "8px" : 0, paddingBottom: i < awards.length - 1 ? "8px" : 0, borderBottom: i < awards.length - 1 ? "1px solid #e8edf3" : "none", pageBreakInside: "avoid" }}>
@@ -906,7 +1085,7 @@ function ClassicTemplate({ info, educations, experiences }) {
                       </div>
                       <p style={{ fontSize: "11px", color: "#777", whiteSpace: "nowrap" }}>{c.start_date ? c.start_date + (c.end_date ? " – " + c.end_date : "") : ""}</p>
                     </div>
-                    <CertFilePreview url={c.file_url} />
+                    <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                   </div>
                 );
               })}
@@ -926,32 +1105,32 @@ function ClassicMainSection({ title, children }) {
   return <div style={{ marginBottom: "18px" }}><h2 className="cv-print-section" style={{ fontSize: "12px", fontWeight: "700", textTransform: "uppercase", letterSpacing: "1.5px", color: "#1a1a2e", marginBottom: "10px", paddingBottom: "4px", borderBottom: "2px solid #1a1a2e", pageBreakAfter: "avoid" }}>{title}</h2>{children}</div>;
 }
 
-function MinimalTemplate({ info, educations, experiences, skills }) {
+function MinimalTemplate({ info, educations, experiences, skills, L, jaFont = "" }) {
   var { personalSkills, techSkills, profSkills, artSkills, sportSkills, languages, certs, internships, awards } = parseSkillsFromInfo(info);
   var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
   var allSkills = personalSkills.concat(techSkills).concat(profSkills).concat(artSkills).concat(sportSkills);
   var contactItems = [info.address, info.phone, info.email].filter(Boolean);
   var skillColumns = [];
-  if (techSkills.length > 0) skillColumns.push({ title: "Компьютер", items: techSkills });
-  if (profSkills.length > 0) skillColumns.push({ title: "Мэргэжлийн", items: profSkills });
-  if (personalSkills.length > 0) skillColumns.push({ title: "Хувийн", items: personalSkills });
-  if (skillColumns.length === 0 && allSkills.length > 0) skillColumns.push({ title: "Үндсэн", items: allSkills });
+  if (techSkills.length > 0) skillColumns.push({ title: L.techSkills, items: techSkills });
+  if (profSkills.length > 0) skillColumns.push({ title: L.profSkillsSt, items: profSkills });
+  if (personalSkills.length > 0) skillColumns.push({ title: L.personalSkills, items: personalSkills });
+  if (skillColumns.length === 0 && allSkills.length > 0) skillColumns.push({ title: L.mainSkills, items: allSkills });
   if (skillColumns.length === 0 && skills.length > 0) {
-    skillColumns.push({ title: "Үндсэн", items: skills.map(function (s) { return s.skill_name; }) });
+    skillColumns.push({ title: L.mainSkills, items: skills.map(function (s) { return s.skill_name; }) });
   }
   var extraSkills = [];
   if (artSkills.length > 0) extraSkills = extraSkills.concat(artSkills);
   if (sportSkills.length > 0) extraSkills = extraSkills.concat(sportSkills);
   return (
-    <div className="cv-print-document" style={{ background: "#fff", fontFamily: "'Georgia', 'Times New Roman', serif", color: "#222", minHeight: "297mm", padding: "34px 38px 30px" }}>
+    <div className="cv-print-document" style={{ background: "#fff", fontFamily: jaFont ? jaFont + "sans-serif" : "'Georgia', 'Times New Roman', serif", color: "#222", minHeight: "297mm", padding: "34px 38px 30px" }}>
       <div className="cv-print-section" style={{ marginBottom: "20px", textAlign: "center" }}>
-        <h1 style={{ fontSize: "29px", fontWeight: "700", letterSpacing: "0.2px", margin: 0, color: "#171717", lineHeight: 1.05 }}>{fullName || "Нэр оруулаагүй"}</h1>
+        <h1 style={{ fontSize: "29px", fontWeight: "700", letterSpacing: "0.2px", margin: 0, color: "#171717", lineHeight: 1.05 }}>{fullName || L.noNameAlt}</h1>
         {info.position && <p style={{ fontSize: "13px", color: "#404040", margin: "7px 0 0", fontWeight: "400" }}>{info.position}</p>}
         {contactItems.length > 0 && <p style={{ fontSize: "10.5px", color: "#525252", margin: "8px 0 0", lineHeight: 1.6 }}>{contactItems.join("  •  ")}</p>}
         {info.linkedin && <p style={{ fontSize: "10.5px", color: "#525252", margin: "2px 0 0" }}>{info.linkedin}</p>}
       </div>
       {info.about && (
-        <MinimalSection title="ТОВЧ ТАНИЛЦУУЛГА">
+        <MinimalSection title={L.about}>
           <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
             <div style={{ fontSize: "10px", color: "#666" }}></div>
             <p style={{ fontSize: "11px", color: "#3d3d3d", margin: 0, lineHeight: 1.7, whiteSpace: "pre-line" }}>{info.about}</p>
@@ -959,11 +1138,11 @@ function MinimalTemplate({ info, educations, experiences, skills }) {
         </MinimalSection>
       )}
       {educations.length > 0 && (
-        <MinimalSection title="БОЛОВСРОЛ">
+        <MinimalSection title={L.education}>
           {educations.map(function (edu, i) {
             return (
               <div key={i} className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr 110px", gap: "14px", marginBottom: i < educations.length - 1 ? "12px" : 0 }}>
-                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{edu.start_year ? edu.start_year + (edu.end_year ? " – " + edu.end_year : " – Одоо") : ""}</div>
+                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{edu.start_year ? edu.start_year + (edu.end_year ? " – " + edu.end_year : " – " + L.present) : ""}</div>
                 <div>
                   <p style={{ fontSize: "12.5px", color: "#222", fontWeight: "700", margin: 0 }}>{edu.school}</p>
                   <p style={{ fontSize: "10.5px", color: "#666", margin: "2px 0 0" }}>{[edu.level || edu.degree, edu.major].filter(Boolean).join(", ")}</p>
@@ -976,11 +1155,11 @@ function MinimalTemplate({ info, educations, experiences, skills }) {
         </MinimalSection>
       )}
       {experiences.length > 0 && (
-        <MinimalSection title="АЖЛЫН ТУРШЛАГА">
+        <MinimalSection title={L.experience}>
           {experiences.map(function (exp, i) {
             return (
               <div key={i} className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr 110px", gap: "14px", marginBottom: i < experiences.length - 1 ? "14px" : 0 }}>
-                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || "Одоо") : ""}</div>
+                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || L.present) : ""}</div>
                 <div>
                   <p style={{ fontSize: "12.5px", color: "#222", fontWeight: "700", margin: 0 }}>{exp.position}{exp.company ? ", " + exp.company : ""}</p>
                   {exp.description && <div style={{ fontSize: "10.8px", color: "#4a4a4a", marginTop: "5px", lineHeight: 1.7, whiteSpace: "pre-line" }}>{exp.description}</div>}
@@ -992,9 +1171,9 @@ function MinimalTemplate({ info, educations, experiences, skills }) {
         </MinimalSection>
       )}
       {(skillColumns.length > 0 || extraSkills.length > 0) && (
-        <MinimalSection title="УР ЧАДВАР">
+        <MinimalSection title={L.skills}>
           <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
-            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>Төрлөөр</div>
+            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>{L.byType}</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 18px" }}>
               {skillColumns.map(function (group, i) {
                 return (
@@ -1017,9 +1196,9 @@ function MinimalTemplate({ info, educations, experiences, skills }) {
         </MinimalSection>
       )}
       {languages.length > 0 && (
-        <MinimalSection title="ГАДААД ХЭЛ">
+        <MinimalSection title={L.languages}>
           <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
-            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>Түвшин</div>
+            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>{L.level}</div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 18px" }}>
               {languages.map(function (l, i) {
                 return <div key={i} style={{ fontSize: "10.8px", color: "#3d3d3d" }}>{l.name}{l.level ? <span style={{ color: "#777" }}> {l.level}</span> : ""}</div>;
@@ -1029,22 +1208,22 @@ function MinimalTemplate({ info, educations, experiences, skills }) {
         </MinimalSection>
       )}
       {(certs.length > 0 || internships.length > 0 || awards.length > 0) && (
-        <MinimalSection title="НЭМЭЛТ МЭДЭЭЛЭЛ">
+        <MinimalSection title={L.extra}>
           <div style={{ display: "grid", gridTemplateColumns: "96px 1fr", gap: "14px" }}>
-            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>Нэмэлт</div>
+            <div style={{ fontSize: "10px", color: "#5f5f5f" }}>{L.extra}</div>
             <div style={{ fontSize: "10.8px", color: "#3d3d3d", lineHeight: 1.8 }}>
-              {certs.length > 0 && <div><b>Сертификат:</b> {certs.map(function (c) { return c.name; }).join(", ")}</div>}
-              {internships.length > 0 && <div><b>Дадлага:</b> {internships.map(function (n) { return [n.title, n.company].filter(Boolean).join(" - "); }).join(", ")}</div>}
-              {awards.length > 0 && <div><b>Шагнал:</b> {awards.map(function (a) { return a.name + (a.year ? " (" + a.year + ")" : ""); }).join(", ")}</div>}
+              {certs.length > 0 && <div><b>{L.certificates}:</b> {certs.map(function (c) { return c.name; }).join(", ")}</div>}
+              {internships.length > 0 && <div><b>{L.internships}:</b> {internships.map(function (n) { return [n.title, n.company].filter(Boolean).join(" - "); }).join(", ")}</div>}
+              {awards.length > 0 && <div><b>{L.awards}:</b> {awards.map(function (a) { return a.name + (a.year ? " (" + a.year + ")" : ""); }).join(", ")}</div>}
             </div>
           </div>
         </MinimalSection>
       )}
       {(info.birthDate || info.marital || info.gender || info.address || info.regNo) && (
         <div className="cv-print-section" style={{ marginTop: "18px", borderTop: "1px solid #bdbdbd", paddingTop: "10px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 20px" }}>
-          {info.birthDate && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>Төрсөн огноо / Хаяг</span><span style={{ marginLeft: "10px" }}>{info.birthDate}{info.address ? " / " + info.address : ""}</span></div>}
-          {info.marital && <div style={{ fontSize: "10.5px", color: "#444", textAlign: "right" }}><span style={{ color: "#777" }}>Гэрлэлтийн байдал</span><span style={{ marginLeft: "10px" }}>{info.marital}</span></div>}
-          {(info.regNo || info.gender) && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>Регистр / Хүйс</span><span style={{ marginLeft: "10px" }}>{info.regNo ? info.regNo + " / " : ""}{info.gender || ""}</span></div>}
+          {info.birthDate && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>{L.birthDate} / {L.address}</span><span style={{ marginLeft: "10px" }}>{info.birthDate}{info.address ? " / " + info.address : ""}</span></div>}
+          {info.marital && <div style={{ fontSize: "10.5px", color: "#444", textAlign: "right" }}><span style={{ color: "#777" }}>{L.marital}</span><span style={{ marginLeft: "10px" }}>{info.marital}</span></div>}
+          {(info.regNo || info.gender) && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>{L.regNo} / {L.gender}</span><span style={{ marginLeft: "10px" }}>{info.regNo ? info.regNo + " / " : ""}{info.gender || ""}</span></div>}
         </div>
       )}
     </div>

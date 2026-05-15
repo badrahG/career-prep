@@ -14,6 +14,14 @@ export default function CVDetail() {
   var [downloading, setDownloading] = useState(false);
   var [notFound, setNotFound] = useState(false);
   var [printStamp, setPrintStamp] = useState("");
+  var [translating, setTranslating] = useState(false);
+  var [translatedCv, setTranslatedCv] = useState(null);
+  var [showTranslateModal, setShowTranslateModal] = useState(false);
+  var [printingTranslated, setPrintingTranslated] = useState(false);
+  var [translatingJa, setTranslatingJa] = useState(false);
+  var [translatedCvJa, setTranslatedCvJa] = useState(null);
+  var [showTranslateModalJa, setShowTranslateModalJa] = useState(false);
+  var [printingTranslatedJa, setPrintingTranslatedJa] = useState(false);
   var printRef = useRef(null);
   var defaultTitleRef = useRef(typeof document !== "undefined" ? document.title : "CareerPrep");
 
@@ -28,7 +36,11 @@ export default function CVDetail() {
     if (!cv) return;
 
     function applyPrintTitle() { document.title = " "; }
-    function restoreTitle() { document.title = defaultTitleRef.current; }
+    function restoreTitle() {
+      document.title = defaultTitleRef.current;
+      setPrintingTranslated(false);
+      setPrintingTranslatedJa(false);
+    }
 
     window.addEventListener("beforeprint", applyPrintTitle);
     window.addEventListener("afterprint", restoreTitle);
@@ -49,6 +61,56 @@ export default function CVDetail() {
     } catch {
       toast.error("Устгахад алдаа");
     }
+  }
+
+  async function handleTranslate() {
+    if (translating) return;
+    setTranslating(true);
+    try {
+      var res = await API.post("/cv/" + id + "/translate");
+      var data = res.data;
+      var parsedInfo = {};
+      try { parsedInfo = data.personal_info ? JSON.parse(data.personal_info) : {}; } catch { parsedInfo = {}; }
+      setTranslatedCv({ ...data, _parsedInfo: parsedInfo });
+      setShowTranslateModal(true);
+    } catch (err) {
+      var msg = err?.response?.data?.detail || "Орчуулахад алдаа гарлаа";
+      toast.error(msg);
+    } finally {
+      setTranslating(false);
+    }
+  }
+
+  function handleDownloadTranslatedPDF() {
+    setShowTranslateModal(false);
+    setPrintingTranslated(true);
+    document.title = " ";
+    setTimeout(function () { window.print(); }, 100);
+  }
+
+  async function handleTranslateJa() {
+    if (translatingJa) return;
+    setTranslatingJa(true);
+    try {
+      var res = await API.post("/cv/" + id + "/translate?lang=ja");
+      var data = res.data;
+      var parsedInfo = {};
+      try { parsedInfo = data.personal_info ? JSON.parse(data.personal_info) : {}; } catch { parsedInfo = {}; }
+      setTranslatedCvJa({ ...data, _parsedInfo: parsedInfo });
+      setShowTranslateModalJa(true);
+    } catch (err) {
+      var msg = err?.response?.data?.detail || "Орчуулахад алдаа гарлаа";
+      toast.error(msg);
+    } finally {
+      setTranslatingJa(false);
+    }
+  }
+
+  function handleDownloadTranslatedJaPDF() {
+    setShowTranslateModalJa(false);
+    setPrintingTranslatedJa(true);
+    document.title = " ";
+    setTimeout(function () { window.print(); }, 100);
   }
 
   async function handleDownloadPDF() {
@@ -130,6 +192,24 @@ export default function CVDetail() {
                 <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Бэлтгэж байна...</>
               ) : "⬇ PDF татах"}
             </button>
+            <button
+              onClick={handleTranslate}
+              disabled={translating}
+              className="px-5 py-2.5 border border-indigo-200 dark:border-indigo-700 rounded-xl text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 disabled:opacity-60 transition flex items-center gap-2"
+            >
+              {translating ? (
+                <><span className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" /> Орчуулж байна...</>
+              ) : "🌐 Англи орчуулга"}
+            </button>
+            <button
+              onClick={handleTranslateJa}
+              disabled={translatingJa}
+              className="px-5 py-2.5 border border-rose-200 dark:border-rose-800 rounded-xl text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 disabled:opacity-60 transition flex items-center gap-2"
+            >
+              {translatingJa ? (
+                <><span className="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin" /> Орчуулж байна...</>
+              ) : "🇯🇵 Япон орчуулга"}
+            </button>
             <Link to={"/cv/" + cv.id + "/edit"} className="px-5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
               Засах
             </Link>
@@ -142,7 +222,12 @@ export default function CVDetail() {
         {/* CV preview */}
         <div className="cv-print-shell shadow-xl rounded-2xl overflow-hidden">
           <div ref={printRef} className="cv-print-root" style={{ width: "210mm", maxWidth: "100%", margin: "0 auto" }}>
-            <CVPreview cv={cv} info={info} template={template} printStamp={printStamp} />
+            {printingTranslated && translatedCv
+              ? <CVPreview cv={translatedCv} info={translatedCv._parsedInfo} template={template} printStamp="" lang="en" />
+              : printingTranslatedJa && translatedCvJa
+              ? <CVPreview cv={translatedCvJa} info={translatedCvJa._parsedInfo} template={template} printStamp="" lang="ja" />
+              : <CVPreview cv={cv} info={info} template={template} printStamp={printStamp} />
+            }
           </div>
         </div>
 
@@ -150,6 +235,81 @@ export default function CVDetail() {
           PDF татахын өмнө мэдээллээ шалгана уу.
         </p>
       </div>
+
+      {showTranslateModalJa && translatedCvJa && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 flex items-start justify-center overflow-y-auto py-6 cv-screen-only"
+          onClick={function (e) { if (e.target === e.currentTarget) setShowTranslateModalJa(false); }}
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-5xl w-full mx-4 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">🇯🇵 日本語履歴書プレビュー</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDownloadTranslatedJaPDF}
+                  className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition flex items-center gap-2"
+                >
+                  ⬇ PDF татах
+                </button>
+                <button
+                  onClick={function () { setShowTranslateModalJa(false); }}
+                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition text-gray-500 text-lg"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div style={{ width: "210mm", maxWidth: "100%", margin: "0 auto" }}>
+              <CVPreview
+                cv={translatedCvJa}
+                info={translatedCvJa._parsedInfo}
+                template={template}
+                printStamp=""
+                lang="ja"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showTranslateModal && translatedCv && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 flex items-start justify-center overflow-y-auto py-6 cv-screen-only"
+          onClick={function (e) { if (e.target === e.currentTarget) setShowTranslateModal(false); }}
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-5xl w-full mx-4 overflow-hidden">
+            <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">English Translation Preview</p>
+                
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleDownloadTranslatedPDF}
+                  className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition flex items-center gap-2"
+                >
+                  ⬇ PDF татах
+                </button>
+                <button
+                  onClick={function () { setShowTranslateModal(false); }}
+                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition text-gray-500 text-lg"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div style={{ width: "210mm", maxWidth: "100%", margin: "0 auto" }}>
+              <CVPreview
+                cv={translatedCv}
+                info={translatedCv._parsedInfo}
+                template={template}
+                printStamp=""
+                lang="en"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -52,6 +52,62 @@ export default function AdviceDetail() {
     return null;
   }
 
+  function renderContent(text) {
+    if (!text) return null;
+    var lines = text.split("\n");
+    var elements = [];
+    var bulletBuffer = [];
+
+    function flushBullets(key) {
+      if (bulletBuffer.length === 0) return;
+      elements.push(
+        <ul key={"ul-" + key} className="space-y-2 pl-1 mb-1">
+          {bulletBuffer.map(function (b, i) {
+            return (
+              <li key={i} className="flex items-start gap-2.5">
+                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-violet-400 flex-shrink-0"></span>
+                <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{b}</span>
+              </li>
+            );
+          })}
+        </ul>
+      );
+      bulletBuffer = [];
+    }
+
+    lines.forEach(function (line, idx) {
+      var trimmed = line.trim();
+      if (!trimmed) {
+        flushBullets(idx);
+        return;
+      }
+      var numberedMatch = trimmed.match(/^(\d+)\.\s+(.+)$/);
+      if (numberedMatch) {
+        flushBullets(idx);
+        elements.push(
+          <div key={idx} className="flex items-start gap-3 mt-5 mb-1">
+            <span className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 text-xs font-bold flex items-center justify-center mt-0.5">
+              {numberedMatch[1]}
+            </span>
+            <span className="text-base font-semibold text-gray-800 dark:text-gray-100 leading-snug pt-1">{numberedMatch[2]}</span>
+          </div>
+        );
+        return;
+      }
+      var bulletMatch = trimmed.match(/^[-•]\s+(.+)$/);
+      if (bulletMatch) {
+        bulletBuffer.push(bulletMatch[1]);
+        return;
+      }
+      flushBullets(idx);
+      elements.push(
+        <p key={idx} className="text-gray-700 dark:text-gray-300 leading-relaxed">{trimmed}</p>
+      );
+    });
+    flushBullets("end");
+    return elements;
+  }
+
   function parseLinks(str) {
     if (!str) return [];
     try { var p = JSON.parse(str); return Array.isArray(p) ? p : []; }
@@ -96,8 +152,8 @@ export default function AdviceDetail() {
   return (
     <Layout>
       {/* Hero */}
-      <div className={"bg-gradient-to-br " + meta.gradient + " px-5 md:px-10 pt-7 pb-8"}>
-        <div className="max-w-2xl mx-auto">
+      <div className={"bg-gradient-to-br " + meta.gradient + " px-5 md:px-10 pt-7 pb-10"}>
+        <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-2 text-xs text-white/50 mb-5">
             <Link to="/advice" className="hover:text-white transition">Зөвлөмж</Link>
             <span>/</span>
@@ -115,7 +171,7 @@ export default function AdviceDetail() {
 
       {/* Content */}
       <div className="bg-gray-50 dark:bg-gray-950 min-h-screen">
-        <div className="max-w-2xl mx-auto px-5 md:px-10 py-8 space-y-5">
+        <div className="max-w-4xl mx-auto px-5 md:px-10 py-8 space-y-6">
 
           {/* Admin toolbar */}
           {isAdmin && (
@@ -134,18 +190,18 @@ export default function AdviceDetail() {
 
           {/* YouTube */}
           {embedUrl && (
-            <div className="rounded-2xl overflow-hidden shadow-sm bg-black" style={{ paddingBottom: "56.25%", height: 0, position: "relative" }}>
+            <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 aspect-video">
               <iframe src={embedUrl} title={article.title}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen />
             </div>
           )}
 
           {/* Article body */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 px-6 md:px-8 py-7">
-            <div className="text-sm md:text-[15px] text-gray-700 dark:text-gray-300 leading-8 whitespace-pre-line">
-              {article.content}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 px-6 md:px-10 py-8">
+            <div className="text-[15px] space-y-3">
+              {renderContent(article.content)}
             </div>
           </div>
 

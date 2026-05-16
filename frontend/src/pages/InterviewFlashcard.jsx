@@ -122,10 +122,10 @@ export default function InterviewFlashcard() {
     { key: "all", label: "Бүгд" },
     { key: "general", label: "Ерөнхий" },
     { key: "technical", label: "Техникийн" },
-    { key: "behavioral", label: "Зан үйлийн" },
+    { key: "behavioral", label: "Зан төлөвийн" },
     { key: "case", label: "Кейс" },
   ];
-  var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн", case: "Кейс" };
+  var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан төлөвийн", case: "Кейс" };
 
   var currentQuestion = questions[currentIndex];
   var studiedCount = studied.size;
@@ -159,11 +159,11 @@ export default function InterviewFlashcard() {
               placeholder="Асуулт хайх..."
               className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             />
-            <div className="flex gap-1 flex-wrap">
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-0.5">
               {categories.map(function (c) {
                 return (
                   <button key={c.key} onClick={function () { setCategory(c.key); setSelectedMajorId(null); }}
-                    className={"px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
+                    className={"flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
                       (category === c.key ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                     {c.label}
                   </button>
@@ -175,8 +175,8 @@ export default function InterviewFlashcard() {
 
         {/* Major picker (shown when technical or case is selected) */}
         {needsMajor && (
-          <div className="bg-white dark:bg-gray-800 border border-emerald-100 dark:border-emerald-800 rounded-2xl shadow-sm p-4 mb-5">
-            <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider mb-3">Мэргэжил сонгоно уу</p>
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-5">
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Мэргэжил сонгоно уу</p>
             {majors.length === 0 ? (
               <p className="text-sm text-gray-400 dark:text-gray-500">Мэргэжил нэмэгдээгүй байна. Adminтай холбогдоно уу.</p>
             ) : (
@@ -185,10 +185,10 @@ export default function InterviewFlashcard() {
                   return (
                     <button key={m.id}
                       onClick={function () { setSelectedMajorId(m.id === selectedMajorId ? null : m.id); }}
-                      className={"px-4 py-2 rounded-xl text-sm font-medium transition " +
+                      className={"flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
                         (selectedMajorId === m.id
-                          ? "bg-emerald-600 text-white"
-                          : "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40")}>
+                          ? "bg-violet-600 text-white"
+                          : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                       {m.name}
                     </button>
                   );
@@ -215,8 +215,8 @@ export default function InterviewFlashcard() {
           <QuestionSkeleton />
         ) : needsMajor && !selectedMajorId ? (
           <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-12 flex flex-col items-center text-center">
-            <div className="w-16 h-16 mb-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+            <div className="w-16 h-16 mb-4 bg-violet-50 dark:bg-violet-900/20 rounded-full flex items-center justify-center">
+              <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
               </svg>
             </div>
@@ -241,7 +241,7 @@ export default function InterviewFlashcard() {
                       {categoryLabels[currentQuestion.category] || currentQuestion.category}
                     </span>
                     {isStudied && (
-                      <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-lg font-medium flex items-center gap-1">
+                      <span className="text-xs bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800 px-2 py-0.5 rounded-lg font-medium flex items-center gap-1">
                         ✓ Судалсан
                       </span>
                     )}

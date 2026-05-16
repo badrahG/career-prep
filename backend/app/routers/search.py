@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from typing import List
 
 from app.database import get_db
 from app.models.advice import Advice
 from app.models.scholarship import Scholarship
 from app.models.interview import InterviewQuestion
+from app.models.cv import CV
 from app.services.auth import get_optional_user
 
 router = APIRouter(prefix="/api/search", tags=["Search"])
@@ -29,7 +29,11 @@ def global_search(
         db.query(Advice)
         .filter(
             Advice.is_published == True,
-            or_(Advice.title.ilike(pattern), Advice.summary.ilike(pattern)),
+            or_(
+                Advice.title.ilike(pattern),
+                Advice.summary.ilike(pattern),
+                Advice.content.ilike(pattern),
+            ),
         )
         .limit(5)
         .all()
@@ -50,6 +54,7 @@ def global_search(
             or_(
                 Scholarship.name.ilike(pattern),
                 Scholarship.organization.ilike(pattern),
+                Scholarship.description.ilike(pattern),
             )
         )
         .limit(5)
@@ -62,12 +67,16 @@ def global_search(
             "title": s.name,
             "subtitle": s.organization or "",
             "url": f"/scholarship/{s.id}",
-            "category": "scholarship",
         })
 
     questions = (
         db.query(InterviewQuestion)
-        .filter(InterviewQuestion.question_mn.ilike(pattern))
+        .filter(
+            or_(
+                InterviewQuestion.question_mn.ilike(pattern),
+                InterviewQuestion.answer_mn.ilike(pattern),
+            )
+        )
         .limit(5)
         .all()
     )
@@ -78,7 +87,22 @@ def global_search(
             "title": iq.question_mn[:120],
             "subtitle": iq.category,
             "url": "/interview/flashcard",
-            "category": iq.category,
         })
+
+    if current_user:
+        cvs = (
+            db.query(CV)
+            .filter(CV.user_id == current_user.id, CV.name.ilike(pattern))
+            .limit(3)
+            .all()
+        )
+        for cv in cvs:
+            results.append({
+                "type": "cv",
+                "id": cv.id,
+                "title": cv.name,
+                "subtitle": "Миний CV",
+                "url": f"/cv/{cv.id}",
+            })
 
     return {"results": results}

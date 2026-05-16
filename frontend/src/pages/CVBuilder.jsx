@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import CVPreview from "../components/CVPreview";
 import API from "../services/api";
@@ -199,6 +199,18 @@ export default function CVBuilder() {
   var [interns, setInterns] = useState([{ company: "", title: "", description: "", start_date: "", end_date: "" }]);
   var [awards, setAwards] = useState([{ name: "", year: "" }]);
   var [showFullPreview, setShowFullPreview] = useState(false);
+  var [modalScale, setModalScale] = useState(1);
+  var modalContentRef = useRef(null);
+
+  useEffect(function () {
+    if (!showFullPreview) return;
+    var t = setTimeout(function () {
+      if (!modalContentRef.current) return;
+      var available = modalContentRef.current.clientWidth - 32;
+      setModalScale(Math.min(1, available / 794));
+    }, 0);
+    return function () { clearTimeout(t); };
+  }, [showFullPreview]);
 
   function removeAt(arr, idx) { var f = []; for (var j = 0; j < arr.length; j++) { if (j !== idx) f.push(arr[j]); } return f; }
   function toggleSkill(arr, setArr, val) { if (arr.includes(val)) { setArr(removeAt(arr, arr.indexOf(val))); } else { setArr([].concat(arr, [val])); } }
@@ -703,6 +715,19 @@ export default function CVBuilder() {
         </div>
       </div>
 
+      {/* Mobile/tablet floating preview button — hidden on xl where panel is visible */}
+      <button
+        type="button"
+        onClick={function() { setShowFullPreview(true); }}
+        className="fixed bottom-6 right-6 z-40 xl:hidden w-14 h-14 bg-violet-600 hover:bg-violet-700 text-white rounded-full shadow-xl flex items-center justify-center transition"
+        title="CV урьдчилан харах"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </button>
+
       {showFullPreview && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={function() { setShowFullPreview(false); }}>
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden flex flex-col" style={{ width: "min(900px, 95vw)", maxHeight: "92vh" }} onClick={function(e) { e.stopPropagation(); }}>
@@ -710,9 +735,16 @@ export default function CVBuilder() {
               <p className="font-semibold text-slate-900 dark:text-gray-100 text-sm">CV урьдчилан харах</p>
               <button type="button" onClick={function() { setShowFullPreview(false); }} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-gray-700 text-slate-500 dark:text-gray-400 transition text-xl">×</button>
             </div>
-            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4">
-              <div className="bg-white shadow-lg mx-auto" style={{ width: "210mm", maxWidth: "100%", transform: "scale(0.72)", transformOrigin: "top center", marginBottom: "calc((0.72 - 1) * 100%)" }}>
-                <CVPreview cv={previewCv} info={previewInfo} template={template} />
+            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4" ref={modalContentRef}>
+              <div style={{
+                width: Math.round(794 * modalScale) + "px",
+                height: Math.round(1123 * modalScale) + "px",
+                overflow: "hidden",
+                margin: "0 auto",
+              }}>
+                <div style={{ width: "794px", transform: "scale(" + modalScale + ")", transformOrigin: "top left" }}>
+                  <CVPreview cv={previewCv} info={previewInfo} template={template} />
+                </div>
               </div>
             </div>
           </div>

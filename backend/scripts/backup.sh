@@ -1,16 +1,16 @@
 #!/bin/bash
 # CareerPrep PostgreSQL өдөр тутмын backup скрипт
 
-DB_NAME="career_platform"
-DB_USER="odoo"
-DB_HOST="localhost"
-DB_PORT="5432"
-PGPASSWORD="odoo123"
-BACKUP_DIR="/var/backups/career_platform"
-RETENTION_DAYS=7
+DB_NAME="${DB_NAME:-career_platform}"
+DB_USER="${DB_USER:-odoo}"
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+PGPASSWORD="${DB_PASSWORD:-odoo123}"
+BACKUP_DIR="${BACKUP_DIR:-/var/backups/career_platform}"
+RETENTION_DAYS="${RETENTION_DAYS:-7}"
 DATE=$(date +%Y%m%d_%H%M%S)
 FILENAME="backup_${DATE}.sql.gz"
-LOG_FILE="/var/log/career_platform_backup.log"
+LOG_FILE="${LOG_FILE:-/var/log/career_platform_backup.log}"
 
 export PGPASSWORD
 

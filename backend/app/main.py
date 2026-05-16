@@ -34,10 +34,13 @@ from app.models.scholarship_checklist import UserScholarshipChecklist  # noqa
 from app.models.scholarship_bookmark import ScholarshipBookmark  # noqa
 from app.models.refresh_token import RefreshToken  # noqa
 from app.models.major import Major  # noqa
+from app.models.notification import Notification, NotificationRead  # noqa
 
-from app.routers import auth, cv, interview, scholarship, admin, advice
+from app.routers import auth, cv, interview, scholarship, admin, advice, scholarship_cv
 from app.routers import cv_analysis
 from app.routers import search
+from app.routers import notification
+from app.routers import settings
 from app.seed import seed_data
 from app.services.auth import get_current_user
 
@@ -170,6 +173,32 @@ def run_migrations():
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS major_id INTEGER REFERENCES majors(id) ON DELETE SET NULL"))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_iq_major ON interview_questions(major_id)"))
 
+        # ── Notifications ───────────────────────────────────────────────────────
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS notifications (
+                id SERIAL PRIMARY KEY,
+                type VARCHAR(50) NOT NULL,
+                title VARCHAR(200) NOT NULL,
+                body TEXT,
+                url VARCHAR(300),
+                ref_key VARCHAR(120) UNIQUE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_notif_created ON notifications(created_at DESC)"))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS notification_reads (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                notification_id INTEGER NOT NULL REFERENCES notifications(id) ON DELETE CASCADE,
+                read_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                CONSTRAINT uq_notif_read UNIQUE(user_id, notification_id)
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_nr_user ON notification_reads(user_id)"))
+
+        conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_prefs TEXT"))
+
         conn.commit()
     print("✓ Migrations applied")
 
@@ -295,7 +324,10 @@ app.include_router(scholarship.router)
 app.include_router(admin.router)
 app.include_router(advice.router)
 app.include_router(cv_analysis.router)
+app.include_router(scholarship_cv.router)
 app.include_router(search.router)
+app.include_router(notification.router)
+app.include_router(settings.router)
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)

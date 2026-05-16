@@ -47,7 +47,7 @@ export default function Interview() {
       id: "star",
       title: "Дадлага горим",
       subtitle: "STAR",
-      description: "Зан үйлийн асуултуудад STAR аргаар (Situation, Task, Action, Result) бүтэцтэй хариулт бичих дадлага.",
+      description: "Зан төлөвийн асуултуудад STAR аргаар (Situation, Task, Action, Result) бүтэцтэй хариулт бичих дадлага.",
       link: "/interview/star",
       available: true,
       features: [
@@ -61,7 +61,7 @@ export default function Interview() {
   var categories = [
     { key: "general", label: "Ерөнхий", desc: "Өөрийгөө танилцуулах, компани, карьер" },
     { key: "technical", label: "Техникийн", desc: "Програмчлал, технологийн мэдлэг" },
-    { key: "behavioral", label: "Зан үйлийн", desc: "Багаар ажиллах, шийдвэр гаргах" },
+    { key: "behavioral", label: "Зан төлөвийн", desc: "Багаар ажиллах, шийдвэр гаргах" },
   ];
 
   var tips = [
@@ -165,7 +165,7 @@ export default function Interview() {
 
         <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 rounded-2xl p-6">
           <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2">STAR арга гэж юу вэ?</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Зан үйлийн асуултад бүтэцтэй хариулт өгөх арга. Дөрвөн хэсэгтэй:</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Зан төлөвийн асуултад бүтэцтэй хариулт өгөх арга. Дөрвөн хэсэгтэй:</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
               { letter: "S", name: "Situation", desc: "Ямар нөхцөл байсан" },

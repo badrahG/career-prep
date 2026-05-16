@@ -305,6 +305,7 @@ export default function Dashboard() {
               {activity.slice(0, 6).map(function (item, i) {
                 var ACT = {
                   cv:             { bg: "#EDE9FE", color: "#7C3AED", icon: "cv" },
+                  cv_edit:        { bg: "#EDE9FE", color: "#7C3AED", icon: "cv" },
                   quiz:           { bg: "#FEE2E2", color: "#EF4444", icon: "interview" },
                   flashcard:      { bg: "#ECFDF5", color: "#10B981", icon: "advice" },
                   checklist:      { bg: "#FFFBEB", color: "#F59E0B", icon: "scholarship" },

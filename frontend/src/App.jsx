@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import CVList from "./pages/CVList";
 import CVStart from "./pages/CVStart";
 import CVBuilder from "./pages/CVBuilder";
+import ScholarshipCVBuilder from "./pages/ScholarshipCVBuilder";
 import CVEdit from "./pages/CVEdit";
 import CVDetail from "./pages/CVDetail";
 import Interview from "./pages/Interview";
@@ -33,6 +34,7 @@ import AdminAdvice from "./pages/AdminAdvice";
 import AdminScholarship from "./pages/AdminScholarship";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Settings from "./pages/Settings";
 
 function PrivateRoute({ children }) {
   var { token } = useAuth();
@@ -67,6 +69,7 @@ function AppRoutes() {
       <Route path="/cv-analysis" element={<PrivateRoute><CVAnalysis /></PrivateRoute>} />
       <Route path="/cv/start" element={<PrivateRoute><CVStart /></PrivateRoute>} />
       <Route path="/cv/new" element={<PrivateRoute><CVBuilder /></PrivateRoute>} />
+      <Route path="/cv/scholarship/new" element={<PrivateRoute><ScholarshipCVBuilder /></PrivateRoute>} />
       <Route path="/cv/:id" element={<PrivateRoute><CVDetail /></PrivateRoute>} />
       <Route path="/cv/:id/edit" element={<PrivateRoute><CVEdit /></PrivateRoute>} />
       <Route path="/interview" element={<PrivateRoute><Interview /></PrivateRoute>} />
@@ -80,6 +83,7 @@ function AppRoutes() {
       <Route path="/scholarship/new" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
       <Route path="/scholarship/:id" element={<PrivateRoute><ScholarshipDetail /></PrivateRoute>} />
       <Route path="/scholarship/:id/edit" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
+      <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
       <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/interview" element={<AdminRoute><AdminInterview /></AdminRoute>} />

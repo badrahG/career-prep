@@ -310,6 +310,8 @@ def get_activity(db: Session = Depends(get_db), current_user: User = Depends(get
 
     for cv in db.query(CV).filter(CV.user_id == current_user.id).all():
         events.append({"type": "cv", "label": "CV үүсгэсэн", "detail": cv.name, "ts": _aware(cv.created_at)})
+        if cv.updated_at and _aware(cv.updated_at) > _aware(cv.created_at):
+            events.append({"type": "cv_edit", "label": "CV засварласан", "detail": cv.name, "ts": _aware(cv.updated_at)})
 
     for qr in db.query(UserQuizResult).filter(UserQuizResult.user_id == current_user.id).all():
         events.append({

@@ -11,16 +11,31 @@ function Icon({ d, size = 16 }) {
 }
 
 const TYPE_META = {
+  page:        { label: "Хуудас",    color: "#6366F1", bg: "#EEF2FF", icon: "M17 8l4 4m0 0l-4 4m4-4H3" },
+  cv:          { label: "CV",        color: "#7C3AED", bg: "#EDE9FE", icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" },
   advice:      { label: "Зөвлөмж",   color: "#10B981", bg: "#ECFDF5", icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
   scholarship: { label: "Тэтгэлэг",  color: "#F59E0B", bg: "#FFFBEB", icon: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" },
   interview:   { label: "Ярилцлага", color: "#06B6D4", bg: "#ECFEFF", icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" },
 };
 
+const MODULES = [
+  { label: "CV модуль",    url: "/cv",                  keywords: ["cv"] },
+  { label: "Шинэ CV",      url: "/cv/start",            keywords: ["шинэ cv", "cv үүсгэх", "шинэ"] },
+  { label: "Ярилцлага",    url: "/interview",           keywords: ["ярилцлага", "interview"] },
+  { label: "Flashcard",    url: "/interview/flashcard", keywords: ["flashcard", "карт", "flash", "судлах"] },
+  { label: "Quiz",         url: "/interview/quiz",      keywords: ["quiz", "тест", "шалгах"] },
+  { label: "Зөвлөмж",     url: "/advice",              keywords: ["зөвлөмж", "зөвлөл", "advice"] },
+  { label: "Тэтгэлэг",    url: "/scholarship",         keywords: ["тэтгэлэг", "scholarship", "internship"] },
+  { label: "CV Анализ",    url: "/cv-analysis",         keywords: ["анализ", "analysis", "шинжилгэ"] },
+  { label: "Нүүр хуудас",  url: "/dashboard",           keywords: ["нүүр", "dashboard"] },
+  { label: "Профайл",      url: "/profile",             keywords: ["профайл", "profile"] },
+];
+
 const QUICK_LINKS = [
-  { label: "CV үүсгэх",         url: "/cv/new",           icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",  color: "#7C3AED", bg: "#EDE9FE" },
-  { label: "Ярилцлага",          url: "/interview",        icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z",            color: "#06B6D4", bg: "#ECFEFF" },
-  { label: "Тэтгэлэгүүд",        url: "/scholarship",      icon: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z", color: "#F59E0B", bg: "#FFFBEB" },
-  { label: "CV Анализ",          url: "/cv-analysis",      icon: "M13 10V3L4 14h7v7l9-11h-7z",                                                                                              color: "#EC4899", bg: "#FDF2F8" },
+  { label: "CV үүсгэх",   url: "/cv/start",    icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z", color: "#7C3AED", bg: "#EDE9FE" },
+  { label: "Ярилцлага",   url: "/interview",   icon: "M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z",            color: "#06B6D4", bg: "#ECFEFF" },
+  { label: "Тэтгэлэгүүд", url: "/scholarship", icon: "M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z", color: "#F59E0B", bg: "#FFFBEB" },
+  { label: "CV Анализ",   url: "/cv-analysis", icon: "M13 10V3L4 14h7v7l9-11h-7z",                                                                                              color: "#EC4899", bg: "#FDF2F8" },
 ];
 
 export default function SearchModal({ open, onClose }) {
@@ -55,9 +70,19 @@ export default function SearchModal({ open, onClose }) {
     return function () { clearTimeout(timer); };
   }, [query]);
 
+  var moduleMatches = useMemo(function () {
+    if (query.trim().length < 2) return [];
+    var q = query.trim().toLowerCase();
+    return MODULES.filter(function (m) {
+      return m.keywords.some(function (k) { return k.includes(q) || q.includes(k); });
+    }).slice(0, 3).map(function (m) {
+      return { type: "page", title: m.label, subtitle: "Хуудас руу очих", url: m.url };
+    });
+  }, [query]);
+
   var allItems = useMemo(function () {
-    return query.trim().length >= 2 ? results : [];
-  }, [query, results]);
+    return query.trim().length >= 2 ? [...moduleMatches, ...results] : [];
+  }, [query, results, moduleMatches]);
 
   var handleKey = useCallback(function (e) {
     if (!open) return;
@@ -81,9 +106,10 @@ export default function SearchModal({ open, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50" onClick={onClose}>
-
-      <div className="absolute top-[62px] right-6 w-[480px] max-w-[calc(100vw-1.5rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700"
-        onClick={function (e) { e.stopPropagation(); }}>
+      <div
+        className="absolute left-3 right-3 top-16 sm:left-auto sm:right-6 sm:top-[62px] sm:w-[480px] sm:max-w-[calc(100vw-1.5rem)] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700"
+        onClick={function (e) { e.stopPropagation(); }}
+      >
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100 dark:border-gray-700">
           <span className="text-gray-400 flex-shrink-0">
@@ -93,7 +119,7 @@ export default function SearchModal({ open, onClose }) {
             ref={inputRef}
             value={query}
             onChange={function (e) { setQuery(e.target.value); setActive(0); }}
-            placeholder="Хайх... (зөвлөмж, тэтгэлэг, асуулт)"
+            placeholder="Хайх... (CV, зөвлөмж, тэтгэлэг, асуулт)"
             className="flex-1 text-sm text-gray-800 dark:text-gray-100 outline-none placeholder-gray-400 dark:placeholder-gray-500 bg-transparent"
           />
           {loading && (
@@ -110,7 +136,7 @@ export default function SearchModal({ open, onClose }) {
           </button>
         </div>
 
-        <div className="max-h-[420px] overflow-y-auto">
+        <div className="max-h-[60vh] sm:max-h-[420px] overflow-y-auto">
           {/* Search results */}
           {allItems.length > 0 && (
             <div className="py-2">
@@ -149,7 +175,7 @@ export default function SearchModal({ open, onClose }) {
             </div>
           )}
 
-          {/* Quick links (shown when no query) */}
+          {/* Quick links */}
           {query.trim().length < 2 && (
             <div className="py-3 px-2">
               <p className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-2 mb-2">Шуурхай холбоос</p>
@@ -171,8 +197,8 @@ export default function SearchModal({ open, onClose }) {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-4 py-2.5 border-t border-gray-100 dark:border-gray-700 flex items-center gap-4 text-[11px] text-gray-400 dark:text-gray-500">
+        {/* Footer — keyboard shortcuts, desktop only */}
+        <div className="hidden sm:flex px-4 py-2.5 border-t border-gray-100 dark:border-gray-700 items-center gap-4 text-[11px] text-gray-400 dark:text-gray-500">
           <span><kbd className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400 font-medium">↑↓</kbd> шилжих</span>
           <span><kbd className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400 font-medium">Enter</kbd> нээх</span>
           <span><kbd className="bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-gray-500 dark:text-gray-400 font-medium">Esc</kbd> хаах</span>

@@ -16,6 +16,7 @@ from app.models.user import User
 from app.models.cv import CV, Education, WorkExperience, Skill
 from app.schemas.cv import CVCreate, CVResponse, CVListResponse
 from app.services.auth import get_current_user
+from app.services import cloudinary_storage
 
 router = APIRouter(prefix="/api/cv", tags=["CV"])
 
@@ -26,6 +27,21 @@ MAX_CERT_BYTES = 10 * 1024 * 1024   # 10 MB
 UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8001")
 
+
+async def _store_upload(contents: bytes, filename: str, folder: str) -> str:
+    cloud_url = cloudinary_storage.upload_bytes(
+        contents,
+        folder=folder,
+        public_id=filename.rsplit(".", 1)[0],
+    )
+    if cloud_url:
+        return cloud_url
+
+    dest = UPLOAD_DIR / filename
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    async with aiofiles.open(dest, "wb") as f:
+        await f.write(contents)
+    return f"{API_BASE}/uploads/{filename}"
 
 def _verify_image_magic(data: bytes, ext: str) -> bool:
     if ext in ("jpg", "jpeg"):
@@ -53,11 +69,8 @@ async def upload_photo(
         raise HTTPException(status_code=400, detail="Файлын агуулга зурагтай тохирохгүй байна")
 
     filename = f"{user.id}_{uuid.uuid4().hex}.{ext}"
-    dest = UPLOAD_DIR / filename
-    async with aiofiles.open(dest, "wb") as f:
-        await f.write(contents)
-
-    return {"photo_url": f"{API_BASE}/uploads/{filename}"}
+    photo_url = await _store_upload(contents, filename, folder="careerprep/cv/photos")
+    return {"photo_url": photo_url}
 
 
 _PARSE_PROMPT = """You are a CV parser. Extract all information from this CV text and return ONLY valid JSON.
@@ -186,11 +199,8 @@ async def upload_certificate(
             raise HTTPException(status_code=400, detail="Файлын агуулга зурагтай тохирохгүй байна")
 
     filename = f"cert_{user.id}_{uuid.uuid4().hex}.{ext}"
-    dest = UPLOAD_DIR / filename
-    async with aiofiles.open(dest, "wb") as f:
-        await f.write(contents)
-
-    return {"cert_file_url": f"{API_BASE}/uploads/{filename}"}
+    cert_file_url = await _store_upload(contents, filename, folder="careerprep/cv/certificates")
+    return {"cert_file_url": cert_file_url}
 
 
 @router.post("", response_model=CVResponse)

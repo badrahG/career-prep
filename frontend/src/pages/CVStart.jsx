@@ -139,17 +139,38 @@ export default function CVStart() {
   // Step 1: Choose method
   return (
     <Layout>
-      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-5 md:p-8">
-        <div className="w-full max-w-3xl">
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-5 md:p-8 bg-gray-50 dark:bg-gray-950">
+        <div className="w-full max-w-5xl">
           <div className="mb-10 text-center">
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">CV Builder</p>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200">Хэрхэн эхлэх вэ?</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">Эхлэх аргаа сонгоно уу</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            {/* Card 1: Start fresh */}
+            {/* Card 1: Scholarship CV — featured */}
+            <div className="bg-white dark:bg-gray-800 border-2 border-violet-400 dark:border-violet-500 rounded-2xl shadow-md p-8 flex flex-col items-center text-center hover:shadow-xl transition relative">
+              <span className="absolute top-4 right-4 text-xs bg-violet-600 text-white px-2.5 py-1 rounded-full font-bold">New</span>
+              <div className="w-20 h-20 bg-violet-50 dark:bg-violet-900/30 rounded-2xl flex items-center justify-center mb-6">
+                <svg className="w-10 h-10 text-violet-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+              </div>
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Scholarship Apply CV</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-5 flex-1">
+                АНУ, Австрали, Япон руу тэтгэлэгт apply хийх CV болон motivation letter бэлдэх.
+              </p>
+              <p className="text-xs text-violet-500 font-medium mb-6">US · Australia · Japan</p>
+              <button
+                onClick={function () { navigate("/cv/scholarship/new"); }}
+                className="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl text-sm font-semibold transition shadow-sm"
+              >
+                Эхлэх →
+              </button>
+            </div>
+
+            {/* Card 2: Start fresh */}
             <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-8 flex flex-col items-center text-center hover:shadow-md transition">
               <div className="relative mb-6">
                 <div className="w-20 h-20 bg-violet-50 dark:bg-violet-900/30 rounded-2xl flex items-center justify-center">
@@ -165,17 +186,17 @@ export default function CVStart() {
               </div>
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Шинээр үүсгэх</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 flex-1">
-                Эхнээс мэдээллээ алхам алхмаар оруулж, CareerPrep-ийн загвар дээр CV үүсгэнэ үү.
+                Эхнээс мэдээллээ алхам алхмаар оруулж, CareerPrep системийн загвар дээр CV үүсгэнэ үү.
               </p>
               <button
                 onClick={function () { setParsedData(null); setStep(2); }}
-                className="w-full text-center bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-lg transition"
+                className="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl text-sm font-semibold transition shadow-sm"
               >
                 Эхнээс эхлэх →
               </button>
             </div>
 
-            {/* Card 2: Upload existing */}
+            {/* Card 3: Upload existing */}
             <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-8 flex flex-col items-center text-center hover:shadow-md transition">
               <div className="relative mb-6">
                 <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center">
@@ -191,7 +212,7 @@ export default function CVStart() {
               </div>
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Бэлэн CV байршуулах</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 flex-1">
-                Өмнөх CV-ийн PDF-ийг байршуулж, мэдээллийг автоматаар уншиж CareerPrep-ийн загвар дээр CV үүсгэнэ.
+                Өмнө нь хийж байсан CV загвараа байршуулж, мэдээллийг автоматаар уншиж CareerPrep системийн загвар дээр CV үүсгэнэ.
               </p>
               <input ref={fileRef} type="file" accept=".pdf" className="hidden" onChange={handleFile} />
               <button

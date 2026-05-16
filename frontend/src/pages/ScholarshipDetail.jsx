@@ -105,73 +105,131 @@ export default function ScholarshipDetail() {
   }
 
   var days = daysLeft(item.deadline);
+  var isExpired = days?.expired || false;
   var doneCount = checklist.filter(function (c) { return c.done; }).length;
   var checklistProgress = checklist.length > 0 ? Math.round((doneCount / checklist.length) * 100) : 0;
 
+  var STEPS = [
+    { num: 1, title: "Шаардлага шалгах", desc: "Дээрх шаардлагыг хангаж байгаа эсэхээ нягтлана уу." },
+    { num: 2, title: "Баримт бичиг бэлдэх", desc: "CV, тодорхойлолт, голч дүнгийн хуулбар болон шаардагдах баримтуудыг бэлдэнэ." },
+    { num: 3, title: "Маягт бөглөх", desc: "Албан ёсны сайт дээр бүртгэлийн маягтыг бөглөнө." },
+    { num: 4, title: "Илгээх, хянах", desc: "Deadline-аас өмнө илгээж, и-мэйлээ шалгаж байгаарай." },
+  ];
+
+  var INFO_ROWS = [
+    { label: "Байгууллага", value: item.organization },
+    { label: "Төрөл", value: item.target },
+    { label: "Хугацаа", value: item.duration },
+    { label: "Эцсийн хугацаа", value: item.deadline },
+  ].filter(function (r) { return r.value; });
+
   return (
     <Layout>
-      <div className="p-5 md:p-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 mb-5">
-          <Link to="/scholarship" className="hover:text-violet-600 transition">Тэтгэлэг</Link>
-          <span>/</span>
-          <span className="text-gray-600 dark:text-gray-300 font-medium truncate">{item.name}</span>
-        </div>
+      {/* ── Hero banner ── */}
+      <div className="relative overflow-hidden" style={{ background: isExpired ? "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e293b 100%)" : "linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #4338ca 100%)" }}>
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle at 10% 90%, white 0%, transparent 55%), radial-gradient(circle at 90% 10%, white 0%, transparent 55%)" }} />
+        <div className="relative px-5 pt-5 pb-7 md:px-8 md:pt-6 md:pb-8">
+          {/* Breadcrumb */}
+          <div className="flex items-center gap-1.5 text-xs text-white/50 mb-5">
+            <Link to="/scholarship" className="hover:text-white/80 transition">Тэтгэлэг</Link>
+            <span>/</span>
+            <span className="text-white/75 truncate max-w-[200px]">{item.name}</span>
+          </div>
 
-        {/* Hero card */}
-        <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden mb-5">
-          <div className={"h-1 " + (days && days.expired ? "bg-gray-300 dark:bg-gray-600" : "bg-gradient-to-r from-violet-600 to-indigo-600")} />
-          <div className="p-5 md:p-6">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-5 mb-5">
-              <div className="flex items-start gap-4 flex-1 min-w-0">
-                <OrgLogo name={item.organization || item.name} imageUrl={item.image_url} websiteUrl={item.website_url} size="lg" />
-                <div className="flex-1 min-w-0">
-                  {item.target && (
-                    <span className="inline-block text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-lg font-medium mb-2">
-                      {item.target}
-                    </span>
-                  )}
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-200 leading-tight">{item.name}</h1>
-                  <p className="text-sm text-violet-600 font-semibold mt-1">{item.organization}</p>
-                </div>
+          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+            {/* Logo */}
+            <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl shadow-lg flex-shrink-0 overflow-hidden flex items-center justify-center">
+              <OrgLogo name={item.organization || item.name} imageUrl={item.image_url} websiteUrl={item.website_url} size="lg" />
+            </div>
+
+            {/* Title block */}
+            <div className="flex-1 min-w-0">
+              {item.target && (
+                <span className="inline-block text-[11px] bg-white/15 text-white/90 px-2.5 py-0.5 rounded-full font-medium mb-2 tracking-wide">
+                  {item.target}
+                </span>
+              )}
+              <h1 className="text-xl md:text-2xl font-bold text-white leading-snug">{item.name}</h1>
+              {item.organization && <p className="text-white/65 text-sm mt-1">{item.organization}</p>}
+            </div>
+
+            {/* Deadline badge */}
+            {days && (
+              <div className={"flex-shrink-0 rounded-xl px-4 py-2.5 text-sm font-bold border " +
+                (days.color === "red" ? "bg-red-500/25 border-red-400/30 text-red-100" :
+                 days.color === "amber" ? "bg-amber-400/25 border-amber-300/30 text-amber-100" :
+                 "bg-emerald-500/25 border-emerald-400/30 text-emerald-100")}>
+                <p>{days.text}</p>
+                {item.deadline && <p className="text-white/45 text-xs font-normal mt-0.5">{item.deadline}</p>}
               </div>
-              {days && (
-                <div className={"text-right rounded-xl border px-4 py-3 flex-shrink-0 " +
-                  (days.color === "red" ? "bg-red-50 border-red-200" :
-                   days.color === "amber" ? "bg-amber-50 border-amber-200" :
-                   "bg-emerald-50 border-emerald-200")}>
-                  <p className="text-xs uppercase tracking-wide font-semibold text-gray-500">Хугацаа</p>
-                  <p className={"text-base font-bold mt-0.5 " +
-                    (days.color === "red" ? "text-red-700" : days.color === "amber" ? "text-amber-700" : "text-emerald-700")}>
-                    {days.text}
-                  </p>
-                  {item.deadline && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{item.deadline}</p>}
-                </div>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              {item.website_url && !days?.expired && (
-                <a href={item.website_url} target="_blank" rel="noreferrer"
-                  className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
-                  Албан ёсны сайтаар бүртгүүлэх →
-                </a>
-              )}
-              {item.website_url && days?.expired && (
-                <span className="bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-6 py-2.5 rounded-xl text-sm font-semibold cursor-not-allowed">Хугацаа дууссан</span>
-              )}
-              {isAdmin && (
-                <>
-                  <Link to={"/scholarship/" + id + "/edit"} className="border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">Засах</Link>
-                  <button onClick={handleDelete} className="border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition">Устгах</button>
-                </>
-              )}
-            </div>
+            )}
           </div>
         </div>
+      </div>
 
+      {/* ── Content ── */}
+      <div className="px-4 py-5 md:px-6 md:py-6 pb-24 sm:pb-6">
+        {/* Quick chips */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {item.target && (
+            <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-100 dark:border-violet-800 px-3 py-1 rounded-full font-medium">
+              {item.target}
+            </span>
+          )}
+          {item.deadline && (
+            <span className={"text-xs px-3 py-1 rounded-full font-medium border " +
+              (isExpired
+                ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
+                : "bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600")}>
+              {item.deadline}
+            </span>
+          )}
+          {item.duration && (
+            <span className="text-xs bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 px-3 py-1 rounded-full font-medium">
+              {item.duration}
+            </span>
+          )}
+          {item.gpa && (
+            <span className="text-xs bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-600 px-3 py-1 rounded-full font-medium">
+              GPA {item.gpa}+
+            </span>
+          )}
+        </div>
+
+        {/* Desktop apply + admin buttons */}
+        <div className="hidden sm:flex flex-wrap gap-2 mb-5">
+          {item.website_url && !isExpired && (
+            <a href={item.website_url} target="_blank" rel="noreferrer"
+              className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition">
+              Бүртгүүлэх →
+            </a>
+          )}
+          {item.website_url && isExpired && (
+            <span className="bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 px-6 py-2.5 rounded-xl text-sm font-semibold cursor-not-allowed">
+              Хугацаа дууссан
+            </span>
+          )}
+          {isAdmin && (
+            <>
+              <Link to={"/scholarship/" + id + "/edit"}
+                className="border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                Засах
+              </Link>
+              <button onClick={handleDelete}
+                className="border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                Устгах
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Main grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {/* Left column */}
-          <div className="lg:col-span-2 space-y-4">
+
+          {/* ── Left column — shows second on mobile ── */}
+          <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
+
+            {/* Description */}
             {item.description && (
               <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
                 <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
@@ -183,6 +241,7 @@ export default function ScholarshipDetail() {
               </div>
             )}
 
+            {/* Requirements */}
             {(item.requirements || item.gpa) && (
               <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
                 <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
@@ -190,47 +249,40 @@ export default function ScholarshipDetail() {
                 </div>
                 <div className="p-5 space-y-3">
                   {item.requirements && (
-                    <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl p-3">
-                      <span className="text-violet-600 font-bold text-sm mt-0.5">›</span>
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Ерөнхий шаардлага</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">{item.requirements}</p>
-                      </div>
+                    <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl p-4">
+                      <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">Ерөнхий шаардлага</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{item.requirements}</p>
                     </div>
                   )}
                   {item.gpa && (
-                    <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl p-3">
-                      <span className="text-violet-600 font-bold text-sm mt-0.5">›</span>
-                      <div>
-                        <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Голч дүн (GPA)</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold">{item.gpa}</p>
-                      </div>
+                    <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl p-4">
+                      <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">Голч дүн (GPA)</p>
+                      <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{item.gpa}+</p>
                     </div>
                   )}
                 </div>
               </div>
             )}
 
+            {/* Steps — vertical timeline */}
             <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
               <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Бүртгүүлэх заавар</h2>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Ерөнхий алхам дараалал.</p>
+                <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Бүртгүүлэх алхмууд</h2>
               </div>
-              <div className="p-5 space-y-3">
-                {[
-                  { num: 1, title: "Шаардлага шалгах", desc: "Дээрх шаардлагыг хангаж байгаа эсэхээ нягтлана уу." },
-                  { num: 2, title: "Баримт бичиг бэлдэх", desc: "CV, тодорхойлолт, голч дүнгийн хуулбар болон шаардагдах баримтуудыг бэлдэнэ." },
-                  { num: 3, title: "Маягт бөглөх", desc: "Албан ёсны сайт дээр бүртгэлийн маягтыг бөглөнө." },
-                  { num: 4, title: "Илгээх, хянах", desc: "Deadline-аас өмнө илгээж, и-мэйлээ шалгаж байгаарай." },
-                ].map(function (step) {
+              <div className="p-5">
+                {STEPS.map(function (step, idx) {
+                  var isLast = idx === STEPS.length - 1;
                   return (
-                    <div key={step.num} className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 text-violet-600 dark:text-violet-400 rounded-xl flex items-center justify-center font-bold text-sm flex-shrink-0">
-                        {step.num}
+                    <div key={step.num} className="flex gap-3">
+                      <div className="flex flex-col items-center flex-shrink-0">
+                        <div className="w-7 h-7 rounded-xl bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 text-violet-600 dark:text-violet-400 flex items-center justify-center text-xs font-bold">
+                          {step.num}
+                        </div>
+                        {!isLast && <div className="w-px flex-1 bg-gray-100 dark:bg-gray-700 my-1.5" />}
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{step.title}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{step.desc}</p>
+                      <div className={"flex-1 " + (isLast ? "" : "pb-5")}>
+                        <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-none mt-1">{step.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 leading-relaxed">{step.desc}</p>
                       </div>
                     </div>
                   );
@@ -238,18 +290,20 @@ export default function ScholarshipDetail() {
               </div>
             </div>
 
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
-              <h3 className="text-sm font-bold text-amber-900 mb-2">⚠ Нийтлэг алдаа</h3>
-              <ul className="space-y-1.5">
+            {/* Warning */}
+            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-5">
+              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-400 mb-3">Нийтлэг алдаа</h3>
+              <ul className="space-y-2">
                 {[
-                  "Deadline-ыг хойшлуулах — хугацаа дуусахаас хэдэн өдөр өмнө илгээгээрэй.",
+                  "Deadline-ыг хойшлуулах — хэдэн өдөр өмнө илгээгээрэй.",
                   "Бичиг баримтын хуулбар муу чанартай байх.",
                   "Мотивацын захидлыг сүүлийн мөчид бичих.",
                   "И-мэйл хаягаа шалгахгүй байх.",
                 ].map(function (m, i) {
                   return (
-                    <li key={i} className="flex items-start gap-2 text-xs text-amber-900">
-                      <span>•</span><span>{m}</span>
+                    <li key={i} className="flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 mt-1.5" />
+                      <span>{m}</span>
                     </li>
                   );
                 })}
@@ -257,71 +311,84 @@ export default function ScholarshipDetail() {
             </div>
           </div>
 
-          {/* Right column */}
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
-              <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Мэдээлэл</h2>
-              </div>
-              <div className="p-5 space-y-3 text-sm">
-                <div>
-                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-0.5">Байгууллага</p>
-                  <p className="text-gray-800 dark:text-gray-200">{item.organization || "—"}</p>
-                </div>
-                <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-0.5">Төрөл</p>
-                  <p className="text-gray-800 dark:text-gray-200">{item.target || "—"}</p>
-                </div>
-                {item.duration && (
-                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-0.5">Хугацаа</p>
-                    <p className="text-gray-800 dark:text-gray-200">{item.duration}</p>
-                  </div>
-                )}
-                {item.deadline && (
-                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-0.5">Эцсийн хугацаа</p>
-                    <p className="text-gray-800 dark:text-gray-200">{item.deadline}</p>
-                  </div>
-                )}
-                {item.website_url && (
-                  <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Линк</p>
-                    <a href={item.website_url} target="_blank" rel="noreferrer" className="text-xs text-violet-600 hover:underline break-all">{item.website_url}</a>
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* ── Right column — shows first on mobile ── */}
+          <div className="space-y-4 order-1 lg:order-2">
 
             {/* Checklist */}
             <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
               <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Миний checklist</h2>
-                  {!checklistLoading && <span className="text-xs text-violet-600 font-semibold">{doneCount}/{checklist.length}</span>}
+                <div className="flex items-center justify-between mb-2">
+                  <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Бэлдэх жагсаалт</h2>
+                  {!checklistLoading && (
+                    <span className="text-xs font-bold text-violet-600 dark:text-violet-400">{doneCount}/{checklist.length}</span>
+                  )}
                 </div>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{user ? "Бэлдэх алхмуудаа тэмдэглэнэ үү." : "Checklist хадгалахын тулд нэвтэрнэ үү."}</p>
-              </div>
-              <div className="px-5 pt-4">
                 <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-1.5">
-                  <div className="bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full h-1.5 transition-all duration-300" style={{ width: checklistProgress + "%" }} />
+                  <div className="bg-gradient-to-r from-violet-500 to-indigo-500 h-1.5 rounded-full transition-all duration-500" style={{ width: checklistProgress + "%" }} />
                 </div>
+                {!user && (
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">Хадгалахын тулд нэвтэрнэ үү.</p>
+                )}
               </div>
               <div className="p-3">
                 {checklist.map(function (c, i) {
                   return (
-                    <label key={i} className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition">
+                    <label key={i} className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition">
                       <input type="checkbox" checked={c.done} onChange={function () { toggleItem(i); }}
-                        className="mt-0.5 w-4 h-4 accent-violet-600 cursor-pointer flex-shrink-0" />
-                      <span className={"text-sm flex-1 " + (c.done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-700 dark:text-gray-300")}>{c.label}</span>
+                        className="w-4 h-4 accent-violet-600 cursor-pointer flex-shrink-0" />
+                      <span className={"text-sm " + (c.done ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-700 dark:text-gray-300")}>
+                        {c.label}
+                      </span>
                     </label>
                   );
                 })}
               </div>
               <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex justify-end">
-                <button onClick={resetChecklist} className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-medium">Шинэчлэх</button>
+                <button onClick={resetChecklist} className="text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition">
+                  Шинэчлэх
+                </button>
               </div>
             </div>
+
+            {/* Info card */}
+            <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Мэдээлэл</h2>
+              </div>
+              <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                {INFO_ROWS.map(function (row) {
+                  return (
+                    <div key={row.label} className="px-5 py-3.5">
+                      <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">{row.label}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200">{row.value}</p>
+                    </div>
+                  );
+                })}
+                {item.website_url && (
+                  <div className="px-5 py-3.5">
+                    <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Линк</p>
+                    <a href={item.website_url} target="_blank" rel="noreferrer"
+                      className="text-xs text-violet-600 hover:underline break-all">
+                      {item.website_url}
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Admin buttons */}
+            {isAdmin && (
+              <div className="flex gap-2">
+                <Link to={"/scholarship/" + id + "/edit"}
+                  className="flex-1 text-center border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                  Засах
+                </Link>
+                <button onClick={handleDelete}
+                  className="flex-1 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                  Устгах
+                </button>
+              </div>
+            )}
 
             <Link to="/scholarship" className="block text-center text-sm text-violet-600 hover:underline font-medium">
               ← Бүх тэтгэлгийг харах
@@ -329,6 +396,22 @@ export default function ScholarshipDetail() {
           </div>
         </div>
       </div>
+
+      {/* ── Mobile sticky apply button ── */}
+      {item.website_url && (
+        <div className="sm:hidden fixed bottom-0 left-0 right-0 z-20 p-3 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-gray-100 dark:border-gray-700">
+          {isExpired ? (
+            <div className="w-full text-center bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 py-3 rounded-xl text-sm font-semibold">
+              Хугацаа дууссан
+            </div>
+          ) : (
+            <a href={item.website_url} target="_blank" rel="noreferrer"
+              className="block w-full text-center bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold active:opacity-90 transition">
+              Бүртгүүлэх →
+            </a>
+          )}
+        </div>
+      )}
     </Layout>
   );
 }

@@ -93,12 +93,15 @@ def get_advice(
 
 @router.post("/", response_model=AdviceResponse)
 def create_advice(data: AdviceCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    from app.services.notification_service import push_notification
     if data.category not in VALID_CATEGORIES:
         raise HTTPException(status_code=400, detail="Буруу категори")
     advice = Advice(**data.model_dump())
     db.add(advice)
     db.commit()
     db.refresh(advice)
+    cat_label = {"cv": "CV зөвлөмж", "interview": "Ярилцлагын зөвлөмж", "job_search": "Ажил хайх зөвлөмж", "career": "Карьерын зөвлөмж"}.get(str(data.category), "Зөвлөмж")
+    push_notification(db, "advice_new", f"Шинэ зөвлөмж: {advice.title}", cat_label, f"/advice/detail/{advice.id}")
     return advice
 
 

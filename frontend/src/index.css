@@ -2,6 +2,16 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+.cv-print-only {
+  display: none;
+}
+
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
 @page {
   size: A4;
   margin: 10mm 0 10mm;
@@ -23,6 +33,9 @@
 
   .cv-screen-only {
     display: none !important;
+  }
+  .cv-print-only {
+    display: block !important;
   }
 
   .app-toaster {

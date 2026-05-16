@@ -138,7 +138,7 @@ export default function InterviewQuiz() {
     setSelectedMajorId(null);
   }
 
-  var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан үйлийн", case: "Кейс асуулт", all: "Бүгд" };
+  var categoryLabels = { general: "Ерөнхий", technical: "Техникийн", behavioral: "Зан төлөвийн", case: "Кейс асуулт", all: "Бүгд" };
   var currentQuestion = questions[currentIndex];
   var answeredCount = Object.keys(answers).length;
   var progress = questions.length > 0 ? Math.round(((currentIndex + 1) / questions.length) * 100) : 0;
@@ -168,11 +168,11 @@ export default function InterviewQuiz() {
             <div className="p-6 space-y-5">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Категори</label>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-0.5">
                   {["all", "general", "technical", "behavioral", "case"].map(function (c) {
                     return (
                       <button key={c} onClick={function () { setCategory(c); setSelectedMajorId(null); }}
-                        className={"px-3 py-2 rounded-xl text-sm font-medium transition " +
+                        className={"flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
                           (category === c ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                         {categoryLabels[c]}
                       </button>
@@ -184,17 +184,17 @@ export default function InterviewQuiz() {
               {needsMajor && majors.length > 0 && (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    Мэргэжил сонгох <span className="text-emerald-600 font-normal text-xs">(заавал)</span>
+                    Мэргэжил сонгох <span className="text-gray-400 dark:text-gray-500 font-normal text-xs">(заавал)</span>
                   </label>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-0.5">
                     {majors.map(function (m) {
                       return (
                         <button key={m.id}
                           onClick={function () { setSelectedMajorId(m.id === selectedMajorId ? null : m.id); }}
-                          className={"px-4 py-2 rounded-xl text-sm font-medium transition " +
+                          className={"flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " +
                             (selectedMajorId === m.id
-                              ? "bg-emerald-600 text-white"
-                              : "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40")}>
+                              ? "bg-violet-600 text-white"
+                              : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                           {m.name}
                         </button>
                       );

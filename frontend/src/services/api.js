@@ -1,14 +1,16 @@
 import axios from "axios";
 
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:8001/api";
+
 const API = axios.create({
-  baseURL: "http://localhost:8001/api",
+  baseURL: BASE,
 });
 
 let csrfToken = sessionStorage.getItem("csrfToken") || null;
 
 export async function refreshCsrfToken() {
   try {
-    const res = await axios.get("http://localhost:8001/api/auth/csrf-token");
+    const res = await axios.get(`${BASE}/auth/csrf-token`);
     csrfToken = res.data.csrf_token;
     sessionStorage.setItem("csrfToken", csrfToken);
   } catch {
@@ -64,7 +66,7 @@ API.interceptors.response.use(
         return Promise.reject(error);
       }
       try {
-        const res = await axios.post("http://localhost:8001/api/auth/refresh", { refresh_token: refreshToken });
+        const res = await axios.post(`${BASE}/auth/refresh`, { refresh_token: refreshToken });
         const { access_token, refresh_token } = res.data;
         localStorage.setItem("token", access_token);
         localStorage.setItem("refreshToken", refresh_token);

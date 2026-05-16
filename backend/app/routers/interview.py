@@ -345,6 +345,9 @@ def create_question(data: QuestionCreate, db: Session = Depends(get_db), admin: 
     db.add(q)
     db.commit()
     db.refresh(q)
+    from app.services.notification_service import push_notification
+    cat_label = {"general": "Ерөнхий", "technical": "Техникийн", "behavioral": "Зан төлөвийн", "case": "Кейс"}.get(data.category, data.category)
+    push_notification(db, "interview_new", f"Шинэ ярилцлагын асуулт нэмэгдлээ", cat_label, "/interview/flashcard")
     return q
 
 

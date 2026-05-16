@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import SearchModal from "./SearchModal";
+import NotificationDropdown from "./NotificationDropdown";
+import API from "../services/api";
 
 function Icon({ d, size = 18 }) {
   return (
@@ -24,6 +26,7 @@ const ICONS = {
   bell:       "M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9",
   search:     "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
   logout:     "M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1",
+  settings:   "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
   menu:       "M4 6h16M4 12h16M4 18h16",
   close:      "M6 18L18 6M6 6l12 12",
   sun:        "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
@@ -47,6 +50,9 @@ export default function Layout({ children }) {
   var [sidebarOpen, setSidebarOpen] = useState(false);
   var [userMenuOpen, setUserMenuOpen] = useState(false);
   var [searchOpen, setSearchOpen] = useState(false);
+  var [logoutConfirm, setLogoutConfirm] = useState(false);
+  var [notifOpen, setNotifOpen] = useState(false);
+  var [unreadCount, setUnreadCount] = useState(0);
 
   var isAdmin = user?.role === "admin";
   var firstName = user?.first_name || "Хэрэглэгч";
@@ -63,6 +69,13 @@ export default function Layout({ children }) {
     window.addEventListener("keydown", handleGlobalKey);
     return function () { window.removeEventListener("keydown", handleGlobalKey); };
   }, [handleGlobalKey]);
+
+  useEffect(function () {
+    if (!user) return;
+    API.get("/notifications/unread-count")
+      .then(function (r) { setUnreadCount(r.data.unread_count || 0); })
+      .catch(function () {});
+  }, [user]);
 
   function isActive(link) {
     if (link === "/dashboard") return location.pathname === "/dashboard";
@@ -127,7 +140,7 @@ export default function Layout({ children }) {
           )}
         </nav>
 
-        {/* Help + Logout */}
+        {/* Help + Settings + Logout */}
         <div className="px-3 pb-5 space-y-0.5">
           <Link to="/profile" onClick={function () { setSidebarOpen(false); }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200 transition"
@@ -139,8 +152,19 @@ export default function Layout({ children }) {
             </span>
             Тусламж
           </Link>
+          <Link to="/settings" onClick={function () { setSidebarOpen(false); }}
+            className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition " +
+              (location.pathname === "/settings"
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
+                : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200")}
+          >
+            <span className={location.pathname === "/settings" ? "text-gray-800 dark:text-gray-200" : "text-gray-400 dark:text-gray-500"}>
+              <Icon d={ICONS.settings} size={18} />
+            </span>
+            Тохиргоо
+          </Link>
           <button
-            onClick={function () { logout(); window.location.href = "/login"; }}
+            onClick={function () { setUserMenuOpen(false); setSidebarOpen(false); setLogoutConfirm(true); }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400 transition w-full text-left"
           >
             <span className="text-gray-400 dark:text-gray-500">
@@ -161,6 +185,12 @@ export default function Layout({ children }) {
           <button className="lg:hidden text-gray-500 dark:text-gray-400" onClick={function () { setSidebarOpen(true); }}>
             <Icon d={ICONS.menu} size={20} />
           </button>
+          <button
+            onClick={function () { setSearchOpen(true); }}
+            className="md:hidden text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition p-1"
+          >
+            <Icon d={ICONS.search} size={20} />
+          </button>
 
           <div className="ml-auto flex items-center gap-2">
             <button
@@ -180,8 +210,16 @@ export default function Layout({ children }) {
               <Icon d={theme === "dark" ? ICONS.sun : ICONS.moon} size={15} />
             </button>
 
-            <button className="w-9 h-9 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition border border-gray-200 dark:border-gray-700">
+            <button
+              onClick={function () { setNotifOpen(!notifOpen); setUserMenuOpen(false); }}
+              className="relative w-9 h-9 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition border border-gray-200 dark:border-gray-700"
+            >
               <Icon d={ICONS.bell} size={16} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center px-0.5">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </button>
 
             <div className="relative">
@@ -209,8 +247,12 @@ export default function Layout({ children }) {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <Icon d={ICONS.cv} size={15} /> Миний CV
                   </Link>
+                  <Link to="/settings" onClick={function () { setUserMenuOpen(false); }}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                    <Icon d={ICONS.settings} size={15} /> Тохиргоо
+                  </Link>
                   <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
-                  <button onClick={function () { logout(); window.location.href = "/login"; }}
+                  <button onClick={function () { setUserMenuOpen(false); setSidebarOpen(false); setLogoutConfirm(true); }}
                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                     <Icon d={ICONS.logout} size={15} /> Гарах
                   </button>
@@ -227,6 +269,42 @@ export default function Layout({ children }) {
       </div>
 
       <SearchModal open={searchOpen} onClose={function () { setSearchOpen(false); }} />
+      <NotificationDropdown
+        open={notifOpen}
+        onClose={function () { setNotifOpen(false); }}
+        onUnreadChange={setUnreadCount}
+      />
+
+      {/* Logout confirmation modal */}
+      {logoutConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+          onClick={function () { setLogoutConfirm(false); }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 w-full max-w-xs p-6"
+            onClick={function (e) { e.stopPropagation(); }}>
+            <div className="w-12 h-12 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg width={22} height={22} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24" className="text-red-500">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 text-center mb-1">Гарахдаа итгэлтэй байна уу?</h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500 text-center mb-6">Системээс гарах гэж байна.</p>
+            <div className="flex gap-2">
+              <button
+                onClick={function () { setLogoutConfirm(false); }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              >
+                Буцах
+              </button>
+              <button
+                onClick={function () { logout(); window.location.href = "/login"; }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition"
+              >
+                Гарах
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

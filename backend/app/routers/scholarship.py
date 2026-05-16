@@ -107,11 +107,13 @@ def get_scholarship(sid: int, db: Session = Depends(get_db)):
 
 @router.post("", response_model=ScholarshipResponse)
 def create_scholarship(data: ScholarshipCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
+    from app.services.notification_service import push_notification
     s = Scholarship(**data.model_dump())
     db.add(s)
     db.commit()
     db.refresh(s)
     cache_clear_prefix("scholarships:")
+    push_notification(db, "scholarship_new", f"Шинэ тэтгэлэг нэмэгдлээ: {s.name}", s.organization or "", f"/scholarship/{s.id}")
     return s
 
 

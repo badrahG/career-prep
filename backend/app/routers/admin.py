@@ -3,7 +3,7 @@ import io
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import cast, Date, or_, func
@@ -17,6 +17,9 @@ from app.models.cv import CV
 from app.models.user import User
 from app.schemas.user import UserAdminResponse, UserUpdateAdmin
 from app.services.auth import get_current_user
+from app.models.email_token import TokenType
+from app.services.email_service import send_password_reset_email
+from app.routers.auth import _create_token, _check_email_cooldown
 
 router = APIRouter(prefix="/api/admin", tags=["Admin"])
 
@@ -25,6 +28,37 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
     if current_user.role != "admin":
         raise HTTPException(status_code=403, detail="Зөвхөн админ хандах эрхтэй")
     return current_user
+
+
+class AdminPasswordResetRequest(BaseModel):
+    email: str
+
+
+@router.post("/users/send-password-reset")
+def admin_send_password_reset(
+    data: AdminPasswordResetRequest,
+    background_tasks: BackgroundTasks,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    target = db.query(User).filter(func.lower(User.email) == data.email.lower()).first()
+    if target and target.is_active:
+        _check_email_cooldown(db, target, TokenType.reset_password)
+        token = _create_token(db, target, TokenType.reset_password, hours=1)
+        background_tasks.add_task(send_password_reset_email, target.email, target.first_name, token)
+
+    from app.models.audit_log import AuditLog
+    ip = request.client.host if request.client else "unknown"
+    db.add(AuditLog(
+        user_id=admin.id,
+        action="admin_send_password_reset",
+        ip_address=ip,
+        details=data.email,
+    ))
+    db.commit()
+
+    return {"message": "Хэрэв тухайн и-мэйл бүртгэлтэй бол нууц үг сэргээх линк илгээгдсэн."}
 
 
 # ── User list ─────────────────────────────────────────────────────────────────

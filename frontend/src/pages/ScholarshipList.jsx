@@ -65,9 +65,10 @@ export default function ScholarshipList() {
   function daysLeft(deadline) {
     if (!deadline) return null;
     var diff = Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24));
-    if (diff < 0) return "Дууссан";
-    if (diff === 0) return "Өнөөдөр";
-    return diff + " хоног";
+    if (diff < 0) return { text: "Дууссан", color: "red", expired: true };
+    if (diff === 0) return { text: "Өнөөдөр", color: "red", expired: false };
+    if (diff <= 7) return { text: diff + " хоног", color: "amber", expired: false };
+    return { text: diff + " хоног", color: "emerald", expired: false };
   }
 
   return (
@@ -88,23 +89,22 @@ export default function ScholarshipList() {
               placeholder="Нэр эсвэл байгууллагаар хайх..."
               className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-200 transition bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             />
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
               {["all", "Бакалавр", "Магистр", "Internship"].map(function (f) {
                 return (
                   <button key={f} onClick={function () { setFilter(f); }}
-                    className={"px-3 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " + (filter === f ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
+                    className={"flex-shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " + (filter === f ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                     {f === "all" ? "Бүгд" : f}
                   </button>
                 );
               })}
               <button onClick={function () { setActiveOnly(!activeOnly); }}
-                className={"px-3 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap flex items-center gap-1.5 " + (activeOnly ? "bg-emerald-500 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
-                <span className={"w-2 h-2 rounded-full " + (activeOnly ? "bg-white" : "bg-emerald-500")} />
+                className={"flex-shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " + (activeOnly ? "bg-violet-600 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                 Хугацаа дуусаагүй
               </button>
               {user && (
                 <button onClick={function () { setBookmarkedOnly(!bookmarkedOnly); }}
-                  className={"px-3 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " + (bookmarkedOnly ? "bg-amber-500 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
+                  className={"flex-shrink-0 px-3 py-2 rounded-xl text-sm font-medium transition whitespace-nowrap " + (bookmarkedOnly ? "bg-amber-500 text-white" : "bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600")}>
                   ★ Хадгалсан
                 </button>
               )}
@@ -120,7 +120,7 @@ export default function ScholarshipList() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map(function (s) {
               var days = daysLeft(s.deadline);
-              var isExpired = days === "Дууссан";
+              var isExpired = days?.expired || false;
               return (
                 <Link to={"/scholarship/" + s.id} key={s.id}
                   className={"bg-white dark:bg-gray-800 rounded-2xl border shadow-sm overflow-hidden transition flex flex-col group " + (isExpired ? "border-gray-100 dark:border-gray-700 opacity-70 hover:opacity-100" : "border-gray-100 dark:border-gray-700 hover:border-violet-200 dark:hover:border-violet-600 hover:shadow-md")}>
@@ -158,16 +158,23 @@ export default function ScholarshipList() {
                       {s.duration && <span className="text-xs bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-lg border border-gray-200 dark:border-gray-600">{s.duration}</span>}
                     </div>
 
-                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          {s.deadline && <p className="text-xs text-gray-400 dark:text-gray-500">Хугацаа: {s.deadline}</p>}
-                          {days && <p className={"text-xs font-semibold mt-0.5 " + (isExpired ? "text-red-500" : "text-emerald-600")}>{days}</p>}
+                    <div className="mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-2.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {s.deadline && <span className="text-xs text-gray-400 dark:text-gray-500">{s.deadline}</span>}
+                          {days && (
+                            <span className={"text-xs px-2 py-0.5 rounded-full font-semibold border " +
+                              (days.color === "red" ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800" :
+                               days.color === "amber" ? "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800" :
+                               "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800")}>
+                              {days.text}
+                            </span>
+                          )}
                         </div>
                         <span className="text-xs text-violet-600 font-semibold group-hover:underline">Дэлгэрэнгүй →</span>
                       </div>
                       {(s.website_url || isAdmin) && (
-                        <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                        <div className="flex gap-2">
                           {s.website_url && !isExpired && (
                             <a href={s.website_url} target="_blank" rel="noreferrer" onClick={stop}
                               className="flex-1 text-center text-xs bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium py-1.5 rounded-lg transition hover:shadow-sm">

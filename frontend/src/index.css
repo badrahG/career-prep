@@ -6,6 +6,24 @@
   display: none;
 }
 
+.cv-print-version {
+  display: none;
+}
+
+.scholarship-cv-print {
+  display: none;
+}
+
+.no-print {
+  display: block;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
 @utility scrollbar-hide {
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -15,20 +33,42 @@
 @page {
   size: A4;
   margin: 10mm 0 10mm;
+
+  @bottom-center {
+    content: counter(page) "/" counter(pages);
+    color: #98a2b3;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+  }
 }
 
 @page :first {
   margin: 0 0 10mm;
+
+  @bottom-center {
+    content: counter(page) "/" counter(pages);
+    color: #98a2b3;
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+  }
 }
 
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   html,
   body {
     background: #fff !important;
     margin: 0 !important;
     padding: 0 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  }
+
+  /* Screen layout бүрэн нуугдана — хоосон хуудас үүсгэхгүй */
+  .cv-screen-layout {
+    display: none !important;
   }
 
   .cv-screen-only {
@@ -42,17 +82,15 @@
     display: none !important;
   }
 
-  .cv-print-shell {
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-  }
+  body[data-print-lang^="sc-"] .scholarship-cv-screen { display: none !important; }
+  body[data-print-lang="sc-original"] .scholarship-cv-print[data-lang="original"] { display: block !important; }
+  body[data-print-lang="sc-en"] .scholarship-cv-print[data-lang="en"] { display: block !important; }
+  body[data-print-lang="sc-ja"] .scholarship-cv-print[data-lang="ja"] { display: block !important; }
 
-  .cv-print-root {
-    width: 210mm !important;
-    max-width: 210mm !important;
-    margin: 0 auto !important;
-  }
+  .cv-print-version { display: none !important; }
+  body[data-print-lang="original"] .cv-print-version[data-lang="original"] { display: block !important; }
+  body[data-print-lang="en"] .cv-print-version[data-lang="en"] { display: block !important; }
+  body[data-print-lang="ja"] .cv-print-version[data-lang="ja"] { display: block !important; }
 
   .cv-print-document {
     width: 210mm !important;

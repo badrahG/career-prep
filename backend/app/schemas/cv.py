@@ -53,6 +53,7 @@ class CVResponse(BaseModel):
     id: int
     name: str
     template_type: str
+    cv_type: str = "job"
     personal_info: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
@@ -68,6 +69,7 @@ class CVListResponse(BaseModel):
     id: int
     name: str
     template_type: str
+    cv_type: str = "job"
     created_at: datetime
 
     class Config:

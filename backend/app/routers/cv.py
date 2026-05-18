@@ -340,9 +340,9 @@ def translate_cv(cv_id: int, lang: str = Query(default="en"), db: Session = Depe
         ("gender", info.get("gender", "")),
         ("marital", info.get("marital", "")),
     ]
-    for i, lang in enumerate(languages):
-        slots.append((f"lang_name_{i}", lang.get("name", "")))
-        slots.append((f"lang_level_{i}", lang.get("level", "")))
+    for i, lng in enumerate(languages):
+        slots.append((f"lang_name_{i}", lng.get("name", "")))
+        slots.append((f"lang_level_{i}", lng.get("level", "")))
     for i, exp in enumerate(exp_list):
         slots.append((f"exp_pos_{i}", exp.position or ""))
         slots.append((f"exp_company_{i}", exp.company or ""))

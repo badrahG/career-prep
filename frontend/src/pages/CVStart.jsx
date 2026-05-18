@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import API from "../services/api";
@@ -31,10 +31,25 @@ var SAMPLE_INFO = {
 };
 
 var TEMPLATES = [
-  { id: "modern", label: "Монгол стандарт", desc: "Монголын компаниудад хамгийн тохиромжтой" },
-  { id: "classic", label: "Ази загвар", desc: "Бүтцийг тодорхой харуулсан мэргэжлийн загвар" },
-  { id: "minimal", label: "Европ загвар", desc: "Энгийн, цэвэр, орчин үеийн дизайн" },
+  { id: "modern", label: "Монгол хэв маяг", desc: "Монголын компаниудад хамгийн тохиромжтой" },
+  { id: "classic", label: "Ази хэв маяг", desc: "Бүтцийг тодорхой харуулсан мэргэжлийн загвар" },
+  { id: "minimal", label: "Европ хэв маяг", desc: "Энгийн, цэвэр, орчин үеийн дизайн" },
 ];
+
+function StarDisplay({ avg, count }) {
+  if (!count) return <span className="text-xs text-gray-400">Үнэлгээ алга</span>;
+  var full = Math.round(avg);
+  return (
+    <span className="flex items-center gap-1">
+      <span className="text-sm leading-none" style={{ letterSpacing: "-1px" }}>
+        {[1,2,3,4,5].map(function (n) {
+          return <span key={n} style={{ color: n <= full ? "#f59e0b" : "#d1d5db" }}>★</span>;
+        })}
+      </span>
+      <span className="text-xs text-gray-500 dark:text-gray-400">{avg.toFixed(1)} ({count})</span>
+    </span>
+  );
+}
 
 export default function CVStart() {
   var navigate = useNavigate();
@@ -42,6 +57,13 @@ export default function CVStart() {
   var [step, setStep] = useState(1);
   var [parsedData, setParsedData] = useState(null);
   var fileRef = useRef(null);
+  var [ratings, setRatings] = useState({});
+
+  useEffect(function () {
+    API.get("/feedback/cv-template/summary")
+      .then(function (res) { setRatings(res.data); })
+      .catch(function () {});
+  }, []);
 
   function handleFile(e) {
     var file = e.target.files[0];
@@ -84,7 +106,7 @@ export default function CVStart() {
               ← Буцах
             </button>
             <div className="text-center mb-8">
-              <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">CV Builder</p>
+              <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">CV загвараа үүсгэ</p>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200">Загвар сонгоно уу</h1>
               <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">Загвар дээр дарж CV хийж эхэлнэ үү</p>
             </div>
@@ -125,6 +147,9 @@ export default function CVStart() {
                     <div className="text-center mt-4">
                       <p className="font-bold text-gray-800 dark:text-gray-200 text-base">{t.label}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t.desc}</p>
+                      <div className="flex justify-center mt-2">
+                        <StarDisplay avg={ratings[t.id]?.avg || 0} count={ratings[t.id]?.count || 0} />
+                      </div>
                     </div>
                   </div>
                 );

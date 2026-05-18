@@ -40,7 +40,7 @@ function EduForm(props) {
         <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Боловсрол #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Түвшин <span className="text-red-500">*</span></label>
           <select value={edu.level} onChange={function(e) { onUpdate("level", e.target.value); }} className={inputCls}>
@@ -98,7 +98,7 @@ function ExpForm(props) {
         <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Туршлага #{i + 1}</span>
         {canRemove && <button type="button" onClick={onRemove} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Чиглэл <span className="text-red-500">*</span></label>
           <select value={exp.category} onChange={function(e) { onUpdate("category", e.target.value); }} className={inputCls}>
@@ -374,14 +374,14 @@ export default function CVBuilder() {
           {step === 1 && (
             <div>
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">CV нэр болон загвар</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">CV-дээ нэр өгч загвар сонгоно уу.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">CV загварт нэр өгч загвар сонгоно уу.</p>
               <Inp label="CV нэр *" value={cvName} onChange={function(v) { setCvName(v); }} placeholder="Жишээ: Программистын CV" cls="mb-6" />
               <label className={labelCls}>Загвар</label>
-              <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                 {[
-                  { id: "modern", name: "Монгол стандарт", desc: "Монголын компаниудад нийцсэн" },
-                  { id: "classic", name: "Ази загвар", desc: "Цэгцтэй, бүрэн CV" },
-                  { id: "minimal", name: "Европ загвар", desc: "Европ хэв маяг" }
+                  { id: "modern", name: "Монгол хэв маяг", desc: "Монголын компаниудад нийцсэн" },
+                  { id: "classic", name: "Ази хэв маяг", desc: "Цэгцтэй, бүрэн CV" },
+                  { id: "minimal", name: "Европ хэв маяг", desc: "Европ хэв маяг" }
                 ].map(function(t) {
                   var active = template === t.id;
                   return (
@@ -417,12 +417,12 @@ export default function CVBuilder() {
             <div>
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Ерөнхий мэдээлэл</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Хувийн мэдээллээ оруулна уу.</p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Inp label="Овог *" value={info.lastName} onChange={function(v) { upd(setInfo, "lastName", v); }} placeholder="Ганбаатар" />
                 <Inp label="Нэр *" value={info.firstName} onChange={function(v) { upd(setInfo, "firstName", v); }} placeholder="Бадрах" />
                 <Inp label="Төрсөн он" value={info.birthDate} onChange={function(v) { upd(setInfo, "birthDate", v); }} type="date" />
                 <Sel label="Хүйс" value={info.gender} onChange={function(v) { upd(setInfo, "gender", v); }} options={["Эрэгтэй", "Эмэгтэй"]} />
-                <Inp label="Регистрийн дугаар" value={info.regNo} onChange={function(v) { upd(setInfo, "regNo", v); }} placeholder="ИЭ04242518" />
+                <Inp label="Регистрийн дугаар" value={info.regNo} onChange={function(v) { upd(setInfo, "regNo", v); }} placeholder="ИЭ04******" />
                 <Sel label="Жолооны үнэмлэх" value={info.license} onChange={function(v) { upd(setInfo, "license", v); }} options={["Байхгүй", "B", "C", "D", "E"]} />
                 <Sel label="Гэрлэлтийн байдал" value={info.marital} onChange={function(v) { upd(setInfo, "marital", v); }} options={["Гэрлээгүй", "Гэрлэсэн"]} />
                 <Inp label="Цалингийн хүлээлт" value={info.salaryExpect} onChange={function(v) { upd(setInfo, "salaryExpect", v); }} placeholder="1,200,000-1,500,000" />
@@ -438,10 +438,10 @@ export default function CVBuilder() {
             <div>
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">Холбоо барих</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Холбогдох мэдээллээ оруулна уу.</p>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Inp label="И-мэйл *" value={contact.email} onChange={function(v) { upd(setContact, "email", v); }} placeholder="badrakh@email.com" type="email" />
-                <Inp label="Утас *" value={contact.phone} onChange={function(v) { upd(setContact, "phone", v); }} placeholder="88395886" />
-                <Inp label="Утас 2" value={contact.phone2} onChange={function(v) { upd(setContact, "phone2", v); }} placeholder="96113376" />
+                <Inp label="Утас *" value={contact.phone} onChange={function(v) { upd(setContact, "phone", v); }} placeholder="8839****" />
+                <Inp label="Утас 2" value={contact.phone2} onChange={function(v) { upd(setContact, "phone2", v); }} placeholder="9611****" />
                 <Inp label="Хаяг" value={contact.address} onChange={function(v) { upd(setContact, "address", v); }} placeholder="Улаанбаатар хот" />
                 <Inp label="LinkedIn / Facebook" value={contact.linkedin} onChange={function(v) { upd(setContact, "linkedin", v); }} placeholder="ganbaatar.badrah" cls="col-span-2" />
               </div>
@@ -520,10 +520,12 @@ export default function CVBuilder() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Мэддэг хэлээ нэмнэ үү.</p>
               {langList.map(function(l, i) {
                 return (
-                  <div key={i} className="flex items-end gap-3 mb-3">
-                    <Sel label="Хэл" value={l.name} onChange={function(v) { updList(langList, setLangList, i, "name", v); }} options={languageOptions} cls="flex-1" />
-                    <Sel label="Түвшин" value={l.level} onChange={function(v) { updList(langList, setLangList, i, "level", v); }} options={levelOptions} cls="flex-1" />
-                    {langList.length > 1 && <button type="button" onClick={function() { setLangList(removeAt(langList, i)); }} className="text-red-600 text-xs font-medium pb-3 px-2">Устгах</button>}
+                  <div key={i} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3 relative">
+                    <Sel label="Хэл" value={l.name} onChange={function(v) { updList(langList, setLangList, i, "name", v); }} options={languageOptions} />
+                    <div className="flex items-end gap-2">
+                      <Sel label="Түвшин" value={l.level} onChange={function(v) { updList(langList, setLangList, i, "level", v); }} options={levelOptions} cls="flex-1" />
+                      {langList.length > 1 && <button type="button" onClick={function() { setLangList(removeAt(langList, i)); }} className="text-red-600 text-xs font-medium pb-3 px-2 flex-shrink-0">Устгах</button>}
+                    </div>
                   </div>
                 );
               })}
@@ -542,7 +544,7 @@ export default function CVBuilder() {
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Сургалт #{i + 1}</span>
                       {certs.length > 1 && <button type="button" onClick={function() { setCerts(removeAt(certs, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Inp label="Сургалтын нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" />
                       <Inp label="Сургалтын дэлгэрэнгүй *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Pinecone" />
                       <Inp label="Эхэлсэн" value={c.start_date} onChange={function(v) { updList(certs, setCerts, i, "start_date", v); }} type="date" />
@@ -583,7 +585,7 @@ export default function CVBuilder() {
                       <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Дадлага #{i + 1}</span>
                       {interns.length > 1 && <button type="button" onClick={function() { setInterns(removeAt(interns, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <Inp label="Байгууллага *" value={n.company} onChange={function(v) { updList(interns, setInterns, i, "company", v); }} placeholder="Компани" />
                       <Inp label="Дадлагын нэр *" value={n.title} onChange={function(v) { updList(interns, setInterns, i, "title", v); }} placeholder="Frontend дадлагажигч" />
                       <Inp label="Эхэлсэн" value={n.start_date} onChange={function(v) { updList(interns, setInterns, i, "start_date", v); }} type="date" />
@@ -606,10 +608,12 @@ export default function CVBuilder() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Авсан шагнал урамшуулалаа нэмнэ үү.</p>
               {awards.map(function(a, i) {
                 return (
-                  <div key={i} className="flex items-end gap-3 mb-3">
-                    <Inp label="Шагнал *" value={a.name} onChange={function(v) { updList(awards, setAwards, i, "name", v); }} placeholder="2020 оны Улсын Аварга 3р байр" cls="flex-1" />
-                    <Inp label="Он" value={a.year} onChange={function(v) { updList(awards, setAwards, i, "year", v); }} placeholder="2020" cls="w-28" />
-                    {awards.length > 1 && <button type="button" onClick={function() { setAwards(removeAt(awards, i)); }} className="text-red-600 text-xs font-medium pb-3 px-2">Устгах</button>}
+                  <div key={i} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <Inp label="Шагнал *" value={a.name} onChange={function(v) { updList(awards, setAwards, i, "name", v); }} placeholder="2020 оны Улсын Аварга 3р байр" />
+                    <div className="flex items-end gap-2">
+                      <Inp label="Он" value={a.year} onChange={function(v) { updList(awards, setAwards, i, "year", v); }} placeholder="2020" cls="flex-1" />
+                      {awards.length > 1 && <button type="button" onClick={function() { setAwards(removeAt(awards, i)); }} className="text-red-600 text-xs font-medium pb-3 px-2 flex-shrink-0">Устгах</button>}
+                    </div>
                   </div>
                 );
               })}

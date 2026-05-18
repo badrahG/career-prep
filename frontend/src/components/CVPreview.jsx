@@ -44,7 +44,7 @@ var MN = {
   noName: "Овог нэр",
   noNameAlt: "Нэр оруулаагүй",
   gpa: "Голч: ",
-  cvTitle: "Монголын компаниудад зориулсан CV",
+  cvTitle: "Монголын нөхцөлд зориулсан CV",
   byType: "Төрлөөр",
   level: "Түвшин",
   extra: "Нэмэлт",
@@ -366,6 +366,9 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
                     title={c.name}
                     subtitle={c.organization}
                     date={c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : ""}
+                    fileUrl={c.file_url}
+                    openLabel={L.openCert}
+                    altLabel={L.certAlt}
                     last={i === certs.length - 1}
                   />
                 );
@@ -427,15 +430,18 @@ function BestExperienceItem({ title, company, date, description, last }) {
   );
 }
 
-function BestCompactItem({ title, subtitle, date, description, last }) {
+function BestCompactItem({ title, subtitle, date, description, fileUrl, openLabel, altLabel, last }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 138px", gap: "10px", marginBottom: last ? 0 : "13px", pageBreakInside: "avoid" }}>
-      <div style={{ minWidth: 0 }}>
-        <p style={{ fontSize: "12.2px", fontWeight: "820", color: "#293044", margin: 0, lineHeight: 1.3, overflowWrap: "break-word" }}>{title}</p>
-        {subtitle && <p style={{ fontSize: "10.8px", color: "#667085", margin: "2px 0 0", lineHeight: 1.4, overflowWrap: "break-word" }}>{subtitle}</p>}
-        {description && <p style={{ fontSize: "10.8px", color: "#667085", margin: "5px 0 0", lineHeight: 1.5, whiteSpace: "pre-line", overflowWrap: "break-word" }}>{description}</p>}
+    <div style={{ marginBottom: last ? 0 : "13px", pageBreakInside: "avoid" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 138px", gap: "10px" }}>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ fontSize: "12.2px", fontWeight: "820", color: "#293044", margin: 0, lineHeight: 1.3, overflowWrap: "break-word" }}>{title}</p>
+          {subtitle && <p style={{ fontSize: "10.8px", color: "#667085", margin: "2px 0 0", lineHeight: 1.4, overflowWrap: "break-word" }}>{subtitle}</p>}
+        </div>
+        {date && <p style={{ fontSize: "10px", color: "#7b8494", margin: 0, textAlign: "right", lineHeight: 1.35, whiteSpace: "nowrap" }}>{date}</p>}
       </div>
-      {date && <p style={{ fontSize: "10px", color: "#7b8494", margin: 0, textAlign: "right", lineHeight: 1.35, whiteSpace: "nowrap" }}>{date}</p>}
+      {description && <p style={{ fontSize: "10.8px", color: "#667085", margin: "5px 0 0", lineHeight: 1.5, whiteSpace: "pre-line", overflowWrap: "break-word" }}>{description}</p>}
+      <CertFilePreview url={fileUrl} openLabel={openLabel} altLabel={altLabel} />
     </div>
   );
 }
@@ -518,7 +524,7 @@ function ModernMongolianTemplate({ info, educations, experiences, skills }) {
             {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <span style={{ fontSize: "10px", color: "#7c8aa0", fontWeight: "700", textTransform: "uppercase" }}>Зураг</span>}
           </div>
           <div>
-            <p style={{ fontSize: "10px", letterSpacing: "1.7px", textTransform: "uppercase", color: "#526276", fontWeight: "800", margin: "0 0 7px" }}>Монгол стандарт CV</p>
+            <p style={{ fontSize: "10px", letterSpacing: "1.7px", textTransform: "uppercase", color: "#526276", fontWeight: "800", margin: "0 0 7px" }}>Монгол хэв маяг</p>
             <h1 style={{ fontSize: "29px", fontWeight: "850", letterSpacing: 0, margin: 0, lineHeight: 1.08, color: "#0f172a", textTransform: "uppercase" }}>{fullName || "Овог нэр"}</h1>
             <div style={{ width: "74px", height: "3px", background: "#b38b2e", margin: "11px 0 10px" }} />
             <p style={{ fontSize: "12.2px", lineHeight: 1.55, color: "#46566b", margin: 0, maxWidth: "420px", whiteSpace: "pre-line" }}>{info.about || "Ажил горилогчийн товч танилцуулга"}</p>

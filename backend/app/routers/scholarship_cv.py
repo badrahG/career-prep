@@ -1,12 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Any
 import os
 import json
 import anthropic
 import deepl
+from sqlalchemy.orm import Session
 
+from app.database import get_db
 from app.models.user import User
+from app.models.cv import CV
 from app.services.auth import get_current_user
 
 router = APIRouter(prefix="/api/cv", tags=["Scholarship CV"])
@@ -265,3 +268,106 @@ async def translate_scholarship_text(
         raise HTTPException(status_code=429, detail="DeepL API-ийн сарын хязгаар дүүрлээ")
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Орчуулахад алдаа: {str(e)[:200]}")
+
+
+class ScholarshipCVSaveRequest(BaseModel):
+    name: str
+    cvData: Any
+
+
+@router.post("/scholarship-save")
+def save_scholarship_cv(
+    data: ScholarshipCVSaveRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    cv = CV(
+        user_id=current_user.id,
+        name=data.name[:200],
+        template_type="modern",
+        personal_info=json.dumps(data.cvData, ensure_ascii=False),
+        cv_type="scholarship",
+    )
+    db.add(cv)
+    db.commit()
+    db.refresh(cv)
+    return {"id": cv.id, "name": cv.name, "created_at": cv.created_at}
+
+
+@router.put("/scholarship-save/{cv_id}")
+def update_scholarship_cv(
+    cv_id: int,
+    data: ScholarshipCVSaveRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    cv = db.query(CV).filter(CV.id == cv_id, CV.user_id == current_user.id, CV.cv_type == "scholarship").first()
+    if not cv:
+        raise HTTPException(status_code=404, detail="CV олдсонгүй")
+    cv.name = data.name[:200]
+    cv.personal_info = json.dumps(data.cvData, ensure_ascii=False)
+    db.commit()
+    db.refresh(cv)
+    return {"id": cv.id, "name": cv.name, "updated_at": cv.updated_at}
+
+
+@router.get("/scholarship/{cv_id}")
+def get_scholarship_cv(
+    cv_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    cv = db.query(CV).filter(CV.id == cv_id, CV.user_id == current_user.id, CV.cv_type == "scholarship").first()
+    if not cv:
+        raise HTTPException(status_code=404, detail="CV олдсонгүй")
+    try:
+        cv_data = json.loads(cv.personal_info) if cv.personal_info else {}
+    except Exception:
+        cv_data = {}
+    return {
+        "id": cv.id,
+        "name": cv.name,
+        "cvData": cv_data,
+        "created_at": cv.created_at,
+        "updated_at": cv.updated_at,
+    }
+
+
+class FieldsTranslateRequest(BaseModel):
+    targetLang: str = "EN"
+    values: List[str]
+
+
+@router.post("/scholarship-translate-fields")
+async def translate_scholarship_fields(
+    data: FieldsTranslateRequest,
+    current_user: User = Depends(get_current_user),
+):
+    if not data.values:
+        return {"translated": []}
+
+    deepl_key = os.getenv("DEEPL_API_KEY")
+    if not deepl_key:
+        raise HTTPException(status_code=503, detail="Орчуулгын үйлчилгээ тохиргоогүй байна. DEEPL_API_KEY тохируулна уу.")
+
+    target = "JA" if data.targetLang == "JA" else "EN-US"
+    non_empty_idx = [i for i, v in enumerate(data.values) if v and v.strip()]
+    non_empty_vals = [data.values[i] for i in non_empty_idx]
+
+    translated_map = {}
+    if non_empty_vals:
+        try:
+            translator = deepl.Translator(deepl_key)
+            results = translator.translate_text(non_empty_vals, target_lang=target)
+            for idx, result in zip(non_empty_idx, results):
+                translated_map[idx] = result.text
+        except deepl.AuthorizationException:
+            raise HTTPException(status_code=401, detail="DeepL API түлхүүр буруу байна")
+        except deepl.QuotaExceededException:
+            raise HTTPException(status_code=429, detail="DeepL API-ийн сарын хязгаар дүүрлээ")
+        except Exception as e:
+            raise HTTPException(status_code=502, detail=f"Орчуулахад алдаа: {str(e)[:200]}")
+
+    return {
+        "translated": [translated_map.get(i, data.values[i]) for i in range(len(data.values))]
+    }

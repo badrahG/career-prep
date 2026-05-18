@@ -20,6 +20,7 @@ class CV(Base):
     name = Column(String(200), nullable=False)
     template_type = Column(Enum(TemplateType), default=TemplateType.modern)
     personal_info = Column(Text, nullable=True)
+    cv_type = Column(String(20), nullable=False, default='job', server_default='job')
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -66,3 +67,16 @@ class Skill(Base):
     level = Column(String(50), nullable=True)
 
     cv = relationship("CV", back_populates="skills")
+
+
+class CVTemplateFeedback(Base):
+    __tablename__ = "cv_template_feedbacks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    template_type = Column(String(20), nullable=False)
+    rating = Column(Integer, nullable=False)
+    pros = Column(Text, nullable=True)
+    cons = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

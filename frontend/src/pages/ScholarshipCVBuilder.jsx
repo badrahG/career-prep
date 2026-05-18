@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../components/Layout";
 import API from "../services/api";
 import toast from "react-hot-toast";
@@ -68,22 +68,28 @@ function SectionHead({ children }) {
   );
 }
 
-function StepIndicator({ steps, current }) {
+function StepIndicator({ steps, current, maxReached, onStepClick }) {
   return (
     <div className="flex items-center justify-center overflow-x-auto pb-1 gap-0">
       {steps.map(function (s, i) {
-        var done = i + 1 < current;
-        var active = i + 1 === current;
+        var num = i + 1;
+        var done = num < current;
+        var active = num === current;
+        var clickable = num >= 2 && num <= maxReached && num !== current;
         return (
           <div key={i} className="flex items-center shrink-0">
             <div className="flex flex-col items-center">
-              <div className={[
-                "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all",
-                done ? "bg-violet-600 text-white" :
-                active ? "bg-violet-600 text-white ring-4 ring-violet-100 dark:ring-violet-900/40" :
-                "bg-gray-100 dark:bg-gray-700 text-gray-400",
-              ].join(" ")}>
-                {done ? "✓" : i + 1}
+              <div
+                onClick={clickable ? function () { onStepClick(num); } : undefined}
+                className={[
+                  "w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all",
+                  done ? "bg-violet-600 text-white" :
+                  active ? "bg-violet-600 text-white ring-4 ring-violet-100 dark:ring-violet-900/40" :
+                  "bg-gray-100 dark:bg-gray-700 text-gray-400",
+                  clickable ? "cursor-pointer hover:opacity-80" : "cursor-default",
+                ].join(" ")}
+              >
+                {done ? "✓" : num}
               </div>
               <span className={[
                 "text-xs mt-1 hidden md:block font-medium whitespace-nowrap",
@@ -105,9 +111,10 @@ function StepIndicator({ steps, current }) {
 
 export default function ScholarshipCVBuilder() {
   var navigate = useNavigate();
-  var previewRef = useRef(null);
+  var { id } = useParams();
 
   var [step, setStep] = useState(1);
+  var [maxStep, setMaxStep] = useState(1);
   var [country, setCountry] = useState("");
   var [req, setReq] = useState({ text: "", name: "", org: "", deadline: "", program: "" });
   var [profile, setProfile] = useState({ fullName: "", email: "", phone: "", location: "", linkedin: "", portfolio: "" });
@@ -117,44 +124,73 @@ export default function ScholarshipCVBuilder() {
   var [goals, setGoals] = useState({ careerGoal: "", whyScholarship: "", whyCountry: "", howContribute: "", impactPlan: "", studyPlan: "" });
   var [cvList, setCvList] = useState([]);
   var [showImport, setShowImport] = useState(false);
+  var [savedCvId, setSavedCvId] = useState(id ? parseInt(id) : null);
+  var [saving, setSaving] = useState(false);
+  var [cvLoading, setCvLoading] = useState(!!id);
   var [showFullPreview, setShowFullPreview] = useState(false);
   var [previewScale, setPreviewScale] = useState(0.55);
   var [modalScale, setModalScale] = useState(1);
   var rightPanelRef = useRef(null);
-  var modalContentRef = useRef(null);
-  var [jaText, setJaText] = useState(null);
-  var [translating, setTranslating] = useState(false);
+  var [enData, setEnData] = useState(null);
+  var [jaData, setJaData] = useState(null);
+  var [showEnModal, setShowEnModal] = useState(false);
   var [showJaModal, setShowJaModal] = useState(false);
+  var [translatingEn, setTranslatingEn] = useState(false);
+  var [translatingJa, setTranslatingJa] = useState(false);
+  var [certFiles, setCertFiles] = useState([]);
 
   var cfg = country ? COUNTRY_CONFIG[country] : null;
   var allSteps = cfg ? ["Country", ...cfg.steps] : DEFAULT_STEPS;
   var isLastStep = step === allSteps.length;
 
   useEffect(function () {
+    function cleanup() { delete document.body.dataset.printLang; }
+    window.addEventListener("afterprint", cleanup);
+    return function () { window.removeEventListener("afterprint", cleanup); };
+  }, []);
+
+  useEffect(function () {
     API.get("/cv").then(function (res) {
-      if (res.data && res.data.length > 0) setCvList(res.data);
+      if (res.data && res.data.length > 0) setCvList(res.data.filter(function(c) { return c.cv_type !== "scholarship"; }));
     }).catch(function () {});
   }, []);
 
   useEffect(function () {
-    if (!showFullPreview) return;
-    var t = setTimeout(function () {
-      if (!modalContentRef.current) return;
-      var available = modalContentRef.current.clientWidth - 32;
+    if (!id) return;
+    setCvLoading(true);
+    API.get("/cv/scholarship/" + id).then(function (res) {
+      var d = res.data.cvData || {};
+      if (d.country) setCountry(d.country);
+      if (d.req) setReq(d.req);
+      if (d.profile) setProfile(d.profile);
+      if (d.edu) setEdu(d.edu);
+      if (d.ach) setAch({ awards: "", competitions: "", certificates: "", langScores: [], ...d.ach });
+      if (d.ldr) setLdr(d.ldr);
+      if (d.goals) setGoals(d.goals);
+      setMaxStep(99);
+    }).catch(function () {
+      toast.error("CV ачаалахад алдаа гарлаа");
+    }).finally(function () {
+      setCvLoading(false);
+    });
+  }, [id]);
+
+  useEffect(function () {
+    function calcScale() {
+      var available = Math.min(860, window.innerWidth * 0.95) - 32;
       setModalScale(Math.min(1, available / 794));
-    }, 0);
-    return function () { clearTimeout(t); };
-  }, [showFullPreview]);
+    }
+    calcScale();
+    window.addEventListener("resize", calcScale);
+    return function () { window.removeEventListener("resize", calcScale); };
+  }, []);
 
   useEffect(function () {
     if (!rightPanelRef.current) return;
     var obs = new ResizeObserver(function (entries) {
       for (var entry of entries) {
         var w = entry.contentRect.width;
-        var h = entry.contentRect.height;
-        var byW = (w - 24) / 794;
-        var byH = (h - 24) / 1123;
-        setPreviewScale(Math.max(0.25, Math.min(0.9, Math.min(byW, byH))));
+        setPreviewScale(Math.max(0.25, Math.min(0.9, (w - 24) / 794)));
       }
     });
     obs.observe(rightPanelRef.current);
@@ -200,7 +236,7 @@ export default function ScholarshipCVBuilder() {
   }
 
   function addLangScore() {
-    setAch(function (p) { return { ...p, langScores: [...p.langScores, { type: "IELTS", score: "" }] }; });
+    setAch(function (p) { return { ...p, langScores: [...p.langScores, { type: "IELTS", score: "", file: null }] }; });
   }
 
   function updateLangScore(i, field, val) {
@@ -211,6 +247,24 @@ export default function ScholarshipCVBuilder() {
 
   function removeLangScore(i) {
     setAch(function (p) { return { ...p, langScores: p.langScores.filter(function (_, idx) { return idx !== i; }) }; });
+  }
+
+  function addCertFile(e) {
+    var files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setCertFiles(function (prev) { return [...prev, ...files.map(function (f) { return { name: f.name }; })]; });
+    e.target.value = "";
+  }
+
+  function removeCertFile(idx) {
+    setCertFiles(function (prev) { return prev.filter(function (_, i) { return i !== idx; }); });
+  }
+
+  function setLangScoreFile(idx, e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    updateLangScore(idx, "file", { name: file.name });
+    e.target.value = "";
   }
 
   function getChecklist() {
@@ -239,111 +293,87 @@ export default function ScholarshipCVBuilder() {
     return items;
   }
 
-  async function handleTranslateJa() {
-    var lines = [];
-    if (profile.fullName) lines.push(profile.fullName);
-    var contact = [profile.email, profile.phone, profile.location].filter(Boolean).join(" | ");
-    if (contact) lines.push(contact);
-    lines.push("");
+  async function buildTranslatedData(targetLang) {
+    var values = [
+      profile.fullName, profile.location,
+      edu.school, edu.degree, edu.major, edu.coursework,
+      ach.awards, ach.competitions, ach.certificates,
+      ldr.leadership, ldr.volunteer, ldr.extracurricular, ldr.projects, ldr.work, ldr.background,
+      goals.careerGoal, goals.whyScholarship, goals.whyCountry, goals.howContribute, goals.impactPlan, goals.studyPlan,
+    ];
+    var res = await API.post("/cv/scholarship-translate-fields", { targetLang, values });
+    var t = res.data.translated;
+    var i = 0;
+    return {
+      country,
+      profile: { ...profile, fullName: t[i++], location: t[i++] },
+      edu: { ...edu, school: t[i++], degree: t[i++], major: t[i++], coursework: t[i++] },
+      ach: { ...ach, awards: t[i++], competitions: t[i++], certificates: t[i++] },
+      ldr: { ...ldr, leadership: t[i++], volunteer: t[i++], extracurricular: t[i++], projects: t[i++], work: t[i++], background: t[i++] },
+      goals: { ...goals, careerGoal: t[i++], whyScholarship: t[i++], whyCountry: t[i++], howContribute: t[i++], impactPlan: t[i++], studyPlan: t[i++] },
+    };
+  }
 
-    lines.push("EDUCATION\n---");
-    if (edu.school) lines.push(edu.school);
-    if (edu.degree || edu.major) lines.push([edu.degree, edu.major].filter(Boolean).join(", "));
-    if (edu.gpa) lines.push("GPA: " + edu.gpa + " / " + (edu.gpaScale || "4.00"));
-    if (edu.coursework) lines.push("Relevant Coursework: " + edu.coursework);
-    lines.push("");
-
-    var hasAch = ach.awards || ach.competitions || ach.certificates || (ach.langScores && ach.langScores.some(function (ls) { return ls.type && ls.score; }));
-    if (hasAch) {
-      lines.push("ACADEMIC ACHIEVEMENTS & AWARDS\n---");
-      if (ach.awards) lines.push(ach.awards);
-      if (ach.competitions) lines.push(ach.competitions);
-      if (ach.certificates) lines.push(ach.certificates);
-      ach.langScores.filter(function (ls) { return ls.type && ls.score; }).forEach(function (ls) { lines.push(ls.type + ": " + ls.score); });
-      lines.push("");
-    }
-
-    if (ldr.leadership || ldr.volunteer || ldr.extracurricular) {
-      lines.push("LEADERSHIP & VOLUNTEER EXPERIENCE\n---");
-      if (ldr.leadership) lines.push(ldr.leadership);
-      if (ldr.volunteer) lines.push(ldr.volunteer);
-      if (ldr.extracurricular) lines.push(ldr.extracurricular);
-      lines.push("");
-    }
-
-    if (ldr.projects) {
-      lines.push("RESEARCH & PROJECTS\n---");
-      lines.push(ldr.projects);
-      lines.push("");
-    }
-
-    if (ldr.work) {
-      lines.push("WORK & INTERNSHIP EXPERIENCE\n---");
-      lines.push(ldr.work);
-      lines.push("");
-    }
-
-    if (goals.studyPlan) {
-      lines.push("STUDY PLAN (研究計画書)\n---");
-      lines.push(goals.studyPlan);
-      lines.push("");
-    }
-
-    var hasGoals = goals.careerGoal || goals.whyScholarship || goals.whyCountry || goals.howContribute || goals.impactPlan;
-    if (hasGoals) {
-      lines.push("GOALS & MOTIVATION\n---");
-      if (goals.careerGoal) lines.push("Career Goal: " + goals.careerGoal);
-      if (goals.whyScholarship) lines.push("Why This Scholarship: " + goals.whyScholarship);
-      if (goals.whyCountry) lines.push("Why Japan / Target Lab: " + goals.whyCountry);
-      if (goals.howContribute) lines.push("Contribution Plan: " + goals.howContribute);
-      if (goals.impactPlan) lines.push("Post-Scholarship Impact: " + goals.impactPlan);
-    }
-
-    var text = lines.join("\n");
-    setTranslating(true);
+  async function handleTranslateEn() {
+    if (translatingEn) return;
+    setTranslatingEn(true);
     try {
-      var res = await API.post("/cv/scholarship-translate", { text, targetLang: "JA" });
-      setJaText(res.data.translatedText);
+      var data = await buildTranslatedData("EN");
+      setEnData(data);
+      setShowEnModal(true);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Орчуулахад алдаа гарлаа");
+    } finally {
+      setTranslatingEn(false);
+    }
+  }
+
+  async function handleTranslateJa() {
+    if (translatingJa) return;
+    setTranslatingJa(true);
+    try {
+      var data = await buildTranslatedData("JA");
+      setJaData(data);
       setShowJaModal(true);
     } catch (err) {
       toast.error(err.response?.data?.detail || "Орчуулахад алдаа гарлаа");
     } finally {
-      setTranslating(false);
+      setTranslatingJa(false);
     }
   }
 
-  async function exportPDF() {
-    if (!previewRef.current) { toast.error("Preview олдсонгүй"); return; }
-    var loadId = toast.loading("PDF үүсгэж байна...");
+  async function handleSave() {
+    if (saving) return;
+    setSaving(true);
     try {
-      var html2canvas = (await import("html2canvas")).default;
-      var { jsPDF } = await import("jspdf");
-      var canvas = await html2canvas(previewRef.current, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
-      var imgData = canvas.toDataURL("image/png");
-      var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-      var pageW = pdf.internal.pageSize.getWidth();
-      var pageH = pdf.internal.pageSize.getHeight();
-      var imgH = (canvas.height * pageW) / canvas.width;
-      var y = 0;
-      pdf.addImage(imgData, "PNG", 0, y, pageW, imgH);
-      var remaining = imgH - pageH;
-      while (remaining > 0) {
-        pdf.addPage();
-        y -= pageH;
-        pdf.addImage(imgData, "PNG", 0, y, pageW, imgH);
-        remaining -= pageH;
+      var cvName = (req.name || profile.fullName || "Scholarship") + (country ? " — " + country : "") + " CV";
+      var cvData = { country, req, profile, edu, ach, ldr, goals };
+      var res;
+      if (savedCvId) {
+        res = await API.put("/cv/scholarship-save/" + savedCvId, { name: cvName, cvData });
+      } else {
+        res = await API.post("/cv/scholarship-save", { name: cvName, cvData });
+        setSavedCvId(res.data.id);
       }
-      var fname = ((profile.fullName || "scholarship").replace(/\s+/g, "_")) + "_" + country.replace(/\s+/g, "_") + "_CV.pdf";
-      pdf.save(fname);
-      toast.success("PDF татагдлаа!", { id: loadId });
-    } catch {
-      toast.error("PDF үүсгэхэд алдаа гарлаа", { id: loadId });
+      toast.success("CV амжилттай хадгалагдлаа");
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Хадгалахад алдаа гарлаа");
+    } finally {
+      setSaving(false);
     }
+  }
+
+  function exportPDF(lang) {
+    var l = lang || "original";
+    document.title = (profile.fullName || "Scholarship").replace(/\s+/g, "_") + "_CV";
+    document.body.dataset.printLang = l === "en" ? "sc-en" : l === "ja" ? "sc-ja" : "sc-original";
+    window.print();
   }
 
   function goNext() {
     if (step === 1 && !country) { toast.error("Улс сонгоно уу"); return; }
     setStep(function (s) { return s + 1; });
+    setMaxStep(function (m) { return Math.max(m, step + 1); });
   }
 
   function goPrev() {
@@ -573,6 +603,30 @@ export default function ScholarshipCVBuilder() {
             <div>
               <Lbl>Гэрчилгээ / Certificates</Lbl>
               <textarea rows={2} className={tCls} placeholder={"Google Data Analytics Certificate — 2024\nAWS Cloud Practitioner — 2023"} value={ach.certificates} onChange={function (e) { setAch(function (p) { return { ...p, certificates: e.target.value }; }); }} />
+              <div className="mt-2">
+                <label className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-semibold cursor-pointer">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                  Гэрчилгээ файл хавсаргах (PDF / JPG / PNG)
+                  <input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple className="hidden" onChange={addCertFile} />
+                </label>
+                {certFiles.length > 0 && (
+                  <div className="mt-1.5 space-y-1">
+                    {certFiles.map(function (f, i) {
+                      return (
+                        <div key={i} className="flex items-center gap-2 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700 rounded-lg px-2.5 py-1.5">
+                          <svg className="w-3.5 h-3.5 text-violet-400 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-xs text-gray-700 dark:text-gray-300 flex-1 truncate">{f.name}</span>
+                          <button onClick={function () { removeCertFile(i); }} className="text-gray-400 hover:text-red-500 transition shrink-0 text-base leading-none">×</button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -585,12 +639,29 @@ export default function ScholarshipCVBuilder() {
               <div className="space-y-2">
                 {ach.langScores.map(function (ls, i) {
                   return (
-                    <div key={i} className="flex gap-2 items-center">
-                      <select className={sCls} value={ls.type} onChange={function (e) { updateLangScore(i, "type", e.target.value); }}>
-                        {LANG_TYPES.map(function (t) { return <option key={t} value={t}>{t}</option>; })}
-                      </select>
-                      <input className={iCls} placeholder="Score, e.g. 7.0, 105, N2..." value={ls.score} onChange={function (e) { updateLangScore(i, "score", e.target.value); }} />
-                      <button onClick={function () { removeLangScore(i); }} className="text-gray-400 hover:text-red-500 transition shrink-0 text-xl leading-none">×</button>
+                    <div key={i} className="space-y-1.5">
+                      <div className="flex gap-2 items-center">
+                        <select className={sCls} value={ls.type} onChange={function (e) { updateLangScore(i, "type", e.target.value); }}>
+                          {LANG_TYPES.map(function (t) { return <option key={t} value={t}>{t}</option>; })}
+                        </select>
+                        <input className={iCls} placeholder="Score, e.g. 7.0, 105, N2..." value={ls.score} onChange={function (e) { updateLangScore(i, "score", e.target.value); }} />
+                        <label className="cursor-pointer text-gray-400 hover:text-violet-500 dark:hover:text-violet-400 transition shrink-0" title="Оноо батлах баримт хавсаргах">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                          </svg>
+                          <input type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={function (e) { setLangScoreFile(i, e); }} />
+                        </label>
+                        <button onClick={function () { removeLangScore(i); }} className="text-gray-400 hover:text-red-500 transition shrink-0 text-xl leading-none">×</button>
+                      </div>
+                      {ls.file && (
+                        <div className="flex items-center gap-2 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700 rounded-lg px-2.5 py-1.5">
+                          <svg className="w-3.5 h-3.5 text-violet-400 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="text-xs text-gray-700 dark:text-gray-300 flex-1 truncate">{ls.file.name}</span>
+                          <button onClick={function () { updateLangScore(i, "file", null); }} className="text-gray-400 hover:text-red-500 transition shrink-0 text-base leading-none">×</button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -830,7 +901,7 @@ export default function ScholarshipCVBuilder() {
 
         {/* PDF Export */}
         <button
-          onClick={exportPDF}
+          onClick={function () { exportPDF("original"); }}
           className="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl text-sm font-bold transition shadow-sm flex items-center justify-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -838,6 +909,30 @@ export default function ScholarshipCVBuilder() {
           </svg>
           PDF татаж авах
         </button>
+
+        {/* Translation buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={handleTranslateEn}
+            disabled={translatingEn}
+            className="flex-1 border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400 py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 disabled:opacity-60 transition flex items-center justify-center gap-1.5"
+          >
+            {translatingEn ? (
+              <><span className="w-3.5 h-3.5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin inline-block" /> Орчуулж байна...</>
+            ) : "🌐 Англи орчуулга"}
+          </button>
+          {country === "Japan" && (
+            <button
+              onClick={handleTranslateJa}
+              disabled={translatingJa}
+              className="flex-1 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 py-2.5 rounded-xl text-sm font-semibold hover:bg-rose-50 dark:hover:bg-rose-900/20 disabled:opacity-60 transition flex items-center justify-center gap-1.5"
+            >
+              {translatingJa ? (
+                <><span className="w-3.5 h-3.5 border-2 border-rose-500 border-t-transparent rounded-full animate-spin inline-block" /> Орчуулж байна...</>
+              ) : "🇯🇵 Япон орчуулга"}
+            </button>
+          )}
+        </div>
 
         {/* AI Premium */}
         <div className="border border-dashed border-violet-300 dark:border-violet-700 rounded-xl p-4">
@@ -898,10 +993,23 @@ export default function ScholarshipCVBuilder() {
   var previewData = { country, profile, edu, ach, ldr, goals };
 
   var scaledW = Math.round(794 * previewScale);
-  var scaledH = Math.round(1123 * previewScale);
 
   return (
-    <Layout>
+    <>
+    <div className="scholarship-cv-print" data-lang="original">
+      <ScholarshipCVPreview data={previewData} />
+    </div>
+    {enData && (
+      <div className="scholarship-cv-print" data-lang="en">
+        <ScholarshipCVPreview data={enData} />
+      </div>
+    )}
+    {jaData && (
+      <div className="scholarship-cv-print" data-lang="ja">
+        <ScholarshipCVPreview data={jaData} />
+      </div>
+    )}
+    <Layout rootClassName="scholarship-cv-screen">
       <div className="h-[calc(100vh-4rem)] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="border-b dark:border-gray-700 bg-white dark:bg-gray-800 py-3 px-4 md:px-6 shrink-0">
@@ -920,7 +1028,7 @@ export default function ScholarshipCVBuilder() {
                 {country ? country + " · " + step + "/" + allSteps.length : "US / AU / JP"}
               </div>
             </div>
-            <StepIndicator steps={allSteps} current={step} />
+            <StepIndicator steps={allSteps} current={step} maxReached={maxStep} onStepClick={function (s) { setStep(s); }} />
           </div>
         </div>
 
@@ -929,7 +1037,11 @@ export default function ScholarshipCVBuilder() {
           {/* Left: Form */}
           <div className="w-full md:w-[55%] border-r dark:border-gray-700 flex flex-col min-h-0">
             <div className="flex-1 overflow-y-auto p-5 md:p-6">
-              {renderStepContent()}
+              {cvLoading ? (
+                <div className="flex items-center justify-center h-48">
+                  <div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : renderStepContent()}
             </div>
             {/* Sticky nav — always visible at bottom */}
             <div className="shrink-0 border-t dark:border-gray-700 px-5 md:px-6 py-3 flex items-center justify-between bg-white dark:bg-gray-800 shadow-[0_-1px_4px_rgba(0,0,0,0.06)]">
@@ -939,7 +1051,7 @@ export default function ScholarshipCVBuilder() {
               >
                 ← Буцах
               </button>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {/* Preview button — mobile only */}
                 <button
                   onClick={function () { setShowFullPreview(true); }}
@@ -951,12 +1063,21 @@ export default function ScholarshipCVBuilder() {
                   </svg>
                   Preview
                 </button>
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 disabled:opacity-60 transition"
+                >
+                  {saving ? (
+                    <><span className="w-3 h-3 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin inline-block" /> Хадгалж байна...</>
+                  ) : "Хадгалах"}
+                </button>
                 <span className="text-xs text-gray-400 font-medium">{step} / {allSteps.length}</span>
               </div>
               {!isLastStep ? (
                 <button
                   onClick={goNext}
-                  className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition shadow-sm"
+                  className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-700 text-white px-3 py-1.5 text-xs md:px-5 md:py-2 md:text-sm rounded-xl font-semibold transition shadow-sm"
                 >
                   Дараах →
                 </button>
@@ -973,33 +1094,19 @@ export default function ScholarshipCVBuilder() {
               <p className="text-xs text-gray-400 dark:text-gray-500 font-semibold uppercase tracking-wider">Урьдчилан харах</p>
             </div>
 
-            {/* Paper area — ResizeObserver target */}
-            <div ref={rightPanelRef} className="relative flex-1 overflow-hidden mx-4 mb-1">
-              {/* Centered A4 paper with exact scaled dimensions */}
-              <div style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: scaledW + "px",
-                height: scaledH + "px",
-                overflow: "hidden",
-              }}>
-                <div style={{
-                  width: "794px",
-                  height: "1123px",
-                  transform: "scale(" + previewScale + ")",
-                  transformOrigin: "top left",
-                  pointerEvents: "none",
-                }} className="bg-white shadow-[0_4px_24px_rgba(0,0,0,0.18)]">
-                  <ScholarshipCVPreview data={previewData} innerRef={previewRef} />
+            {/* Paper area — ResizeObserver target, scrollable */}
+            <div ref={rightPanelRef} className="flex-1 overflow-y-auto mx-4 mb-1">
+              <div style={{ width: scaledW + "px", margin: "12px auto" }}>
+                <div style={{ width: "794px", zoom: previewScale, pointerEvents: "none" }}
+                  className="bg-white shadow-[0_4px_24px_rgba(0,0,0,0.18)]">
+                  <ScholarshipCVPreview data={previewData} />
                 </div>
               </div>
             </div>
 
-            {/* Preview card frame + button — matches CVBuilder */}
+            {/* Preview card frame + buttons */}
             <div className="shrink-0 mx-4 mb-3">
-              <div className={["bg-white dark:bg-gray-800 rounded-xl border border-slate-300 dark:border-gray-600 shadow-sm px-3 py-2.5 flex items-center", country === "Japan" ? "justify-between" : "justify-center"].join(" ")}>
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-300 dark:border-gray-600 shadow-sm px-3 py-2.5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
                 <button
                   onClick={function () { setShowFullPreview(true); }}
                   className="flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 transition"
@@ -1009,21 +1116,34 @@ export default function ScholarshipCVBuilder() {
                   </svg>
                   Бүтнээр харах
                 </button>
-                {country === "Japan" && (
+                {country && (
                   <button
-                    onClick={handleTranslateJa}
-                    disabled={translating}
-                    className="flex items-center gap-1.5 text-sm font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 transition disabled:opacity-50"
+                    onClick={handleTranslateEn}
+                    disabled={translatingEn}
+                    className="flex items-center gap-1 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition disabled:opacity-50"
                   >
-                    {translating ? (
+                    {translatingEn ? (
                       <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
-                    ) : (
-                      <span className="text-base leading-none">🇯🇵</span>
-                    )}
-                    日本語
+                    ) : "🌐"}
+                    EN
+                  </button>
+                )}
+                {country === "Japan" && (
+                  <button
+                    onClick={handleTranslateJa}
+                    disabled={translatingJa}
+                    className="flex items-center gap-1 text-sm font-medium text-rose-600 dark:text-rose-400 hover:text-rose-700 transition disabled:opacity-50"
+                  >
+                    {translatingJa ? (
+                      <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                    ) : "🇯🇵"}
+                    JA
                   </button>
                 )}
               </div>
@@ -1032,50 +1152,69 @@ export default function ScholarshipCVBuilder() {
         </div>
       </div>
 
-      {/* Japanese Translation Modal */}
-      {showJaModal && jaText && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
-          onClick={function () { setShowJaModal(false); }}
-        >
-          <div
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
-            style={{ width: "min(720px, 95vw)", maxHeight: "88vh" }}
-            onClick={function (e) { e.stopPropagation(); }}
-          >
+      {/* English Translation Modal */}
+      {showEnModal && enData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={function () { setShowEnModal(false); }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            style={{ width: "min(860px, 95vw)", maxHeight: "92vh" }}
+            onClick={function (e) { e.stopPropagation(); }}>
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
-              <div className="flex items-center gap-2">
-                <span className="text-base">🇯🇵</span>
-                <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">日本語翻訳 — DeepL (無料)</p>
-                <span className="text-xs bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 px-2 py-0.5 rounded-full font-medium">Free</span>
-              </div>
+              <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">🌐 English Translation — DeepL</p>
               <div className="flex items-center gap-2">
                 <button
-                  onClick={function () {
-                    navigator.clipboard.writeText(jaText).then(function () {
-                      toast.success("Хуулагдлаа!");
-                    }).catch(function () {
-                      toast.error("Хуулах боломжгүй байна");
-                    });
-                  }}
-                  className="text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1"
+                  onClick={function () { exportPDF("en"); }}
+                  className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                  Хуулах
+                  PDF татах
                 </button>
-                <button
-                  onClick={function () { setShowJaModal(false); }}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition text-xl"
-                >×</button>
+                <button onClick={function () { setShowEnModal(false); }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition text-xl">×</button>
               </div>
             </div>
-            <div className="overflow-y-auto flex-1 p-5">
-              <div className="bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl p-3 mb-4 text-xs text-rose-600 dark:text-rose-400">
-                DeepL үнэгүй орчуулга. AI Premium-д илүү байгалийн, мэргэжлийн орчуулга боломжтой болно.
+            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4">
+              <div style={{ width: Math.round(794 * modalScale) + "px", margin: "0 auto" }}>
+                <div style={{ width: "794px", zoom: modalScale }}>
+                  <ScholarshipCVPreview data={enData} />
+                </div>
               </div>
-              <pre className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap font-sans leading-relaxed">{jaText}</pre>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Japanese Translation Modal */}
+      {showJaModal && jaData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={function () { setShowJaModal(false); }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+            style={{ width: "min(860px, 95vw)", maxHeight: "92vh" }}
+            onClick={function (e) { e.stopPropagation(); }}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+              <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">🇯🇵 日本語翻訳 — DeepL</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={function () { exportPDF("ja"); }}
+                  className="text-xs bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  PDF татах
+                </button>
+                <button onClick={function () { setShowJaModal(false); }}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition text-xl">×</button>
+              </div>
+            </div>
+            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4">
+              <div style={{ width: Math.round(794 * modalScale) + "px", margin: "0 auto" }}>
+                <div style={{ width: "794px", zoom: modalScale }}>
+                  <ScholarshipCVPreview data={jaData} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1113,14 +1252,9 @@ export default function ScholarshipCVBuilder() {
                 >×</button>
               </div>
             </div>
-            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4" ref={modalContentRef}>
-              <div style={{
-                width: Math.round(794 * modalScale) + "px",
-                height: Math.round(1123 * modalScale) + "px",
-                overflow: "hidden",
-                margin: "0 auto",
-              }}>
-                <div style={{ width: "794px", transform: "scale(" + modalScale + ")", transformOrigin: "top left" }}>
+            <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4">
+              <div style={{ width: Math.round(794 * modalScale) + "px", margin: "0 auto" }}>
+                <div style={{ width: "794px", zoom: modalScale }}>
                   <ScholarshipCVPreview data={previewData} />
                 </div>
               </div>
@@ -1129,5 +1263,6 @@ export default function ScholarshipCVBuilder() {
         </div>
       )}
     </Layout>
+    </>
   );
 }

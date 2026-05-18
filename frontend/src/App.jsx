@@ -16,6 +16,7 @@ import CVBuilder from "./pages/CVBuilder";
 import ScholarshipCVBuilder from "./pages/ScholarshipCVBuilder";
 import CVEdit from "./pages/CVEdit";
 import CVDetail from "./pages/CVDetail";
+import ScholarshipCVDetail from "./pages/ScholarshipCVDetail";
 import Interview from "./pages/Interview";
 import InterviewFlashcard from "./pages/InterviewFlashcard";
 import InterviewQuiz from "./pages/InterviewQuiz";
@@ -70,6 +71,8 @@ function AppRoutes() {
       <Route path="/cv/start" element={<PrivateRoute><CVStart /></PrivateRoute>} />
       <Route path="/cv/new" element={<PrivateRoute><CVBuilder /></PrivateRoute>} />
       <Route path="/cv/scholarship/new" element={<PrivateRoute><ScholarshipCVBuilder /></PrivateRoute>} />
+      <Route path="/cv/scholarship/:id" element={<PrivateRoute><ScholarshipCVDetail /></PrivateRoute>} />
+      <Route path="/cv/scholarship/:id/edit" element={<PrivateRoute><ScholarshipCVBuilder /></PrivateRoute>} />
       <Route path="/cv/:id" element={<PrivateRoute><CVDetail /></PrivateRoute>} />
       <Route path="/cv/:id/edit" element={<PrivateRoute><CVEdit /></PrivateRoute>} />
       <Route path="/interview" element={<PrivateRoute><Interview /></PrivateRoute>} />

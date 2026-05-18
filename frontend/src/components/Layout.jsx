@@ -43,7 +43,7 @@ const NAV = [
   { label: "CV Анализ", link: "/cv-analysis", icon: "analyze" },
 ];
 
-export default function Layout({ children }) {
+export default function Layout({ children, rootClassName }) {
   var { user, logout } = useAuth();
   var { theme, toggle } = useTheme();
   var location = useLocation();
@@ -83,7 +83,7 @@ export default function Layout({ children }) {
   }
 
   return (
-    <div className="flex h-screen bg-[#f3f4f6] dark:bg-gray-950 overflow-hidden">
+    <div className={"flex h-screen bg-[#f3f4f6] dark:bg-gray-950 overflow-hidden" + (rootClassName ? " " + rootClassName : "")}>
 
       {/* Mobile overlay */}
       {sidebarOpen && (

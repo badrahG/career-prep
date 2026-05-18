@@ -41,6 +41,7 @@ from app.routers import cv_analysis
 from app.routers import search
 from app.routers import notification
 from app.routers import settings
+from app.routers import feedback
 from app.seed import seed_data
 from app.services.auth import get_current_user
 
@@ -199,6 +200,23 @@ def run_migrations():
 
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_prefs TEXT"))
 
+        conn.execute(text("ALTER TABLE cvs ADD COLUMN IF NOT EXISTS cv_type VARCHAR(20) NOT NULL DEFAULT 'job'"))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS cv_template_feedbacks (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                template_type VARCHAR(20) NOT NULL,
+                rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+                pros TEXT,
+                cons TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE,
+                CONSTRAINT uq_user_template UNIQUE(user_id, template_type)
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_ctf_template ON cv_template_feedbacks(template_type)"))
+
         conn.commit()
     print("✓ Migrations applied")
 
@@ -328,6 +346,7 @@ app.include_router(scholarship_cv.router)
 app.include_router(search.router)
 app.include_router(notification.router)
 app.include_router(settings.router)
+app.include_router(feedback.router)
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)

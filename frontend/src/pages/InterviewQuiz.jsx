@@ -30,7 +30,7 @@ export default function InterviewQuiz() {
     return qs.filter(function (q) { return q.case_id === caseId; }).length;
   }
 
-  var needsMajor = category === "technical" || category === "case";
+  var needsMajor = true;
 
   function startQuiz() {
     setLoading(true);

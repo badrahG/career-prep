@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
@@ -22,6 +22,13 @@ export default function Profile() {
   var [showDeleteModal, setShowDeleteModal] = useState(false);
   var [deleteConfirm, setDeleteConfirm] = useState("");
   var [deleting, setDeleting] = useState(false);
+  var [usageData, setUsageData] = useState(null);
+
+  useEffect(function () {
+    if (user?.role !== "admin") {
+      API.get("/subscription/usage").then(function (r) { setUsageData(r.data); }).catch(function () {});
+    }
+  }, [user]);
 
   function upd(field, value) {
     setForm(function (p) { return { ...p, [field]: value }; });
@@ -177,6 +184,61 @@ export default function Profile() {
             </div>
           </form>
         </div>
+
+        {user?.role !== "admin" && usageData && (
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm mb-5">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">Таны эрх</h2>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                  {usageData.plan === "pro" ? (
+                    <>Pro · {usageData.plan_expires ? new Date(usageData.plan_expires).toLocaleDateString("mn-MN") + " хүртэл" : ""}</>
+                  ) : "Үнэгүй эрх"}
+                </p>
+              </div>
+              <Link to="/pricing" className="text-xs text-violet-600 dark:text-violet-400 hover:underline font-medium">
+                {usageData.plan === "free" ? "Pro авах →" : "Сунгах →"}
+              </Link>
+            </div>
+            <div className="p-6 space-y-5">
+              <div>
+                <div className="flex justify-between text-sm mb-1.5">
+                  <span className="text-gray-600 dark:text-gray-400 font-medium">AI ашиглалт</span>
+                  <span className="text-gray-500 dark:text-gray-400">{usageData.ai_used} / {usageData.ai_limit}</span>
+                </div>
+                <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all"
+                    style={{ width: Math.min((usageData.ai_used / usageData.ai_limit) * 100, 100) + "%" }}
+                  />
+                </div>
+                {usageData.extra_ai > 0 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">+ Extra Pack: {usageData.extra_ai} үлдсэн</p>
+                )}
+              </div>
+              <div>
+                <div className="flex justify-between text-sm mb-1.5">
+                  <span className="text-gray-600 dark:text-gray-400 font-medium">Орчуулга</span>
+                  <span className="text-gray-500 dark:text-gray-400">{usageData.tr_used} / {usageData.tr_limit}</span>
+                </div>
+                <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 transition-all"
+                    style={{ width: Math.min((usageData.tr_used / usageData.tr_limit) * 100, 100) + "%" }}
+                  />
+                </div>
+                {usageData.extra_tr > 0 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">+ Extra Pack: {usageData.extra_tr} үлдсэн</p>
+                )}
+              </div>
+              {usageData.plan === "pro" && (
+                <Link to="/pricing" className="block w-full text-center py-2 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 rounded-xl text-sm font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20 transition">
+                  Extra Pack нэмэх — ₮3,900
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="bg-white dark:bg-gray-800 border border-red-100 dark:border-red-900/50 rounded-2xl shadow-sm">
           <div className="px-6 py-4 border-b border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 rounded-t-2xl">

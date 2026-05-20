@@ -49,6 +49,16 @@ API.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config;
+
+    // Dispatch limit exceeded event for AI/TR limit errors
+    if (error.response?.status === 403) {
+      const detail = error.response.data?.detail;
+      if (detail && typeof detail === "object" && (detail.code === "ai_limit_exceeded" || detail.code === "tr_limit_exceeded")) {
+        window.dispatchEvent(new CustomEvent("limitExceeded", { detail }));
+        return Promise.reject(error);
+      }
+    }
+
     if (error.response?.status === 401 && !original._retry && !original.url?.includes("/auth/refresh")) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

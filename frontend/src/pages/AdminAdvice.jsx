@@ -12,6 +12,7 @@ var ADMIN_TABS = [
   { to: "/admin/interview",   label: "Ярилцлага" },
   { to: "/admin/advice",      label: "Зөвлөмж" },
   { to: "/admin/scholarship", label: "Тэтгэлэг" },
+  { to: "/admin/feedback",    label: "CV Үнэлгээ" },
 ];
 
 export default function AdminAdvice() {

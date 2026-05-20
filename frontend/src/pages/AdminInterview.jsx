@@ -12,6 +12,7 @@ var ADMIN_TABS = [
   { to: "/admin/interview",   label: "Ярилцлага" },
   { to: "/admin/advice",      label: "Зөвлөмж" },
   { to: "/admin/scholarship", label: "Тэтгэлэг" },
+  { to: "/admin/feedback",    label: "CV Үнэлгээ" },
 ];
 
 export default function AdminInterview() {
@@ -50,6 +51,8 @@ export default function AdminInterview() {
       case_id: null,
       major_id: null,
       is_quiz: false,
+      is_open_ended: false,
+      open_ended_sample: "",
       option_a: "",
       option_b: "",
       option_c: "",
@@ -76,8 +79,9 @@ export default function AdminInterview() {
     API.get("/interview/questions", { params: params })
       .then(function (res) {
         var data = res.data;
-        if (typeFilter === "flashcard") data = data.filter(function (q) { return !q.is_quiz; });
+        if (typeFilter === "flashcard") data = data.filter(function (q) { return !q.is_quiz && !q.is_open_ended; });
         else if (typeFilter === "quiz") data = data.filter(function (q) { return q.is_quiz; });
+        else if (typeFilter === "open_ended") data = data.filter(function (q) { return q.is_open_ended; });
         setQuestions(data);
       })
       .catch(function () { toast.error("Ачаалахад алдаа"); })
@@ -128,6 +132,8 @@ export default function AdminInterview() {
       case_id: q.case_id || null,
       major_id: q.major_id || null,
       is_quiz: q.is_quiz || false,
+      is_open_ended: q.is_open_ended || false,
+      open_ended_sample: q.open_ended_sample || "",
       option_a: q.option_a || "",
       option_b: q.option_b || "",
       option_c: q.option_c || "",
@@ -146,6 +152,9 @@ export default function AdminInterview() {
     if (!qForm.question_mn.trim()) { toast.error("Асуулт заавал бичих ёстой"); return; }
     if (qForm.category === "case" && !qForm.case_id) {
       toast.error("Кейс асуулт үүсгэхдээ кейс сонгоно уу"); return;
+    }
+    if (qForm.is_open_ended && !qForm.major_id) {
+      toast.error("Нээлттэй асуултад мэргэжил заавал шаардлагатай"); return;
     }
     if (qForm.is_quiz) {
       if (!qForm.option_a || !qForm.option_b || !qForm.option_c || !qForm.option_d) {
@@ -337,10 +346,11 @@ export default function AdminInterview() {
                   <option value="behavioral">Зан үйлийн</option>
                   <option value="case">Кейс асуулт</option>
                 </select>
-                <select value={typeFilter} onChange={function (e) { setTypeFilter(e.target.value); }} className={inputCls + " md:w-40"}>
+                <select value={typeFilter} onChange={function (e) { setTypeFilter(e.target.value); }} className={inputCls + " md:w-44"}>
                   <option value="all">Бүх төрөл</option>
                   <option value="flashcard">Flashcard</option>
                   <option value="quiz">Quiz</option>
+                  <option value="open_ended">Нээлттэй (AI)</option>
                 </select>
               </div>
             </div>
@@ -367,6 +377,9 @@ export default function AdminInterview() {
                               </span>
                               {q.is_quiz && (
                                 <span className="text-xs bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-700 px-2 py-0.5 rounded-full font-medium">Quiz</span>
+                              )}
+                              {q.is_open_ended && (
+                                <span className="text-xs bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-700 px-2 py-0.5 rounded-full font-medium">AI шалгалт</span>
                               )}
                               {q.difficulty && (
                                 <span className="text-xs text-gray-500 dark:text-gray-400">{difficultyLabels[q.difficulty] || q.difficulty}</span>
@@ -577,7 +590,7 @@ export default function AdminInterview() {
                 </div>
               )}
 
-              {(qForm.category === "technical" || qForm.category === "case") && (
+              {(
                 <div className="border-l-4 border-emerald-500 pl-4 bg-emerald-50/30 dark:bg-emerald-900/10 p-4 rounded-r-lg">
                   <label className={labelCls}>Мэргэжил <span className="text-red-500">*</span></label>
                   {majors.filter(function (m) { return m.is_active; }).length === 0 ? (
@@ -607,11 +620,23 @@ export default function AdminInterview() {
               <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input type="checkbox" checked={qForm.is_quiz}
-                    onChange={function (e) { updQ("is_quiz", e.target.checked); }}
+                    onChange={function (e) { updQ("is_quiz", e.target.checked); if (e.target.checked) updQ("is_open_ended", false); }}
                     className="w-4 h-4 accent-violet-600" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Quiz асуулт болгох</p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Идэвхтэй бол 4 сонголт + зөв хариулт бөглөнө үү.</p>
+                  </div>
+                </label>
+              </div>
+
+              <div className="bg-teal-50/50 dark:bg-teal-900/10 border border-teal-200 dark:border-teal-800 rounded-lg p-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input type="checkbox" checked={qForm.is_open_ended}
+                    onChange={function (e) { updQ("is_open_ended", e.target.checked); if (e.target.checked) updQ("is_quiz", false); }}
+                    className="w-4 h-4 accent-teal-600" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">AI шалгалтын нээлттэй асуулт болгох</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Хэрэглэгч гараар хариулж, AI дүгнэнэ. Мэргэжил заавал шаардлагатай.</p>
                   </div>
                 </label>
               </div>
@@ -649,10 +674,19 @@ export default function AdminInterview() {
               )}
 
               <div>
-                <label className={labelCls}>Жишээ хариулт {!qForm.is_quiz && <span className="text-gray-400 dark:text-gray-500">(Flashcard/STAR горимд харагдана)</span>}</label>
+                <label className={labelCls}>Жишээ хариулт <span className="text-gray-400 dark:text-gray-500 font-normal">(Flashcard горимд харагдана)</span></label>
                 <textarea value={qForm.sample_answer} onChange={function (e) { updQ("sample_answer", e.target.value); }}
-                  rows={5} placeholder="Бодит хариулт, жишээ..." className={inputCls} />
+                  rows={4} placeholder="Flashcard горимын жишээ хариулт..." className={inputCls} />
               </div>
+
+              {qForm.is_open_ended && (
+                <div className="border-l-4 border-teal-500 pl-4 bg-teal-50/30 dark:bg-teal-900/10 p-4 rounded-r-lg">
+                  <label className={labelCls}>AI горимын жишээ хариулт <span className="text-teal-600 dark:text-teal-400 font-normal normal-case">(Мэргэжлийн дадлага горимд харагдана)</span></label>
+                  <textarea value={qForm.open_ended_sample} onChange={function (e) { updQ("open_ended_sample", e.target.value); }}
+                    rows={5} placeholder="Мэргэжлийн дадлага горимын дэлгэрэнгүй жишээ хариулт. Хэрэглэгч AI дүгнэлтийн хажууд харна..." className={inputCls} />
+                  <p className="text-xs text-teal-700 dark:text-teal-400 mt-1.5">AI-д жишиг болгон дамжуулах тул дэлгэрэнгүй бичих нь дүгнэлтийн чанарыг нэмэгдүүлнэ.</p>
+                </div>
+              )}
 
               <div>
                 <label className={labelCls}>Зөвлөмж</label>

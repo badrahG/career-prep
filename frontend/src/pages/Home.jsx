@@ -1,5 +1,31 @@
 import { Link } from "react-router";
 import { useAuth } from "../context/AuthContext";
+import CVPreview from "../components/CVPreview";
+
+var SAMPLE_CV = {
+  educations: [
+    { school: "Монгол Улсын Их Сургууль", level: "Бакалавр", major: "Компьютерын ухаан", gpa: "3.8", start_year: "2018", end_year: "2022" },
+  ],
+  experiences: [
+    { position: "Frontend Developer", company: "Tech Solutions LLC", start_date: "2022-06", end_date: "", description: "React, JavaScript ашиглан веб аппликейшн хөгжүүлэлт хийсэн. Баг хамт олонтой нягт хамтран ажилласан." },
+    { position: "Дадлагажигч", company: "DataMon ХХК", start_date: "2021-06", end_date: "2021-12", description: "Мэдээллийн сангийн удирдлага, тайлан боловсруулалт." },
+  ],
+  skills: [],
+};
+
+var SAMPLE_INFO = {
+  lastName: "Батбаяр", firstName: "Нарантуяа",
+  email: "n.batbayar@email.com", phone: "9911-2233", address: "Улаанбаатар хот",
+  about: "Туршлагатай програм хөгжүүлэгч. Баг хамт олонтой нягт хамтран ажиллах дуртай. Шинэ технологийг хурдан эзэмшдэг.",
+  personalSkills: ["Багаар ажиллах", "Цагийн менежмент", "Харилцааны чадвар"],
+  techSkills: ["JavaScript", "React", "Python", "SQL"],
+  profSkills: ["Бичиг баримт боловсруулах"],
+  artSkills: [], sportSkills: [],
+  languages: [{ name: "Англи хэл", level: "Ахисан дунд шат" }],
+  certs: [{ name: "AWS Certified Cloud Practitioner", organization: "Amazon", start_date: "2023" }],
+  internships: [],
+  awards: [{ name: "Оны шилдэг ажилтан — 2023", year: "2023" }],
+};
 
 export default function Home() {
   var { token } = useAuth();
@@ -37,19 +63,19 @@ export default function Home() {
 
   var templates = [
     {
-      name: "Modern",
+      name: "Монгол хэв маяг",
       tagline: "Орчин үеийн, минималист",
       desc: "Хурц навy өнгөтэй, IT болон дизайны салбарт тохиромжтой.",
       preview: "modern",
     },
     {
-      name: "Ази загвар",
+      name: "Ази хэв маяг",
       tagline: "Цэгцтэй, бүрэн мэдээлэлтэй",
       desc: "Санхүү, эрх зүй, боловсролын салбарт тохиромжтой загвар.",
       preview: "classic",
     },
     {
-      name: "Европ загвар",
+      name: "Европ хэв маяг",
       tagline: "Цэвэр, achievement-focused",
       desc: "Олон улсын болон modern ажлын орчинд тохирох, агуулга төвтэй загвар.",
       preview: "minimal",
@@ -69,9 +95,7 @@ export default function Home() {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
-              <span className="text-white font-bold text-sm tracking-wide">CP</span>
-            </div>
+            <img src="/logo.svg" alt="CareerPrep" className="w-9 h-9 drop-shadow-sm" />
             <div>
               <div className="text-base font-bold text-gray-900 dark:text-gray-100 leading-none">CareerPrep</div>
               <div className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-0.5">Career Platform</div>
@@ -159,52 +183,35 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Right: decorative CV mockup */}
-            <div className="hidden lg:block">
-              <div className="relative">
-                <div className="absolute top-8 right-8 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl shadow-sm w-72 opacity-40 transform rotate-3">
-                  <div className="h-2 bg-gradient-to-r from-violet-300 to-indigo-300 rounded-t-xl"></div>
-                  <div className="p-4 space-y-2">
-                    <div className="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/2"></div>
-                    <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded w-2/3"></div>
+            {/* Right: 3 overlapping real CV previews */}
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="relative w-[460px] h-[360px]">
+
+                {/* Back card — Modern */}
+                <div className="absolute top-0 left-0 w-[200px] h-[283px] rounded-2xl shadow-xl overflow-hidden transform -rotate-6 z-10 border-2 border-violet-200">
+                  <div style={{ width: "794px", transformOrigin: "top left", transform: "scale(0.252)", pointerEvents: "none" }}>
+                    <CVPreview cv={SAMPLE_CV} info={SAMPLE_INFO} template="modern" />
                   </div>
                 </div>
 
-                <div className="relative bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg w-80 mx-auto transform -rotate-1 hover:rotate-0 transition duration-500">
-                  <div className="h-2 bg-gradient-to-r from-violet-600 to-indigo-600 rounded-t-2xl"></div>
-                  <div className="p-6">
-                    <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
-                      <div className="w-16 h-16 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center">
-                        <span className="text-violet-400 text-xs font-bold">CP</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="h-4 bg-gray-800 dark:bg-gray-300 rounded w-32 mb-1.5"></div>
-                        <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-1"></div>
-                        <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded w-24"></div>
-                      </div>
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="h-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded w-16 mb-2"></div>
-                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-4/5"></div>
-                      </div>
-                      <div>
-                        <div className="h-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded w-20 mb-2"></div>
-                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-3/4 mb-1"></div>
-                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded w-5/6"></div>
-                      </div>
-                      <div>
-                        <div className="h-2 bg-gradient-to-r from-violet-500 to-indigo-500 rounded w-14 mb-2"></div>
-                        <div className="flex flex-wrap gap-1">
-                          <div className="h-4 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-lg px-2 w-12"></div>
-                          <div className="h-4 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-lg px-2 w-10"></div>
-                          <div className="h-4 bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-lg px-2 w-14"></div>
-                        </div>
-                      </div>
-                    </div>
+                {/* Back-right card — Classic */}
+                <div className="absolute top-4 right-0 w-[200px] h-[283px] rounded-2xl shadow-xl overflow-hidden transform rotate-4 z-20 border-2 border-gray-200">
+                  <div style={{ width: "794px", transformOrigin: "top left", transform: "scale(0.252)", pointerEvents: "none" }}>
+                    <CVPreview cv={SAMPLE_CV} info={SAMPLE_INFO} template="classic" />
                   </div>
+                </div>
+
+                {/* Front center card — Minimal */}
+                <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[210px] h-[297px] rounded-2xl shadow-2xl overflow-hidden z-30 border-2 border-indigo-100">
+                  <div style={{ width: "794px", transformOrigin: "top left", transform: "scale(0.264)", pointerEvents: "none" }}>
+                    <CVPreview cv={SAMPLE_CV} info={SAMPLE_INFO} template="minimal" />
+                  </div>
+                </div>
+
+                {/* Badge */}
+                <div className="absolute bottom-2 left-10 z-40 w-[72px] h-[72px] bg-gradient-to-br from-violet-600 to-indigo-600 rounded-full flex flex-col items-center justify-center shadow-xl text-white text-center border-4 border-white">
+                  <span className="text-[11px] font-extrabold leading-tight">2x</span>
+                  <span className="text-[8px] font-semibold leading-tight opacity-90">хурдан</span>
                 </div>
               </div>
             </div>
@@ -275,93 +282,18 @@ export default function Home() {
             {templates.map(function (t, i) {
               return (
                 <div key={i} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-violet-200 dark:hover:border-violet-600 hover:shadow-md transition group shadow-sm">
-                  <div className="aspect-[210/297] bg-white dark:bg-gray-800 p-4 border-b border-gray-100 dark:border-gray-700 relative overflow-hidden">
-                    {t.preview === "modern" && (
-                      <div className="h-full flex flex-col">
-                        <div className="bg-gradient-to-r from-violet-600 to-indigo-600 -mx-4 -mt-4 px-4 py-3 mb-3">
-                          <div className="h-3 bg-white rounded w-24 mb-1"></div>
-                          <div className="h-1.5 bg-white/70 rounded w-16"></div>
-                        </div>
-                        <div className="space-y-3">
-                          <div>
-                            <div className="h-1.5 bg-violet-500 rounded w-14 mb-1.5"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-4/6"></div>
-                          </div>
-                          <div>
-                            <div className="h-1.5 bg-violet-500 rounded w-20 mb-1.5"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-3/4"></div>
-                          </div>
-                          <div>
-                            <div className="h-1.5 bg-violet-500 rounded w-12 mb-1.5"></div>
-                            <div className="flex gap-1 flex-wrap">
-                              <div className="h-3 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 rounded px-2 w-10"></div>
-                              <div className="h-3 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 rounded px-2 w-12"></div>
-                              <div className="h-3 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 rounded px-2 w-8"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {t.preview === "classic" && (
-                      <div className="h-full flex flex-col">
-                        <div className="text-center pb-3 mb-3 border-b-2 border-gray-800 dark:border-gray-300">
-                          <div className="h-3 bg-gray-800 dark:bg-gray-300 rounded w-32 mx-auto mb-1"></div>
-                          <div className="h-1.5 bg-gray-400 dark:bg-gray-500 rounded w-20 mx-auto"></div>
-                        </div>
-                        <div className="space-y-2.5">
-                          <div>
-                            <div className="h-1.5 bg-gray-800 dark:bg-gray-300 rounded w-14 mb-1"></div>
-                            <div className="border-b border-gray-200 dark:border-gray-600 mb-1.5"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-4/6"></div>
-                          </div>
-                          <div>
-                            <div className="h-1.5 bg-gray-800 dark:bg-gray-300 rounded w-20 mb-1"></div>
-                            <div className="border-b border-gray-200 dark:border-gray-600 mb-1.5"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-5/6 mb-1"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
-                          </div>
-                          <div>
-                            <div className="h-1.5 bg-gray-800 dark:bg-gray-300 rounded w-16 mb-1"></div>
-                            <div className="border-b border-gray-200 dark:border-gray-600 mb-1.5"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded w-4/5"></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    {t.preview === "minimal" && (
-                      <div className="h-full flex flex-col">
-                        <div className="pb-3 mb-3">
-                          <div className="h-4 bg-gray-900 dark:bg-gray-200 rounded w-32 mb-1"></div>
-                          <div className="h-1 bg-gray-300 dark:bg-gray-500 rounded w-24"></div>
-                        </div>
-                        <div className="space-y-4">
-                          <div>
-                            <div className="h-1 bg-gray-900 dark:bg-gray-200 rounded w-14 mb-2"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6"></div>
-                          </div>
-                          <div>
-                            <div className="h-1 bg-gray-900 dark:bg-gray-200 rounded w-20 mb-2"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-4/5 mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-3/4"></div>
-                          </div>
-                          <div>
-                            <div className="h-1 bg-gray-900 dark:bg-gray-200 rounded w-12 mb-2"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-full mb-1"></div>
-                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded w-5/6"></div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  <div className="h-[420px] bg-white border-b border-gray-100 relative overflow-hidden">
+                    <div style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "794px",
+                      transformOrigin: "top left",
+                      transform: "scale(0.385)",
+                      pointerEvents: "none",
+                    }}>
+                      <CVPreview cv={SAMPLE_CV} info={SAMPLE_INFO} template={t.preview} />
+                    </div>
                   </div>
 
                   <div className="p-5">

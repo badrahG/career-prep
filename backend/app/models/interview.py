@@ -31,6 +31,8 @@ class InterviewQuestion(Base):
 
     # Quiz-specific fields
     is_quiz = Column(Boolean, default=False, nullable=False)
+    is_open_ended = Column(Boolean, default=False, nullable=False)
+    open_ended_sample = Column(Text, nullable=True)
     option_a = Column(Text, nullable=True)
     option_b = Column(Text, nullable=True)
     option_c = Column(Text, nullable=True)

@@ -37,16 +37,13 @@ var TEMPLATES = [
 ];
 
 function StarDisplay({ avg, count }) {
-  if (!count) return <span className="text-xs text-gray-400">Үнэлгээ алга</span>;
+  if (!count) return null;
   var full = Math.round(avg);
   return (
-    <span className="flex items-center gap-1">
-      <span className="text-sm leading-none" style={{ letterSpacing: "-1px" }}>
-        {[1,2,3,4,5].map(function (n) {
-          return <span key={n} style={{ color: n <= full ? "#f59e0b" : "#d1d5db" }}>★</span>;
-        })}
-      </span>
-      <span className="text-xs text-gray-500 dark:text-gray-400">{avg.toFixed(1)} ({count})</span>
+    <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+      <span style={{ color: "#f59e0b" }}>{"★".repeat(full)}</span>
+      <span style={{ color: "#d1d5db" }}>{"★".repeat(5 - full)}</span>
+      <span className="ml-0.5">{avg.toFixed(1)} ({count})</span>
     </span>
   );
 }

@@ -123,6 +123,16 @@ export default function ScholarshipDetail() {
     { label: "Эцсийн хугацаа", value: item.deadline },
   ].filter(function (r) { return r.value; });
 
+  function parseList(val) {
+    if (!val) return [];
+    try { var p = JSON.parse(val); return Array.isArray(p) ? p.filter(Boolean) : []; } catch { return val.trim() ? [val.trim()] : []; }
+  }
+
+  var reqList  = parseList(item.requirements);
+  var dirList  = parseList(item.directions);
+  var oppList  = parseList(item.opportunities);
+  var noteList = parseList(item.notes);
+
   return (
     <Layout>
       {/* ── Hero banner ── */}
@@ -233,7 +243,7 @@ export default function ScholarshipDetail() {
             {item.description && (
               <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
                 <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                  <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Тайлбар</h2>
+                  <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Мэдээлэл</h2>
                 </div>
                 <div className="p-5">
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">{item.description}</p>
@@ -242,24 +252,81 @@ export default function ScholarshipDetail() {
             )}
 
             {/* Requirements */}
-            {(item.requirements || item.gpa) && (
+            {(reqList.length > 0 || item.gpa) && (
               <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
                 <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                  <h2 className="text-sm font-bold text-gray-800 dark:text-gray-200">Шаардлага</h2>
+                  <h2 className="text-sm font-bold text-violet-600 dark:text-violet-400">Шаардлага</h2>
                 </div>
-                <div className="p-5 space-y-3">
-                  {item.requirements && (
-                    <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl p-4">
-                      <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">Ерөнхий шаардлага</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{item.requirements}</p>
-                    </div>
-                  )}
+                <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
+                  {reqList.map(function (r, i) {
+                    return (
+                      <div key={i} className="flex items-start gap-3 px-5 py-3.5">
+                        <span className="w-5 h-5 rounded-full border-2 border-violet-300 dark:border-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-2.5 h-2.5 text-violet-500 dark:text-violet-400" fill="none" viewBox="0 0 10 8">
+                            <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{r}</span>
+                      </div>
+                    );
+                  })}
                   {item.gpa && (
-                    <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl p-4">
-                      <p className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1.5">Голч дүн (GPA)</p>
-                      <p className="text-sm font-bold text-gray-800 dark:text-gray-200">{item.gpa}+</p>
+                    <div className="flex items-start gap-3 px-5 py-3.5">
+                      <span className="w-5 h-5 rounded-full border-2 border-violet-300 dark:border-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-2.5 h-2.5 text-violet-500 dark:text-violet-400" fill="none" viewBox="0 0 10 8">
+                          <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Голч дүн {item.gpa}+</span>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Directions */}
+            {dirList.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
+                <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                  <h2 className="text-sm font-bold text-violet-600 dark:text-violet-400">Чиглэлүүд</h2>
+                </div>
+                <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
+                  {dirList.map(function (d, i) {
+                    return (
+                      <div key={i} className="flex items-start gap-3 px-5 py-3.5">
+                        <span className="w-5 h-5 rounded-full border-2 border-violet-300 dark:border-violet-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-2.5 h-2.5 text-violet-500 dark:text-violet-400" fill="none" viewBox="0 0 10 8">
+                            <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{d}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Opportunities */}
+            {oppList.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm">
+                <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                  <h2 className="text-sm font-bold text-violet-600 dark:text-violet-400">Тэтгэлгийн боломж</h2>
+                </div>
+                <div className="divide-y divide-gray-50 dark:divide-gray-700/50">
+                  {oppList.map(function (o, i) {
+                    return (
+                      <div key={i} className="flex items-start gap-3 px-5 py-3.5">
+                        <span className="w-5 h-5 rounded-full bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 flex items-center justify-center flex-shrink-0 mt-0.5 text-violet-500 dark:text-violet-400">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 12 12">
+                            <circle cx="6" cy="6" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
+                            <path d="M6 1v1.5M6 9.5V11M11 6H9.5M2.5 6H1M9.2 2.8l-1 1M3.8 8.2l-1 1M9.2 9.2l-1-1M3.8 3.8l-1-1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                          </svg>
+                        </span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{o}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -290,25 +357,28 @@ export default function ScholarshipDetail() {
               </div>
             </div>
 
-            {/* Warning */}
-            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl p-5">
-              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-400 mb-3">Нийтлэг алдаа</h3>
-              <ul className="space-y-2">
-                {[
-                  "Deadline-ыг хойшлуулах — хэдэн өдөр өмнө илгээгээрэй.",
-                  "Бичиг баримтын хуулбар муу чанартай байх.",
-                  "Мотивацын захидлыг сүүлийн мөчид бичих.",
-                  "И-мэйл хаягаа шалгахгүй байх.",
-                ].map(function (m, i) {
-                  return (
-                    <li key={i} className="flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-300">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 mt-1.5" />
-                      <span>{m}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
+            {/* Notes */}
+            {noteList.length > 0 && (
+              <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 rounded-2xl shadow-sm">
+                <div className="px-5 py-4 border-b border-amber-100 dark:border-amber-800/30">
+                  <h2 className="text-sm font-bold text-amber-800 dark:text-amber-400">Санамж</h2>
+                </div>
+                <div className="divide-y divide-amber-100/60 dark:divide-amber-800/20">
+                  {noteList.map(function (n, i) {
+                    return (
+                      <div key={i} className="flex items-start gap-3 px-5 py-3.5">
+                        <span className="w-5 h-5 rounded-full border-2 border-amber-300 dark:border-amber-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <svg className="w-2.5 h-2.5 text-amber-500 dark:text-amber-400" fill="none" viewBox="0 0 10 8">
+                            <path d="M1 4l2.5 2.5L9 1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </span>
+                        <span className="text-sm text-amber-800 dark:text-amber-300 leading-relaxed">{n}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* ── Right column — shows first on mobile ── */}

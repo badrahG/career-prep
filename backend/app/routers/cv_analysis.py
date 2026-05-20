@@ -1,12 +1,12 @@
 import os
 import io
 import json
-import anthropic
 import pdfplumber
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 
 from app.models.user import User
 from app.services.auth import get_current_user
+from app.services.usage import ai_limit_check
 
 router = APIRouter(prefix="/api/cv-analysis", tags=["CV Analysis"])
 
@@ -36,10 +36,67 @@ CV текст:
 }}"""
 
 
+def _parse_json(raw: str) -> dict:
+    # markdown code block-г хасна
+    if "```" in raw:
+        raw = raw.split("```")[-2] if raw.count("```") >= 2 else raw
+        if raw.startswith("json"):
+            raw = raw[4:]
+    start = raw.find("{")
+    end = raw.rfind("}") + 1
+    if start == -1 or end == 0:
+        raise ValueError("JSON олдсонгүй")
+    return json.loads(raw[start:end])
+
+
+def _analyze_with_claude(cv_text: str, api_key: str) -> dict:
+    import anthropic
+    client = anthropic.Anthropic(api_key=api_key)
+    try:
+        message = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=4096,
+            messages=[{"role": "user", "content": _PROMPT.format(cv_text=cv_text[:6000])}],
+        )
+        raw = message.content[0].text.strip()
+        print(f"[CLAUDE RAW] {raw[:500]}")
+        return _parse_json(raw)
+    except (json.JSONDecodeError, ValueError) as e:
+        print(f"[CLAUDE JSON ERROR] {e}")
+        raise HTTPException(status_code=502, detail="Анализын хариуг задлах боломжгүй байна")
+    except anthropic.APIStatusError as e:
+        if e.status_code == 400 and "credit" in str(e).lower():
+            raise HTTPException(status_code=503, detail="CV анализ үйлчилгээний кредит дууссан байна.")
+        raise HTTPException(status_code=502, detail=f"Claude API алдаа: {str(e)[:200]}")
+    except anthropic.APIError as e:
+        raise HTTPException(status_code=502, detail=f"CV анализ хийхэд алдаа гарлаа: {str(e)[:200]}")
+
+
+def _analyze_with_groq(cv_text: str, api_key: str) -> dict:
+    from groq import Groq
+    client = Groq(api_key=api_key)
+    try:
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": _PROMPT.format(cv_text=cv_text[:6000])}],
+            max_tokens=2048,
+            temperature=0.3,
+        )
+        return _parse_json(completion.choices[0].message.content.strip())
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=502, detail="Анализын хариуг задлах боломжгүй байна")
+    except Exception as e:
+        err = str(e)
+        err_lower = err.lower()
+        if "ratelimit" in err_lower or "rate_limit" in err_lower or "429" in err_lower:
+            raise HTTPException(status_code=429, detail="Groq API-ийн хязгаар дүүрлээ. Түр хүлээгээд дахин оролдоно уу.")
+        raise HTTPException(status_code=502, detail=f"Groq алдаа: {err[:300]}")
+
+
 @router.post("/analyze")
 async def analyze_cv(
     file: UploadFile = File(...),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(ai_limit_check(cost=1)),
 ):
     if not file.filename or not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Зөвхөн PDF файл зөвшөөрнө")
@@ -48,15 +105,10 @@ async def analyze_cv(
     if len(data) > MAX_PDF_BYTES:
         raise HTTPException(status_code=400, detail="Файлын хэмжээ 10MB-аас хэтэрч байна")
 
-    # PDF-ээс текст гаргаж авах
     try:
         with pdfplumber.open(io.BytesIO(data)) as pdf:
-            pages_text = []
-            for page in pdf.pages[:10]:  # max 10 хуудас
-                text = page.extract_text()
-                if text:
-                    pages_text.append(text)
-        cv_text = "\n\n".join(pages_text).strip()
+            pages_text = [page.extract_text() for page in pdf.pages[:10]]
+        cv_text = "\n\n".join(t for t in pages_text if t).strip()
     except Exception:
         raise HTTPException(status_code=422, detail="PDF-ээс текст гаргаж авах боломжгүй байна")
 
@@ -66,38 +118,12 @@ async def analyze_cv(
             detail="PDF-д уншигдах текст олдсонгүй. Скан хийсэн PDF байж болно.",
         )
 
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-    if not api_key:
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    groq_key = os.getenv("GROQ_API_KEY")
+
+    if anthropic_key:
+        return _analyze_with_claude(cv_text, anthropic_key)
+    elif groq_key:
+        return _analyze_with_groq(cv_text, groq_key)
+    else:
         raise HTTPException(status_code=503, detail="CV анализ одоогоор боломжгүй байна")
-
-    client = anthropic.Anthropic(api_key=api_key)
-
-    try:
-        message = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=2048,
-            messages=[
-                {
-                    "role": "user",
-                    "content": _PROMPT.format(cv_text=cv_text[:6000]),
-                }
-            ],
-        )
-        raw = message.content[0].text.strip()
-
-        # JSON хэсгийг олж авах
-        start = raw.find("{")
-        end = raw.rfind("}") + 1
-        if start == -1 or end == 0:
-            raise ValueError("JSON олдсонгүй")
-        result = json.loads(raw[start:end])
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=502, detail="Анализын хариуг задлах боломжгүй байна")
-    except anthropic.APIStatusError as e:
-        if e.status_code == 400 and "credit" in str(e).lower():
-            raise HTTPException(status_code=503, detail="CV анализ үйлчилгээний кредит дууссан байна. Удахгүй сэргээгдэх болно.")
-        raise HTTPException(status_code=502, detail="Claude API-тай холбогдоход алдаа гарлаа. Дахин оролдоно уу.")
-    except anthropic.APIError:
-        raise HTTPException(status_code=502, detail="CV анализ хийхэд алдаа гарлаа. Дахин оролдоно уу.")
-
-    return result

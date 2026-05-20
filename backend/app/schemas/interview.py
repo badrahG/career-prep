@@ -49,6 +49,8 @@ class QuestionCreate(BaseModel):
     major_id: Optional[int] = None
     # Quiz fields
     is_quiz: Optional[bool] = False
+    is_open_ended: Optional[bool] = False
+    open_ended_sample: Optional[str] = None
     option_a: Optional[str] = None
     option_b: Optional[str] = None
     option_c: Optional[str] = None
@@ -69,6 +71,8 @@ class QuestionResponse(BaseModel):
     major_id: Optional[int] = None
     major_name: Optional[str] = None
     is_quiz: bool = False
+    is_open_ended: bool = False
+    open_ended_sample: Optional[str] = None
     option_a: Optional[str] = None
     option_b: Optional[str] = None
     option_c: Optional[str] = None
@@ -134,3 +138,37 @@ class CategoryStats(BaseModel):
     behavioral: int
     case: int
     total: int
+
+
+class OpenEndedMajorStats(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    question_count: int
+
+
+class OpenEndedAnswer(BaseModel):
+    question_id: int
+    answer: str
+
+
+class OpenEndedSubmission(BaseModel):
+    major_id: int
+    answers: List[OpenEndedAnswer]
+
+
+class OpenEndedFeedbackItem(BaseModel):
+    question_id: int
+    question_mn: str
+    user_answer: str
+    score: int
+    strengths: str
+    missing: str
+    suggestion: str
+    open_ended_sample: Optional[str] = None
+
+
+class OpenEndedResult(BaseModel):
+    overall_score: int
+    overall_advice: str
+    results: List[OpenEndedFeedbackItem]

@@ -17,3 +17,6 @@ class Scholarship(Base):
     image_url = Column(String(500), nullable=True)
     gpa = Column(String(50), nullable=True)
     duration = Column(String(200), nullable=True)
+    directions = Column(Text, nullable=True)
+    opportunities = Column(Text, nullable=True)
+    notes = Column(Text, nullable=True)

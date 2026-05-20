@@ -11,6 +11,7 @@ from app.database import get_db
 from app.models.user import User
 from app.models.cv import CV
 from app.services.auth import get_current_user
+from app.services.usage import ai_limit_check
 
 router = APIRouter(prefix="/api/cv", tags=["Scholarship CV"])
 
@@ -195,7 +196,7 @@ Return ONLY the raw JSON object. No markdown code fences (no ```), no preamble, 
 @router.post("/scholarship-generate")
 async def generate_scholarship_cv(
     data: ScholarshipGenerateRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(ai_limit_check(cost=1)),
 ):
     if not data.country or data.country not in _COUNTRY_RULES:
         raise HTTPException(status_code=400, detail="Улс сонгоно уу (United States, Australia, Japan)")

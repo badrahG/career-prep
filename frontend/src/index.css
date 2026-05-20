@@ -6,6 +6,12 @@
   display: none;
 }
 
+.cv-print-footer,
+.cv-watermark-logo,
+.cv-watermark-icon {
+  display: none;
+}
+
 .cv-print-version {
   display: none;
 }
@@ -93,6 +99,7 @@
   body[data-print-lang="ja"] .cv-print-version[data-lang="ja"] { display: block !important; }
 
   .cv-print-document {
+    position: relative !important;
     width: 210mm !important;
     box-sizing: border-box !important;
     min-height: auto !important;
@@ -104,5 +111,42 @@
   .cv-print-section {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  .cv-print-footer {
+    display: block !important;
+  }
+
+  .cv-watermark-logo {
+    display: flex !important;
+    align-items: center;
+    gap: 5px;
+    position: fixed;
+    right: 12mm;
+    bottom: 1.5mm;
+    font-size: 9px;
+    font-weight: 600;
+    color: #374151;
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 0.2px;
+    z-index: 9999;
+    pointer-events: none;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  @media (max-device-width: 768px) {
+    .cv-watermark-logo {
+      position: absolute;
+      right: 12mm;
+      bottom: 8mm;
+    }
+  }
+
+  .cv-watermark-icon {
+    display: block !important;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
   }
 }

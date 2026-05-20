@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
@@ -8,6 +8,12 @@ from app.database import get_db
 from app.models.user import User
 from app.models.cv import CVTemplateFeedback
 from app.services.auth import get_current_user
+
+
+def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="Зөвхөн админ хандах боломжтой")
+    return current_user
 
 router = APIRouter(prefix="/api/feedback", tags=["Feedback"])
 
@@ -95,20 +101,25 @@ def get_summary(db: Session = Depends(get_db)):
 def get_feedbacks(
     template_type: str,
     db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
 ):
     if template_type not in VALID_TEMPLATES:
         raise HTTPException(status_code=400, detail="Загварын төрөл буруу байна")
     rows = (
-        db.query(CVTemplateFeedback)
-        .filter(
-            CVTemplateFeedback.template_type == template_type,
-            CVTemplateFeedback.pros.isnot(None) | CVTemplateFeedback.cons.isnot(None),
-        )
+        db.query(CVTemplateFeedback, User.email, User.first_name, User.last_name)
+        .join(User, CVTemplateFeedback.user_id == User.id)
+        .filter(CVTemplateFeedback.template_type == template_type)
         .order_by(CVTemplateFeedback.created_at.desc())
-        .limit(20)
         .all()
     )
     return [
-        {"rating": r.rating, "pros": r.pros, "cons": r.cons}
+        {
+            "rating": r.CVTemplateFeedback.rating,
+            "pros": r.CVTemplateFeedback.pros,
+            "cons": r.CVTemplateFeedback.cons,
+            "user_email": r.email,
+            "user_name": (r.last_name + " " + r.first_name).strip() if (r.first_name or r.last_name) else None,
+            "created_at": r.CVTemplateFeedback.created_at.isoformat() if r.CVTemplateFeedback.created_at else None,
+        }
         for r in rows
     ]

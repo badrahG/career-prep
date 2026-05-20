@@ -97,9 +97,7 @@ export default function Layout({ children, rootClassName }) {
       }>
         {/* Logo */}
         <div className="px-5 pt-6 pb-5 flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
-            <span className="text-white font-bold text-xs">CP</span>
-          </div>
+          <img src="/logo.svg" alt="CareerPrep" className="w-8 h-8 flex-shrink-0 drop-shadow-sm" />
           <Link to="/dashboard" onClick={function () { setSidebarOpen(false); }}
             className="text-[15px] font-bold text-gray-900 dark:text-gray-100 tracking-tight">
             CareerPrep
@@ -142,10 +140,13 @@ export default function Layout({ children, rootClassName }) {
 
         {/* Help + Settings + Logout */}
         <div className="px-3 pb-5 space-y-0.5">
-          <Link to="/profile" onClick={function () { setSidebarOpen(false); }}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200 transition"
+          <Link to="/help" onClick={function () { setSidebarOpen(false); }}
+            className={"flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition " +
+              (location.pathname === "/help"
+                ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100 font-semibold"
+                : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200")}
           >
-            <span className="text-gray-400 dark:text-gray-500">
+            <span className={location.pathname === "/help" ? "text-gray-800 dark:text-gray-200" : "text-gray-400 dark:text-gray-500"}>
               <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>

@@ -46,14 +46,14 @@ export default function Interview() {
     {
       id: "star",
       title: "Дадлага горим",
-      subtitle: "STAR",
-      description: "Зан төлөвийн асуултуудад STAR аргаар (Situation, Task, Action, Result) бүтэцтэй хариулт бичих дадлага.",
+      subtitle: "AI шалгалт",
+      description: "Мэргэжлээ сонгоод ярилцлагын асуулт бүрд өөрийн хариултаа бичиж, AI-аар нарийн дүгнүүлж зөвлөмж авна.",
       link: "/interview/star",
       available: true,
       features: [
-        "4 хэсэгт хариулт бичих",
-        "Мэргэжилтний жишээтэй харьцуулах",
-        "Хариултаа хадгалах",
+        "Мэргэжлээр шүүсэн асуулт",
+        "Гараар хариулт бичих",
+        "AI дүгнэлт, зөвлөмж",
       ],
     },
   ];
@@ -164,19 +164,18 @@ export default function Interview() {
         </div>
 
         <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 rounded-2xl p-6">
-          <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2">STAR арга гэж юу вэ?</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Зан төлөвийн асуултад бүтэцтэй хариулт өгөх арга. Дөрвөн хэсэгтэй:</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2">AI дүгнэлт хэрхэн ажилладаг вэ?</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">Мэргэжлийн дадлага горимд хариулт бүрийг AI шинжилж 3 талаас дүгнэнэ:</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {[
-              { letter: "S", name: "Situation", desc: "Ямар нөхцөл байсан" },
-              { letter: "T", name: "Task", desc: "Таны үүрэг, зорилт юу байсан" },
-              { letter: "A", name: "Action", desc: "Юу хийсэн, яаж шийдсэн" },
-              { letter: "R", name: "Result", desc: "Ямар үр дүн гарсан (тоо баримттай)" },
+              { icon: "✓", color: "bg-emerald-500", name: "Зөв талууд", desc: "Хариулт дахь сайн, зөв цэгүүдийг онцолно" },
+              { icon: "✗", color: "bg-red-500", name: "Дутуу зүйлс", desc: "Хариулаагүй эсвэл гүнзгийрүүлэх шаардлагатай хэсгүүд" },
+              { icon: "→", color: "bg-amber-500", name: "Зөвлөмж", desc: "Яаж сайжруулах, юу нэмж хэлэх ёстой байсан" },
             ].map(function (item, i) {
               return (
                 <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-3 flex items-start gap-3 shadow-sm">
-                  <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    {item.letter}
+                  <div className={"w-8 h-8 " + item.color + " text-white rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"}>
+                    {item.icon}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.name}</p>

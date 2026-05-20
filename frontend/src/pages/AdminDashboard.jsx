@@ -39,6 +39,7 @@ var ADMIN_TABS = [
   { to: "/admin/interview", label: "Ярилцлага" },
   { to: "/admin/advice",    label: "Зөвлөмж" },
   { to: "/admin/scholarship", label: "Тэтгэлэг" },
+  { to: "/admin/feedback",  label: "CV Үнэлгээ" },
 ];
 
 var ADMIN_LINKS = [
@@ -46,6 +47,7 @@ var ADMIN_LINKS = [
   { to: "/admin/interview",   label: "Ярилцлагын асуулт",  icon: "🎯", desc: "Асуулт нэмэх, засах" },
   { to: "/admin/advice",      label: "Зөвлөмжүүд",         icon: "💡", desc: "Нийтлэл удирдах" },
   { to: "/admin/scholarship", label: "Тэтгэлгүүд",         icon: "🎓", desc: "Тэтгэлэг нэмэх, засах" },
+  { to: "/admin/feedback",    label: "CV Үнэлгээ",         icon: "⭐", desc: "Загварын үнэлгээ, санал" },
 ];
 
 function BarChart({ data, color }) {

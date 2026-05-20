@@ -30,6 +30,14 @@ export default function ScholarshipCVDetail() {
   var cvInnerRef = useRef(null);
   var [cvScale, setCvScale] = useState(1);
   var [cvHeight, setCvHeight] = useState(1123);
+  var enContainerRef = useRef(null);
+  var enInnerRef = useRef(null);
+  var [enScale, setEnScale] = useState(1);
+  var [enHeight, setEnHeight] = useState(1123);
+  var jaContainerRef = useRef(null);
+  var jaInnerRef = useRef(null);
+  var [jaScale, setJaScale] = useState(1);
+  var [jaHeight, setJaHeight] = useState(1123);
   var defaultTitleRef = useRef(typeof document !== "undefined" ? document.title : "CareerPrep");
 
   useEffect(function () {
@@ -51,6 +59,32 @@ export default function ScholarshipCVDetail() {
     window.addEventListener("resize", calc);
     return function () { clearTimeout(t); window.removeEventListener("resize", calc); };
   }, [cv]);
+
+  useEffect(function () {
+    if (!showEnModal) return;
+    function calc() {
+      if (!enContainerRef.current) return;
+      var s = Math.min(1, enContainerRef.current.clientWidth / 794);
+      setEnScale(s);
+      if (enInnerRef.current) setEnHeight(enInnerRef.current.scrollHeight);
+    }
+    var t = setTimeout(calc, 100);
+    window.addEventListener("resize", calc);
+    return function () { clearTimeout(t); window.removeEventListener("resize", calc); };
+  }, [showEnModal]);
+
+  useEffect(function () {
+    if (!showJaModal) return;
+    function calc() {
+      if (!jaContainerRef.current) return;
+      var s = Math.min(1, jaContainerRef.current.clientWidth / 794);
+      setJaScale(s);
+      if (jaInnerRef.current) setJaHeight(jaInnerRef.current.scrollHeight);
+    }
+    var t = setTimeout(calc, 100);
+    window.addEventListener("resize", calc);
+    return function () { clearTimeout(t); window.removeEventListener("resize", calc); };
+  }, [showJaModal]);
 
   async function buildTranslatedData(targetLang, srcData) {
     var profile = srcData.profile || {};
@@ -331,8 +365,27 @@ export default function ScholarshipCVDetail() {
                 >✕</button>
               </div>
             </div>
-            <div style={{ width: "794px", maxWidth: "100%", margin: "0 auto" }}>
-              <ScholarshipCVPreview data={enData} />
+            <div ref={enContainerRef} style={{ width: "100%" }}>
+              <div style={{
+                width: Math.round(794 * enScale) + "px",
+                paddingBottom: Math.round(enHeight * enScale) + "px",
+                margin: "0 auto",
+                position: "relative",
+              }}>
+                <div
+                  ref={enInnerRef}
+                  style={{
+                    width: "794px",
+                    transform: "scale(" + enScale + ")",
+                    transformOrigin: "top left",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                  }}
+                >
+                  <ScholarshipCVPreview data={enData} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -360,8 +413,27 @@ export default function ScholarshipCVDetail() {
                 >✕</button>
               </div>
             </div>
-            <div style={{ width: "794px", maxWidth: "100%", margin: "0 auto" }}>
-              <ScholarshipCVPreview data={jaData} />
+            <div ref={jaContainerRef} style={{ width: "100%" }}>
+              <div style={{
+                width: Math.round(794 * jaScale) + "px",
+                paddingBottom: Math.round(jaHeight * jaScale) + "px",
+                margin: "0 auto",
+                position: "relative",
+              }}>
+                <div
+                  ref={jaInnerRef}
+                  style={{
+                    width: "794px",
+                    transform: "scale(" + jaScale + ")",
+                    transformOrigin: "top left",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                  }}
+                >
+                  <ScholarshipCVPreview data={jaData} />
+                </div>
+              </div>
             </div>
           </div>
         </div>

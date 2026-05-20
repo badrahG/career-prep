@@ -545,7 +545,7 @@ export default function CVBuilder() {
                       {certs.length > 1 && <button type="button" onClick={function() { setCerts(removeAt(certs, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Inp label="Сургалтын нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" />
+                      <Inp label="Сургалт/Сайн дурын ажил нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" />
                       <Inp label="Сургалтын дэлгэрэнгүй *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Pinecone" />
                       <Inp label="Эхэлсэн" value={c.start_date} onChange={function(v) { updList(certs, setCerts, i, "start_date", v); }} type="date" />
                       <Inp label="Дууссан" value={c.end_date} onChange={function(v) { updList(certs, setCerts, i, "end_date", v); }} type="date" />
@@ -742,11 +742,11 @@ export default function CVBuilder() {
             <div className="overflow-y-auto flex-1 bg-slate-100 dark:bg-gray-900 p-4" ref={modalContentRef}>
               <div style={{
                 width: Math.round(794 * modalScale) + "px",
-                height: Math.round(1123 * modalScale) + "px",
-                overflow: "hidden",
+                paddingBottom: Math.round(1123 * modalScale) + "px",
+                position: "relative",
                 margin: "0 auto",
               }}>
-                <div style={{ width: "794px", transform: "scale(" + modalScale + ")", transformOrigin: "top left" }}>
+                <div style={{ position: "absolute", top: 0, left: 0, width: "794px", transform: "scale(" + modalScale + ")", transformOrigin: "top left" }}>
                   <CVPreview cv={previewCv} info={previewInfo} template={template} />
                 </div>
               </div>

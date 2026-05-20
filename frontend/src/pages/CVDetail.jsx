@@ -25,10 +25,16 @@ export default function CVDetail() {
   var [pdfSheetAction, setPdfSheetAction] = useState(null);
   var [cvScale, setCvScale] = useState(1);
   var [cvHeight, setCvHeight] = useState(1123);
+  var [translatedCvScale, setTranslatedCvScale] = useState(1);
+  var [translatedCvHeight, setTranslatedCvHeight] = useState(1123);
+  var [translatedCvJaScale, setTranslatedCvJaScale] = useState(1);
+  var [translatedCvJaHeight, setTranslatedCvJaHeight] = useState(1123);
   var cvContainerRef = useRef(null);
   var cvInnerRef = useRef(null);
   var translatedCvContainerRef = useRef(null);
+  var translatedCvInnerRef = useRef(null);
   var translatedCvJaContainerRef = useRef(null);
+  var translatedCvJaInnerRef = useRef(null);
 
   useEffect(function () {
     API.get("/cv/" + id)
@@ -51,6 +57,32 @@ export default function CVDetail() {
     window.addEventListener("resize", calcCvScale);
     return function () { clearTimeout(t); window.removeEventListener("resize", calcCvScale); };
   }, [cv]);
+
+  useEffect(function () {
+    if (!showTranslateModal) return;
+    function calc() {
+      if (!translatedCvContainerRef.current) return;
+      var s = Math.min(1, translatedCvContainerRef.current.clientWidth / 794);
+      setTranslatedCvScale(s);
+      if (translatedCvInnerRef.current) setTranslatedCvHeight(translatedCvInnerRef.current.scrollHeight);
+    }
+    var t = setTimeout(calc, 100);
+    window.addEventListener("resize", calc);
+    return function () { clearTimeout(t); window.removeEventListener("resize", calc); };
+  }, [showTranslateModal]);
+
+  useEffect(function () {
+    if (!showTranslateModalJa) return;
+    function calc() {
+      if (!translatedCvJaContainerRef.current) return;
+      var s = Math.min(1, translatedCvJaContainerRef.current.clientWidth / 794);
+      setTranslatedCvJaScale(s);
+      if (translatedCvJaInnerRef.current) setTranslatedCvJaHeight(translatedCvJaInnerRef.current.scrollHeight);
+    }
+    var t = setTimeout(calc, 100);
+    window.addEventListener("resize", calc);
+    return function () { clearTimeout(t); window.removeEventListener("resize", calc); };
+  }, [showTranslateModalJa]);
 
   async function handleDelete() {
     if (!window.confirm("Энэ CV-г устгах уу?")) return;
@@ -191,9 +223,7 @@ export default function CVDetail() {
       <nav className="cv-screen-only bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
           <Link to="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-lg shadow-sm">
-              <span className="text-white font-bold text-xs">CP</span>
-            </div>
+            <img src="/logo.svg" alt="CareerPrep" className="w-8 h-8 flex-shrink-0 drop-shadow-sm" />
             <span className="text-base font-semibold text-gray-900 dark:text-gray-100">CareerPrep</span>
           </Link>
           <Link to="/cv" className="text-sm text-gray-500 dark:text-gray-400 hover:text-violet-600 font-medium transition">← CV жагсаалт</Link>
@@ -317,8 +347,27 @@ export default function CVDetail() {
                 </button>
               </div>
             </div>
-            <div ref={translatedCvJaContainerRef} style={{ width: "794px", maxWidth: "100%", margin: "0 auto" }}>
-              <CVPreview cv={translatedCvJa} info={translatedCvJa._parsedInfo} template={template} printStamp="" lang="ja" />
+            <div ref={translatedCvJaContainerRef} style={{ width: "100%" }}>
+              <div style={{
+                width: Math.round(794 * translatedCvJaScale) + "px",
+                paddingBottom: Math.round(translatedCvJaHeight * translatedCvJaScale) + "px",
+                margin: "0 auto",
+                position: "relative",
+              }}>
+                <div
+                  ref={translatedCvJaInnerRef}
+                  style={{
+                    width: "794px",
+                    transform: "scale(" + translatedCvJaScale + ")",
+                    transformOrigin: "top left",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                  }}
+                >
+                  <CVPreview cv={translatedCvJa} info={translatedCvJa._parsedInfo} template={template} printStamp="" lang="ja" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -350,8 +399,27 @@ export default function CVDetail() {
                 </button>
               </div>
             </div>
-            <div ref={translatedCvContainerRef} style={{ width: "794px", maxWidth: "100%", margin: "0 auto" }}>
-              <CVPreview cv={translatedCv} info={translatedCv._parsedInfo} template={template} printStamp="" lang="en" />
+            <div ref={translatedCvContainerRef} style={{ width: "100%" }}>
+              <div style={{
+                width: Math.round(794 * translatedCvScale) + "px",
+                paddingBottom: Math.round(translatedCvHeight * translatedCvScale) + "px",
+                margin: "0 auto",
+                position: "relative",
+              }}>
+                <div
+                  ref={translatedCvInnerRef}
+                  style={{
+                    width: "794px",
+                    transform: "scale(" + translatedCvScale + ")",
+                    transformOrigin: "top left",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                  }}
+                >
+                  <CVPreview cv={translatedCv} info={translatedCv._parsedInfo} template={template} printStamp="" lang="en" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

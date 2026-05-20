@@ -35,6 +35,7 @@ from app.models.scholarship_bookmark import ScholarshipBookmark  # noqa
 from app.models.refresh_token import RefreshToken  # noqa
 from app.models.major import Major  # noqa
 from app.models.notification import Notification, NotificationRead  # noqa
+from app.models.subscription import SubscriptionPlan, UserSubscription, UsageTracking, ExtraPackPurchase  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice, scholarship_cv
 from app.routers import cv_analysis
@@ -42,6 +43,7 @@ from app.routers import search
 from app.routers import notification
 from app.routers import settings
 from app.routers import feedback
+from app.routers import subscription
 from app.seed import seed_data
 from app.services.auth import get_current_user
 
@@ -172,6 +174,8 @@ def run_migrations():
             )
         """))
         conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS major_id INTEGER REFERENCES majors(id) ON DELETE SET NULL"))
+        conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS is_open_ended BOOLEAN NOT NULL DEFAULT FALSE"))
+        conn.execute(text("ALTER TABLE interview_questions ADD COLUMN IF NOT EXISTS open_ended_sample TEXT"))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_iq_major ON interview_questions(major_id)"))
 
         # ── Notifications ───────────────────────────────────────────────────────
@@ -201,6 +205,9 @@ def run_migrations():
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_prefs TEXT"))
 
         conn.execute(text("ALTER TABLE cvs ADD COLUMN IF NOT EXISTS cv_type VARCHAR(20) NOT NULL DEFAULT 'job'"))
+        conn.execute(text("ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS directions TEXT"))
+        conn.execute(text("ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS opportunities TEXT"))
+        conn.execute(text("ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS notes TEXT"))
 
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS cv_template_feedbacks (
@@ -216,6 +223,64 @@ def run_migrations():
             )
         """))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_ctf_template ON cv_template_feedbacks(template_type)"))
+
+        # ── Subscription & Usage ─────────────────────────────────────────────────
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS subscription_plans (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(20) UNIQUE NOT NULL,
+                price INTEGER NOT NULL DEFAULT 0,
+                ai_limit INTEGER NOT NULL,
+                tr_limit INTEGER NOT NULL,
+                cover_letter BOOLEAN NOT NULL DEFAULT FALSE,
+                watermark BOOLEAN NOT NULL DEFAULT TRUE
+            )
+        """))
+        conn.execute(text("""
+            INSERT INTO subscription_plans (name, price, ai_limit, tr_limit, cover_letter, watermark)
+            VALUES ('free', 0, 15, 5, FALSE, TRUE), ('pro', 5900, 80, 40, TRUE, FALSE)
+            ON CONFLICT (name) DO NOTHING
+        """))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS user_subscriptions (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+                plan_id INTEGER NOT NULL REFERENCES subscription_plans(id),
+                period_start TIMESTAMP WITH TIME ZONE NOT NULL,
+                period_end TIMESTAMP WITH TIME ZONE NOT NULL,
+                payment_ref VARCHAR(200),
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                updated_at TIMESTAMP WITH TIME ZONE
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_usub_user ON user_subscriptions(user_id)"))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS usage_tracking (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+                ai_used INTEGER NOT NULL DEFAULT 0,
+                tr_used INTEGER NOT NULL DEFAULT 0,
+                tr_char_used INTEGER NOT NULL DEFAULT 0,
+                period_start TIMESTAMP WITH TIME ZONE NOT NULL,
+                period_end TIMESTAMP WITH TIME ZONE NOT NULL
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_usage_user ON usage_tracking(user_id)"))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS extra_pack_purchases (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                ai_remaining INTEGER NOT NULL DEFAULT 20,
+                tr_remaining INTEGER NOT NULL DEFAULT 10,
+                tr_char_remaining INTEGER NOT NULL DEFAULT 80000,
+                purchased_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+                payment_ref VARCHAR(200)
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_epp_user ON extra_pack_purchases(user_id)"))
+
+        conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_ai_limit INTEGER"))
+        conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_tr_limit INTEGER"))
 
         conn.commit()
     print("✓ Migrations applied")
@@ -347,6 +412,7 @@ app.include_router(search.router)
 app.include_router(notification.router)
 app.include_router(settings.router)
 app.include_router(feedback.router)
+app.include_router(subscription.router)
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)

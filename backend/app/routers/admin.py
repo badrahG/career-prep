@@ -102,6 +102,8 @@ def list_users(
             is_active=u.is_active,
             created_at=u.created_at,
             cv_count=cv_count,
+            custom_ai_limit=u.custom_ai_limit,
+            custom_tr_limit=u.custom_tr_limit,
         ))
     return result
 

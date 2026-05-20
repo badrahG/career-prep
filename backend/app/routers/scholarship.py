@@ -35,6 +35,9 @@ class ScholarshipCreate(BaseModel):
     image_url: Optional[str] = None
     gpa: Optional[str] = None
     duration: Optional[str] = None
+    directions: Optional[str] = None
+    opportunities: Optional[str] = None
+    notes: Optional[str] = None
 
 
 class ScholarshipResponse(BaseModel):
@@ -49,6 +52,9 @@ class ScholarshipResponse(BaseModel):
     image_url: Optional[str] = None
     gpa: Optional[str] = None
     duration: Optional[str] = None
+    directions: Optional[str] = None
+    opportunities: Optional[str] = None
+    notes: Optional[str] = None
 
     class Config:
         from_attributes = True

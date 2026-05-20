@@ -52,7 +52,6 @@ var MN = {
   openCert: "Гэрчилгээ нээх",
   certAlt: "Гэрчилгээ",
   cvPositionFallback: "Анкет / CV",
-  printed: "Татсан: ",
 };
 
 var JA = {
@@ -109,7 +108,6 @@ var JA = {
   openCert: "証明書を開く",
   certAlt: "証明書",
   cvPositionFallback: "履歴書 / CV",
-  printed: "印刷日: ",
 };
 
 var EN = {
@@ -166,16 +164,15 @@ var EN = {
   openCert: "Open certificate",
   certAlt: "Certificate",
   cvPositionFallback: "Resumé / CV",
-  printed: "Printed: ",
 };
 
-export default function CVPreview({ cv, info, template, printStamp, lang }) {
+export default function CVPreview({ cv, info, template, lang }) {
   var L = lang === "en" ? EN : lang === "ja" ? JA : MN;
   var educations = Array.isArray(cv.educations) ? cv.educations : [];
   var experiences = Array.isArray(cv.experiences) ? cv.experiences : [];
   var skills = Array.isArray(cv.skills) ? cv.skills : [];
   var jaFont = lang === "ja" ? "'Meiryo', 'Yu Gothic', 'MS PGothic', " : "";
-  var props = { cv, info, educations, experiences, skills, printStamp, L, jaFont };
+  var props = { cv, info, educations, experiences, skills, L, jaFont };
   if (template === "classic") return <AsianTemplate {...props} />;
   if (template === "minimal") return <MinimalTemplate {...props} />;
   return <BestMongolianTemplate {...props} />;
@@ -228,18 +225,26 @@ function parseSkillsFromInfo(info) {
   };
 }
 
-function BestMongolianTemplate({ info, educations, experiences, skills, printStamp, L, jaFont = "" }) {
+function PrintFooter() {
+  return (
+    <div className="cv-print-footer">
+      <span className="cv-watermark-logo"><img src="/logo.svg" className="cv-watermark-icon" alt="" /><span>careerprep.mn</span></span>
+    </div>
+  );
+}
+
+function BestMongolianTemplate({ info, educations, experiences, skills, L, jaFont = "" }) {
   var { personalSkills, techSkills, profSkills, artSkills, sportSkills, languages, certs, internships, awards } = parseSkillsFromInfo(info);
   var fullName = [info.lastName, info.firstName].filter(Boolean).join(" ");
   var fallbackSkills = skills.map(function (s) { return s.skill_name; }).filter(Boolean);
   var leftSkillGroups = [];
   if (personalSkills.length > 0) leftSkillGroups.push({ title: L.personalSkills, items: personalSkills, isTech: false });
   if (techSkills.length > 0) leftSkillGroups.push({ title: L.techSkills, items: techSkills, isTech: true });
+  if (sportSkills.length > 0) leftSkillGroups.push({ title: L.sportSkills, items: sportSkills, isTech: false });
   if (leftSkillGroups.length === 0 && fallbackSkills.length > 0) leftSkillGroups.push({ title: L.skills, items: fallbackSkills });
   var rightSkillGroups = [];
   if (profSkills.length > 0) rightSkillGroups.push({ title: L.profSkills, items: profSkills });
   if (artSkills.length > 0) rightSkillGroups.push({ title: L.artSkills, items: artSkills });
-  if (sportSkills.length > 0) rightSkillGroups.push({ title: L.sportSkills, items: sportSkills });
   var contactItems = [
     info.phone ? { label: L.phone, value: info.phone + (info.phone2 ? " / " + info.phone2 : "") } : null,
     info.email ? { label: L.email, value: info.email } : null,
@@ -257,9 +262,8 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
 
   return (
     <div className="cv-print-document" style={{ background: "#fff", color: "#283044", fontFamily: jaFont + "'Inter', 'Segoe UI', Arial, sans-serif", minHeight: "297mm", padding: "34px 34px 30px", boxSizing: "border-box" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "190px minmax(0, 1fr)", gap: "34px", alignItems: "start" }}>
-        <aside>
-          {printStamp && <p className="cv-print-section" style={{ fontSize: "9.4px", color: "#98a2b3", lineHeight: 1.35, margin: "0 0 6px", fontWeight: "650" }}>{L.printed}{printStamp}</p>}
+      <div style={{ display: "flex", gap: "34px", alignItems: "flex-start" }}>
+        <aside style={{ width: "190px", flexShrink: 0 }}>
           <div className="cv-print-section" style={{ width: "110px", height: "110px", borderRadius: "7px", background: "#eef3f7", overflow: "hidden", border: "1px solid #e2e8f0", marginBottom: "14px" }}>
             {info.photoUrl ? <img src={info.photoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} /> : <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#8a96a8", fontSize: "10px", fontWeight: "700" }}>{L.photo}</div>}
           </div>
@@ -296,7 +300,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
 
         </aside>
 
-        <main>
+        <main style={{ flex: 1, minWidth: 0 }}>
           <div className="cv-print-section" style={{ marginBottom: "20px" }}>
             <h1 style={{ fontSize: "30px", lineHeight: 1.05, fontWeight: "850", color: "#23283a", margin: 0, letterSpacing: 0 }}>{fullName || L.noName}</h1>
             <p style={{ fontSize: "11px", color: "#1d75b9", fontWeight: "700", margin: "7px 0 0" }}>{L.cvTitle}</p>
@@ -393,6 +397,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, printSta
           )}
         </main>
       </div>
+      <PrintFooter />
     </div>
   );
 }
@@ -408,8 +413,8 @@ function BestSection({ title, children }) {
 
 function BestSideBlock({ title, children }) {
   return (
-    <section className="cv-print-section" style={{ marginBottom: "13px" }}>
-      <h3 style={{ fontSize: "13.2px", color: "#2a3042", margin: "0 0 7px", lineHeight: 1.15, fontWeight: "820", paddingBottom: "5px", borderBottom: "1px solid #d9e0e8" }}>{title}</h3>
+    <section style={{ marginBottom: "13px" }}>
+      <h3 style={{ fontSize: "13.2px", color: "#2a3042", margin: "0 0 7px", lineHeight: 1.15, fontWeight: "820", paddingBottom: "5px", borderBottom: "1px solid #d9e0e8", pageBreakAfter: "avoid" }}>{title}</h3>
       {children}
     </section>
   );
@@ -978,12 +983,13 @@ function AsianTemplate({ info, educations, experiences, skills, L, jaFont = "" }
           )}
         </main>
       </div>
+      <PrintFooter />
     </div>
   );
 }
 
 function AsianSideSection({ title, children }) {
-  return <div className="cv-print-section" style={{ marginBottom: "15px" }}><p style={{ fontSize: "9px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.8px", color: "#12233f", marginBottom: "7px", paddingBottom: "4px", borderBottom: "1.5px solid #93a8bd" }}>{title}</p>{children}</div>;
+  return <div style={{ marginBottom: "15px" }}><p style={{ fontSize: "9px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.8px", color: "#12233f", marginBottom: "7px", paddingBottom: "4px", borderBottom: "1.5px solid #93a8bd", pageBreakAfter: "avoid" }}>{title}</p>{children}</div>;
 }
 
 function AsianMainSection({ title, children }) {
@@ -1099,6 +1105,7 @@ function ClassicTemplate({ info, educations, experiences }) {
           )}
         </div>
       </div>
+      <PrintFooter />
     </div>
   );
 }
@@ -1232,6 +1239,7 @@ function MinimalTemplate({ info, educations, experiences, skills, L, jaFont = ""
           {(info.regNo || info.gender) && <div style={{ fontSize: "10.5px", color: "#444" }}><span style={{ color: "#777" }}>{L.regNo} / {L.gender}</span><span style={{ marginLeft: "10px" }}>{info.regNo ? info.regNo + " / " : ""}{info.gender || ""}</span></div>}
         </div>
       )}
+      <PrintFooter />
     </div>
   );
 }

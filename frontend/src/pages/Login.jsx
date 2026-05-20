@@ -49,9 +49,7 @@ export default function Login() {
       <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
-              <span className="text-white font-bold text-sm tracking-wide">CP</span>
-            </div>
+            <img src="/logo.svg" alt="CareerPrep" className="w-9 h-9 drop-shadow-sm" />
             <div>
               <div className="text-base font-bold text-gray-900 dark:text-gray-100 leading-none">CareerPrep</div>
               <div className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-0.5">Career Platform</div>

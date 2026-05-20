@@ -11,6 +11,8 @@ var TEMPLATE_LABELS = {
   "Japan": "🇯🇵 Япон тэтгэлгийн CV",
 };
 
+var STAR_LABELS = ["", "Муу", "Дунд", "Сайн", "Маш сайн", "Гайхалтай"];
+
 function StarPicker({ value, onChange }) {
   var [hovered, setHovered] = useState(0);
   return (
@@ -34,8 +36,6 @@ function StarPicker({ value, onChange }) {
     </div>
   );
 }
-
-var STAR_LABELS = ["", "Муу", "Дунд", "Сайн", "Маш сайн", "Гайхалтай"];
 
 export default function TemplateFeedbackModal({ templateType, onClose }) {
   var [rating, setRating] = useState(0);

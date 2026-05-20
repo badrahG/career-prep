@@ -42,6 +42,8 @@ class UserAdminResponse(BaseModel):
     is_verified: bool = False
     created_at: datetime
     cv_count: int = 0
+    custom_ai_limit: Optional[int] = None
+    custom_tr_limit: Optional[int] = None
 
     class Config:
         from_attributes = True

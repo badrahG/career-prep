@@ -16,6 +16,7 @@ from app.models.user import User
 from app.models.cv import CV, Education, WorkExperience, Skill
 from app.schemas.cv import CVCreate, CVResponse, CVListResponse
 from app.services.auth import get_current_user
+from app.services.usage import tr_limit_check
 from app.services import cloudinary_storage
 
 router = APIRouter(prefix="/api/cv", tags=["CV"])
@@ -374,6 +375,9 @@ def translate_cv(cv_id: int, lang: str = Query(default="en"), db: Session = Depe
 
     to_translate_idx = [i for i, (_, t) in enumerate(slots) if t.strip()]
     to_translate = [slots[i][1] for i in to_translate_idx]
+
+    total_chars = sum(len(t) for t in to_translate)
+    tr_limit_check(user, total_chars, db)
 
     deepl_lang = "JA" if lang == "ja" else "EN-US"
 

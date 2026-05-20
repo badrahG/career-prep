@@ -137,6 +137,7 @@ export default function ScholarshipCVBuilder() {
   var [showJaModal, setShowJaModal] = useState(false);
   var [translatingEn, setTranslatingEn] = useState(false);
   var [translatingJa, setTranslatingJa] = useState(false);
+  var [ratings, setRatings] = useState({});
   var [certFiles, setCertFiles] = useState([]);
 
   var cfg = country ? COUNTRY_CONFIG[country] : null;
@@ -153,6 +154,10 @@ export default function ScholarshipCVBuilder() {
     API.get("/cv").then(function (res) {
       if (res.data && res.data.length > 0) setCvList(res.data.filter(function(c) { return c.cv_type !== "scholarship"; }));
     }).catch(function () {});
+  }, []);
+
+  useEffect(function () {
+    API.get("/feedback/cv-template/summary").then(function (res) { setRatings(res.data); }).catch(function () {});
   }, []);
 
   useEffect(function () {
@@ -418,9 +423,18 @@ export default function ScholarshipCVBuilder() {
                     </div>
                   )}
                 </div>
-                <div className="mt-2 flex gap-2 flex-wrap">
-                  <span className={"text-xs px-2 py-0.5 rounded-full font-medium " + c.badge}>{c.focus}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">{c.note}</span>
+                <div className="mt-2 flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex gap-2 flex-wrap">
+                    <span className={"text-xs px-2 py-0.5 rounded-full font-medium " + c.badge}>{c.focus}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">{c.note}</span>
+                  </div>
+                  {ratings[c.id] ? (
+                    <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                      <span style={{ color: "#f59e0b" }}>{"★".repeat(Math.round(ratings[c.id].avg))}</span>
+                      <span style={{ color: "#d1d5db" }}>{"★".repeat(5 - Math.round(ratings[c.id].avg))}</span>
+                      <span className="ml-0.5">{ratings[c.id].avg.toFixed(1)} ({ratings[c.id].count})</span>
+                    </span>
+                  ) : null}
                 </div>
               </button>
             );

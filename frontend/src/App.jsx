@@ -33,9 +33,13 @@ import AdminUsers from "./pages/AdminUsers";
 import AdminInterview from "./pages/AdminInterview";
 import AdminAdvice from "./pages/AdminAdvice";
 import AdminScholarship from "./pages/AdminScholarship";
+import AdminFeedback from "./pages/AdminFeedback";
+import Help from "./pages/Help";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Settings from "./pages/Settings";
+import Pricing from "./pages/Pricing";
+import LimitModal from "./components/LimitModal";
 
 function PrivateRoute({ children }) {
   var { token } = useAuth();
@@ -87,11 +91,14 @@ function AppRoutes() {
       <Route path="/scholarship/:id" element={<PrivateRoute><ScholarshipDetail /></PrivateRoute>} />
       <Route path="/scholarship/:id/edit" element={<AdminRoute><ScholarshipForm /></AdminRoute>} />
       <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/help" element={<PrivateRoute><Help /></PrivateRoute>} />
       <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
       <Route path="/admin/interview" element={<AdminRoute><AdminInterview /></AdminRoute>} />
       <Route path="/admin/advice" element={<AdminRoute><AdminAdvice /></AdminRoute>} />
       <Route path="/admin/scholarship" element={<AdminRoute><AdminScholarship /></AdminRoute>} />
+      <Route path="/admin/feedback" element={<AdminRoute><AdminFeedback /></AdminRoute>} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
@@ -103,6 +110,7 @@ export default function App() {
       <ThemeProvider>
         <AuthProvider>
           <Toaster position="top-right" containerClassName="app-toaster" />
+          <LimitModal />
           <AppRoutes />
         </AuthProvider>
       </ThemeProvider>

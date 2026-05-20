@@ -24,7 +24,7 @@ export default function NotFound() {
           <p className="text-7xl font-extrabold text-[#1e3a8a] dark:text-violet-400 mb-2">404</p>
           <h1 className="text-xl font-bold text-slate-900 dark:text-gray-100 mb-3">Хуудас олдсонгүй</h1>
           <p className="text-sm text-slate-500 dark:text-gray-400 mb-8">
-            Та хайж буй хуудас байхгүй эсвэл зөөгдсэн байна.
+            Та хайж буй хуудас байхгүй эсвэл зөөгдсөн байна.
           </p>
           <Link
             to={homeLink}

@@ -15,8 +15,10 @@ from app.schemas.interview import (
     QuizQuestionPublic, QuizSubmission, QuizResult, QuizResultItem,
     CaseCreate, CaseResponse,
     MajorCreate, MajorResponse,
+    OpenEndedMajorStats, OpenEndedSubmission, OpenEndedResult, OpenEndedFeedbackItem,
 )
 from app.services.auth import get_current_user, get_optional_user
+from app.services.usage import ai_limit_check
 
 router = APIRouter(prefix="/api/interview", tags=["Interview"])
 
@@ -65,7 +67,9 @@ def get_questions(
             "difficulty": q.difficulty, "tags": q.tags,
             "case_id": q.case_id, "major_id": q.major_id,
             "major_name": q.major.name if q.major else None,
-            "is_quiz": q.is_quiz, "option_a": q.option_a, "option_b": q.option_b,
+            "is_quiz": q.is_quiz, "is_open_ended": q.is_open_ended,
+            "open_ended_sample": q.open_ended_sample,
+            "option_a": q.option_a, "option_b": q.option_b,
             "option_c": q.option_c, "option_d": q.option_d,
             "correct_option": q.correct_option, "explanation": q.explanation,
         }
@@ -95,7 +99,9 @@ def get_question(qid: int, db: Session = Depends(get_db)):
         "difficulty": q.difficulty, "tags": q.tags,
         "case_id": q.case_id, "major_id": q.major_id,
         "major_name": q.major.name if q.major else None,
-        "is_quiz": q.is_quiz, "option_a": q.option_a, "option_b": q.option_b,
+        "is_quiz": q.is_quiz, "is_open_ended": q.is_open_ended,
+        "open_ended_sample": q.open_ended_sample,
+        "option_a": q.option_a, "option_b": q.option_b,
         "option_c": q.option_c, "option_d": q.option_d,
         "correct_option": q.correct_option, "explanation": q.explanation,
     }
@@ -270,10 +276,11 @@ def mark_question_viewed(qid: int, db: Session = Depends(get_db), current_user: 
 
 @router.get("/behavioral", response_model=List[QuestionResponse])
 def get_behavioral_questions(db: Session = Depends(get_db)):
-    """Get only behavioral questions for STAR practice mode"""
-    return db.query(InterviewQuestion).filter(
+    questions = db.query(InterviewQuestion).filter(
         InterviewQuestion.category == "behavioral"
-    ).order_by(InterviewQuestion.id).all()
+    ).all()
+    random.shuffle(questions)
+    return questions
 
 
 # ---------- Case endpoints ----------
@@ -427,3 +434,191 @@ def delete_major(mid: int, db: Session = Depends(get_db), admin: User = Depends(
     db.delete(m)
     db.commit()
     return {"message": "Устгагдлаа"}
+
+
+# ---------- Open-ended (AI evaluate) endpoints ----------
+
+_EVAL_PROMPT = """Та мэргэжлийн ярилцлагын үнэлгээчин юм. Дараах {n} ярилцлагын асуулт болон хэрэглэгчийн хариултуудыг уншаад Монгол хэлээр нарийн үнэлгээ хийнэ үү.
+
+{qa_list}
+
+Зөвхөн дараах JSON форматаар хариулна уу (өөр текст бичихгүй):
+{{
+  "results": [
+    {{
+      "question_id": <асуултын id>,
+      "score": <0-10 хооронд бүхэл тоо>,
+      "strengths": "<хариулт дахь зөв, сайн талууд — 1-2 өгүүлбэр>",
+      "missing": "<дутуу байсан чухал зүйлс — 1-2 өгүүлбэр>",
+      "suggestion": "<хэрхэн сайжруулах, нэмж хэлэх ёстой байсан зүйл — 1-2 өгүүлбэр>"
+    }}
+  ],
+  "overall_score": <0-100 хооронд бүхэл тоо>,
+  "overall_advice": "<нийт дүгнэлт, цаашид хэрхэн бэлтгэх тухай — 2-3 өгүүлбэр>"
+}}"""
+
+
+def _build_eval_prompt(questions_with_answers: list) -> str:
+    import json
+    qa_lines = []
+    for i, (q, answer) in enumerate(questions_with_answers, 1):
+        qa_lines.append(f"Асуулт {i} (id={q.id}): {q.question_mn}")
+
+        qa_lines.append(f"Хэрэглэгчийн хариулт: {answer.strip() or '(хариулаагүй)'}")
+        qa_lines.append("")
+    return _EVAL_PROMPT.format(n=len(questions_with_answers), qa_list="\n".join(qa_lines))
+
+
+def _parse_eval_json(raw: str) -> dict:
+    import json
+    if "```" in raw:
+        parts = raw.split("```")
+        for part in parts:
+            stripped = part.strip()
+            if stripped.startswith("json"):
+                raw = stripped[4:]
+                break
+            elif "{" in stripped:
+                raw = stripped
+                break
+    start = raw.find("{")
+    end = raw.rfind("}") + 1
+    if start == -1 or end == 0:
+        raise ValueError("JSON олдсонгүй")
+    return json.loads(raw[start:end])
+
+
+def _evaluate_with_claude(prompt: str, api_key: str) -> dict:
+    import anthropic
+    client = anthropic.Anthropic(api_key=api_key)
+    message = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=4096,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return _parse_eval_json(message.content[0].text.strip())
+
+
+def _evaluate_with_groq(prompt: str, api_key: str) -> dict:
+    from groq import Groq
+    client = Groq(api_key=api_key)
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=3000,
+        temperature=0.3,
+    )
+    return _parse_eval_json(completion.choices[0].message.content.strip())
+
+
+@router.get("/open-ended/majors", response_model=List[OpenEndedMajorStats])
+def get_open_ended_majors(db: Session = Depends(get_db)):
+    from sqlalchemy import func
+    rows = (
+        db.query(Major, func.count(InterviewQuestion.id).label("q_count"))
+        .join(InterviewQuestion, (InterviewQuestion.major_id == Major.id) & (InterviewQuestion.is_open_ended == True))
+        .filter(Major.is_active == True)
+        .group_by(Major.id)
+        .order_by(Major.name)
+        .all()
+    )
+    return [
+        OpenEndedMajorStats(id=m.id, name=m.name, description=m.description, question_count=count)
+        for m, count in rows
+    ]
+
+
+@router.get("/open-ended/questions", response_model=List[QuestionResponse])
+def get_open_ended_questions(
+    major_id: int = Query(...),
+    limit: Optional[int] = Query(None, ge=1, le=30),
+    db: Session = Depends(get_db),
+):
+    questions = (
+        db.query(InterviewQuestion)
+        .options(joinedload(InterviewQuestion.major))
+        .filter(InterviewQuestion.is_open_ended == True, InterviewQuestion.major_id == major_id)
+        .all()
+    )
+    if limit and len(questions) > limit:
+        questions = random.sample(questions, limit)
+    return [
+        {
+            "id": q.id, "question_mn": q.question_mn, "category": q.category,
+            "sample_answer": q.sample_answer, "advice": q.advice,
+            "difficulty": q.difficulty, "tags": q.tags,
+            "case_id": q.case_id, "major_id": q.major_id,
+            "major_name": q.major.name if q.major else None,
+            "is_quiz": q.is_quiz, "is_open_ended": q.is_open_ended,
+            "open_ended_sample": q.open_ended_sample,
+            "option_a": None, "option_b": None, "option_c": None, "option_d": None,
+            "correct_option": None, "explanation": None,
+        }
+        for q in questions
+    ]
+
+
+@router.post("/evaluate", response_model=OpenEndedResult)
+def evaluate_open_ended(
+    submission: OpenEndedSubmission,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(ai_limit_check(cost=3)),
+):
+    import os
+    if not submission.answers:
+        raise HTTPException(status_code=400, detail="Хариулт хоосон байна")
+
+    api_key = os.getenv("ANTHROPIC_API_KEY") or os.getenv("CLAUDE_API_KEY")
+    groq_key = os.getenv("GROQ_API_KEY")
+    if not api_key and not groq_key:
+        raise HTTPException(status_code=503, detail="AI үнэлгээний үйлчилгээ тохируулагдаагүй байна.")
+
+    question_ids = [a.question_id for a in submission.answers]
+    questions_map = {
+        q.id: q
+        for q in db.query(InterviewQuestion).filter(InterviewQuestion.id.in_(question_ids)).all()
+    }
+
+    questions_with_answers = [
+        (questions_map[a.question_id], a.answer)
+        for a in submission.answers
+        if a.question_id in questions_map and questions_map[a.question_id].is_open_ended
+    ]
+
+    if not questions_with_answers:
+        raise HTTPException(status_code=400, detail="Дүгнэх асуулт олдсонгүй")
+
+    prompt = _build_eval_prompt(questions_with_answers)
+
+    try:
+        if api_key:
+            raw = _evaluate_with_claude(prompt, api_key)
+        else:
+            raw = _evaluate_with_groq(prompt, groq_key)
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"AI дүгнэхэд алдаа гарлаа: {str(e)[:200]}")
+
+    answer_map = {a.question_id: a.answer for a in submission.answers}
+    results = []
+    for item in raw.get("results", []):
+        qid = item.get("question_id")
+        q = questions_map.get(qid)
+        if q:
+            results.append(OpenEndedFeedbackItem(
+                question_id=qid,
+                question_mn=q.question_mn,
+                user_answer=answer_map.get(qid, ""),
+                score=max(0, min(10, int(item.get("score", 0)))),
+                strengths=item.get("strengths", ""),
+                missing=item.get("missing", ""),
+                suggestion=item.get("suggestion", ""),
+                open_ended_sample=q.open_ended_sample,
+            ))
+
+    return OpenEndedResult(
+        overall_score=max(0, min(100, int(raw.get("overall_score", 0)))),
+        overall_advice=raw.get("overall_advice", ""),
+        results=results,
+    )

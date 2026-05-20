@@ -40,7 +40,7 @@ export default function InterviewFlashcard() {
     }
   }, [authLoading, user?.id]);
 
-  var needsMajor = category === "technical" || category === "case";
+  var needsMajor = true;
 
   function loadQuestions(cat, majId, q) {
     setLoading(true);
@@ -50,7 +50,7 @@ export default function InterviewFlashcard() {
     if (majId) params.major_id = majId;
     API.get("/interview/questions", { params: params })
       .then(function (res) {
-        setQuestions(res.data);
+        setQuestions(res.data.filter(function (q) { return !q.is_open_ended && !q.is_quiz; }));
         setCurrentIndex(0); setFlipped(false);
       })
       .catch(function () { toast.error("Ачаалахад алдаа"); })

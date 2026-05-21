@@ -298,7 +298,7 @@ export default function InterviewFlashcard() {
                 {flipped ? "Асуулт" : "Хариулт"}
               </button>
               <button onClick={goNext} disabled={currentIndex === questions.length - 1}
-                className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition">
+                className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition">
                 Дараах →
               </button>
             </div>

@@ -110,13 +110,13 @@ export default function Home() {
 
           <div className="flex items-center gap-2">
             {token ? (
-              <Link to="/dashboard" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition">
+              <Link to="/dashboard" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-md transition">
                 Dashboard →
               </Link>
             ) : (
               <>
                 <Link to="/login" className="hidden md:inline-block px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 text-sm font-medium transition">Нэвтрэх</Link>
-                <Link to="/register" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition">
+                <Link to="/register" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-md transition">
                   Эхлэх →
                 </Link>
               </>
@@ -143,7 +143,7 @@ export default function Home() {
 
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-100 leading-tight mb-5">
                 Ажилдаа бэлэн бол,<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">амжилтанд ойрхон</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">амжилтанд ойрхон</span>
               </h1>
 
               <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-lg">
@@ -152,12 +152,12 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-3 mb-8">
                 {token ? (
-                  <Link to="/dashboard" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
+                  <Link to="/dashboard" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
                     Dashboard руу орох →
                   </Link>
                 ) : (
                   <>
-                    <Link to="/register" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
+                    <Link to="/register" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
                       Эхлэх →
                     </Link>
                     <a href="#features" className="border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition">
@@ -209,7 +209,7 @@ export default function Home() {
                 </div>
 
                 {/* Badge */}
-                <div className="absolute bottom-2 left-10 z-40 w-[72px] h-[72px] bg-gradient-to-br from-violet-600 to-indigo-600 rounded-full flex flex-col items-center justify-center shadow-xl text-white text-center border-4 border-white">
+                <div className="absolute bottom-2 left-10 z-40 w-[72px] h-[72px] bg-gradient-to-br from-violet-500 to-indigo-500 rounded-full flex flex-col items-center justify-center shadow-xl text-white text-center border-4 border-white">
                   <span className="text-[11px] font-extrabold leading-tight">2x</span>
                   <span className="text-[8px] font-semibold leading-tight opacity-90">хурдан</span>
                 </div>
@@ -227,7 +227,7 @@ export default function Home() {
             ].map(function (s, i) {
               return (
                 <div key={i} className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">{s.value}</div>
+                  <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">{s.value}</div>
                   <div className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mt-2">{s.label}</div>
                 </div>
               );
@@ -311,11 +311,11 @@ export default function Home() {
 
           <div className="text-center mt-8">
             {token ? (
-              <Link to="/cv/new" className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-md transition">
+              <Link to="/cv/new" className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:shadow-md transition">
                 CV үүсгэж эхлэх →
               </Link>
             ) : (
-              <Link to="/register" className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-md transition">
+              <Link to="/register" className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-6 py-3 rounded-full text-sm font-semibold hover:shadow-md transition">
                 Бүртгүүлж CV үүсгэх →
               </Link>
             )}
@@ -340,7 +340,7 @@ export default function Home() {
                     <div className="hidden lg:block absolute top-6 left-[calc(50%+32px)] right-0 h-0.5 bg-gray-100 dark:bg-gray-700"></div>
                   )}
                   <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 hover:border-violet-200 dark:hover:border-violet-600 transition relative z-10 shadow-sm">
-                    <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-4 shadow-sm">
+                    <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-indigo-500 text-white rounded-xl flex items-center justify-center font-bold text-lg mb-4 shadow-sm">
                       {s.num}
                     </div>
                     <h3 className="text-base font-bold text-gray-800 dark:text-gray-200 mb-2">{s.title}</h3>
@@ -361,7 +361,7 @@ export default function Home() {
               <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Яагаад CareerPrep</p>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-5">
                 Залуучуудын карьерын замд<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600">итгэлтэй түнш</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">итгэлтэй түнш</span>
               </h2>
               <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
                 Оюутан, шинэ төгсөгчдөд зориулсан бүрэн цогц платформ. Туршлагагүй байсан ч мэргэжлийн түвшинд CV үүсгэж, ярилцлагад итгэлтэйгээр орох боломжтой.
@@ -469,7 +469,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <Link to="/" className="flex items-center gap-2.5 mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-lg">
+                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center rounded-lg">
                   <span className="text-white font-bold text-xs tracking-wide">CP</span>
                 </div>
                 <span className="text-base font-bold text-white">CareerPrep</span>

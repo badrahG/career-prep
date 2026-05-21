@@ -84,7 +84,7 @@ export default function LimitModal() {
                   <button
                     onClick={function () { handleBuy("pro"); }}
                     disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-semibold text-sm hover:shadow-lg disabled:opacity-50 transition"
+                    className="w-full py-3 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full font-semibold text-sm hover:shadow-lg disabled:opacity-50 transition"
                   >
                     {loading ? "Холбогдож байна..." : "Pro авах — QPay"}
                   </button>
@@ -106,7 +106,7 @@ export default function LimitModal() {
                   <button
                     onClick={function () { handleBuy("extra_pack"); }}
                     disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold text-sm hover:shadow-lg disabled:opacity-50 transition"
+                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full font-semibold text-sm hover:shadow-lg disabled:opacity-50 transition"
                   >
                     {loading ? "Холбогдож байна..." : "Extra Pack авах — QPay"}
                   </button>

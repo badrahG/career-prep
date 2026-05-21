@@ -142,7 +142,7 @@ export default function TemplateFeedbackModal({ templateType, onClose }) {
               <button
                 onClick={handleSubmit}
                 disabled={submitting || !rating}
-                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition flex items-center justify-center gap-2"
               >
                 {submitting ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : null}
                 Хадгалах

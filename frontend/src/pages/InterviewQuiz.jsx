@@ -225,7 +225,7 @@ export default function InterviewQuiz() {
                 </ul>
               </div>
               <button onClick={startQuiz} disabled={loading || (needsMajor && !selectedMajorId)}
-                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition">
+                className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition">
                 {loading ? "Ачаалж байна..." : (needsMajor && !selectedMajorId) ? "Мэргэжил сонгоно уу" : "Quiz эхлүүлэх →"}
               </button>
             </div>
@@ -381,7 +381,7 @@ export default function InterviewQuiz() {
                 </button>
               ) : (
                 <button onClick={goNext}
-                  className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+                  className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
                   Дараах →
                 </button>
               )}
@@ -428,7 +428,7 @@ export default function InterviewQuiz() {
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-5 max-w-lg mx-auto leading-relaxed">{result.advice}</p>
                 <div className="mt-6 flex flex-wrap gap-2 justify-center">
                   <button onClick={restart}
-                    className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+                    className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
                     Дахин хийх
                   </button>
                   <Link to="/interview"

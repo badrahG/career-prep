@@ -103,7 +103,7 @@ export default function Login() {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition mt-2"
+                className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition mt-2"
               >
                 Нэвтрэх →
               </button>

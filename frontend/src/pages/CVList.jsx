@@ -250,7 +250,7 @@ export default function CVList() {
                 </>
               )}
             </button>
-            <Link to="/cv/start" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition whitespace-nowrap">
+            <Link to="/cv/start" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition whitespace-nowrap">
               + Шинэ CV
             </Link>
           </div>
@@ -268,7 +268,7 @@ export default function CVList() {
             <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">CV үүсгээгүй байна</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-xs">Эхний CV-гээ үүсгэж, ажилд орох бэлтгэлээ эхлүүлцгааe.</p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/cv/start" className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+              <Link to="/cv/start" className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
                 + Шинэ CV үүсгэх
               </Link>
               <button

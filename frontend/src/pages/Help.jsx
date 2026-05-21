@@ -220,7 +220,7 @@ export default function Help() {
                 </span>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:shadow-md transition"
+                  className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-sm font-semibold rounded-full hover:shadow-md transition"
                 >
                   Илгээх
                 </button>

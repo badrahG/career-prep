@@ -684,9 +684,9 @@ export default function CVBuilder() {
               <Link to="/cv" className="px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition">Цуцлах</Link>
             )}
             {step < 12 ? (
-              <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">Дараагийн →</button>
+              <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">Дараагийн →</button>
             ) : (
-              <button type="button" onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">{saving ? "Хадгалж байна..." : "CV хадгалах"}</button>
+              <button type="button" onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">{saving ? "Хадгалж байна..." : "CV хадгалах"}</button>
             )}
           </div>
         </div>

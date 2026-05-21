@@ -121,7 +121,7 @@ export default function Register() {
               </div>
 
               <div className="flex flex-col gap-2">
-                <Link to="/login" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition">
+                <Link to="/login" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition">
                   Нэвтрэх хуудас руу очих →
                 </Link>
                 <button
@@ -224,7 +224,7 @@ export default function Register() {
 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition mt-2"
+                  className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition mt-2"
                 >
                   Үнэгүй бүртгүүлэх →
                 </button>

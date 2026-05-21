@@ -261,7 +261,7 @@ export default function AdminScholarship() {
             <button onClick={exportCSV} className="px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition">
               CSV татах
             </button>
-            <button onClick={openCreate} className="px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+            <button onClick={openCreate} className="px-4 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
               + Тэтгэлэг
             </button>
           </div>
@@ -544,7 +544,7 @@ export default function AdminScholarship() {
                 <button onClick={closeModal} className="px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 transition">
                   Цуцлах
                 </button>
-                <button onClick={handleSave} className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-lg text-sm font-semibold hover:shadow-md transition">
+                <button onClick={handleSave} className="px-5 py-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-lg text-sm font-semibold hover:shadow-md transition">
                   {editingId ? "Шинэчлэх" : "Үүсгэх"}
                 </button>
               </div>

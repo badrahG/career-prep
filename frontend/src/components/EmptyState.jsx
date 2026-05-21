@@ -153,14 +153,14 @@ export default function EmptyState({ illustration, title, description, actionLab
             actionLink ? (
               <Link
                 to={actionLink}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition"
               >
                 {actionLabel}
               </Link>
             ) : (
               <button
                 onClick={onAction}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition"
               >
                 {actionLabel}
               </button>

@@ -1017,7 +1017,7 @@ export default function ScholarshipCVBuilder() {
         {/* AI Premium */}
         <div className="border border-dashed border-violet-300 dark:border-violet-700 rounded-xl p-4">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-2 py-0.5 rounded-full font-bold">Premium</span>
+            <span className="text-xs bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-2 py-0.5 rounded-full font-bold">Premium</span>
             <span className="text-sm font-bold text-gray-700 dark:text-gray-300">AI-assisted Generation</span>
           </div>
           <p className="text-xs text-gray-500 mb-3">
@@ -1026,7 +1026,7 @@ export default function ScholarshipCVBuilder() {
           <button
             onClick={handleAiGenerate}
             disabled={aiLoading}
-            className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
+            className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-2.5 rounded-full text-sm font-semibold hover:from-violet-700 hover:to-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
           >
             {aiLoading ? (
               <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> AI боловсруулж байна...</>

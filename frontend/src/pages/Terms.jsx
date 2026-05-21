@@ -23,7 +23,7 @@ export default function Terms() {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to={backLink} className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center rounded-xl shadow-sm">
               <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
             <div>
@@ -222,7 +222,7 @@ export default function Terms() {
       <footer className="bg-gray-900 text-gray-400 mt-16">
         <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-lg">
+            <div className="w-7 h-7 bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center rounded-lg">
               <span className="text-white font-bold text-xs">CP</span>
             </div>
             <p className="text-xs">© 2026 CareerPrep. Бүх эрх хуулиар хамгаалагдсан.</p>

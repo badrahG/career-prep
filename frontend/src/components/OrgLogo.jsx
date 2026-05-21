@@ -71,7 +71,7 @@ export default function OrgLogo(props) {
 
   // Fallback: violet circle with initial
   return (
-    <div className={"rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center flex-shrink-0 " + sizeCls}>
+    <div className={"rounded-xl bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center flex-shrink-0 " + sizeCls}>
       <span className="text-white font-bold">{initial}</span>
     </div>
   );

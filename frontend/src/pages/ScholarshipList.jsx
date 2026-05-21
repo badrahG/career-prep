@@ -80,7 +80,7 @@ export default function ScholarshipList() {
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Тэтгэлэг & Internship</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Дотоодын тэтгэлэг, дадлагын хөтөлбөрүүд.</p>
           </div>
-          {isAdmin && <Link to="/scholarship/new" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition whitespace-nowrap">+ Нэмэх</Link>}
+          {isAdmin && <Link to="/scholarship/new" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition whitespace-nowrap">+ Нэмэх</Link>}
         </div>
 
         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-6">
@@ -177,7 +177,7 @@ export default function ScholarshipList() {
                         <div className="flex gap-2">
                           {s.website_url && !isExpired && (
                             <a href={s.website_url} target="_blank" rel="noreferrer" onClick={stop}
-                              className="flex-1 text-center text-xs bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium py-1.5 rounded-lg transition hover:shadow-sm">
+                              className="flex-1 text-center text-xs bg-gradient-to-r from-violet-500 to-indigo-500 text-white font-medium py-1.5 rounded-lg transition hover:shadow-sm">
                               Бүртгүүлэх
                             </a>
                           )}

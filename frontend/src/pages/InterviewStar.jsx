@@ -242,7 +242,7 @@ export default function InterviewStar() {
                 {currentIndex < questions.length - 1 ? (
                   <button
                     onClick={function () { setCurrentIndex(currentIndex + 1); }}
-                    className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+                    className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
                     Дараах →
                   </button>
                 ) : (
@@ -331,7 +331,7 @@ export default function InterviewStar() {
                 <p className="text-sm text-gray-600 dark:text-gray-300 max-w-lg mx-auto leading-relaxed">{result.overall_advice}</p>
                 <div className="mt-6 flex flex-wrap gap-2 justify-center">
                   <button onClick={restart}
-                    className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+                    className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
                     Дахин хийх
                   </button>
                   <Link to="/interview"

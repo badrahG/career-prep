@@ -98,7 +98,7 @@ export default function ScholarshipDetail() {
       <Layout>
         <div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <p className="text-gray-500 dark:text-gray-400 text-sm">Тэтгэлэг олдсонгүй.</p>
-          <Link to="/scholarship" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">← Жагсаалт руу буцах</Link>
+          <Link to="/scholarship" className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">← Жагсаалт руу буцах</Link>
         </div>
       </Layout>
     );
@@ -210,7 +210,7 @@ export default function ScholarshipDetail() {
         <div className="hidden sm:flex flex-wrap gap-2 mb-5">
           {item.website_url && !isExpired && (
             <a href={item.website_url} target="_blank" rel="noreferrer"
-              className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition">
+              className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition">
               Бүртгүүлэх →
             </a>
           )}
@@ -476,7 +476,7 @@ export default function ScholarshipDetail() {
             </div>
           ) : (
             <a href={item.website_url} target="_blank" rel="noreferrer"
-              className="block w-full text-center bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold active:opacity-90 transition">
+              className="block w-full text-center bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold active:opacity-90 transition">
               Бүртгүүлэх →
             </a>
           )}

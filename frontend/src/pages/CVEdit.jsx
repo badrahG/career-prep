@@ -221,7 +221,7 @@ export default function CVEdit() {
     return <Layout><div className="p-5 md:p-6 flex items-center justify-center min-h-[60vh]"><div className="text-gray-400 text-sm">Ачааллаж байна...</div></div></Layout>;
   }
   if (notFound) {
-    return <Layout><div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4"><p className="text-gray-500 text-sm">CV олдсонгүй эсвэл нэвтрэх эрхгүй байна.</p><Link to="/cv" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">← CV жагсаалт руу буцах</Link></div></Layout>;
+    return <Layout><div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4"><p className="text-gray-500 text-sm">CV олдсонгүй эсвэл нэвтрэх эрхгүй байна.</p><Link to="/cv" className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">← CV жагсаалт руу буцах</Link></div></Layout>;
   }
 
   return (
@@ -463,9 +463,9 @@ export default function CVEdit() {
                   <Link to={"/cv/" + cvId} className="px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 transition">Цуцлах</Link>
                 )}
                 {step < 12 ? (
-                  <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">Дараагийн →</button>
+                  <button type="button" onClick={function() { setStep(step + 1); }} className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">Дараагийн →</button>
                 ) : (
-                  <button type="button" onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">{saving ? "Хадгалж байна..." : "Шинэчлэлт хадгалах"}</button>
+                  <button type="button" onClick={handleSave} disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">{saving ? "Хадгалж байна..." : "Шинэчлэлт хадгалах"}</button>
                 )}
               </div>
             </div>

@@ -103,7 +103,7 @@ export default function Pricing() {
           {/* Pro card */}
           <div className={"bg-white dark:bg-gray-800 border rounded-2xl shadow-sm overflow-hidden relative " + (currentPlan === "pro" ? "border-violet-400 dark:border-violet-600 ring-2 ring-violet-200 dark:ring-violet-900" : "border-violet-200 dark:border-violet-800")}>
             <div className="absolute top-4 right-4">
-              <span className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">Санал болгох</span>
+              <span className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">Санал болгох</span>
             </div>
             <div className="p-6">
               <p className="text-sm font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide">Pro</p>
@@ -131,7 +131,7 @@ export default function Pricing() {
                 <button
                   onClick={function () { handleBuy("pro"); }}
                   disabled={loading && buyType === "pro"}
-                  className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
+                  className="w-full py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
                 >
                   {loading && buyType === "pro" ? "Холбогдож байна..." : "Сунгах — QPay"}
                 </button>
@@ -139,7 +139,7 @@ export default function Pricing() {
                 <button
                   onClick={function () { handleBuy("pro"); }}
                   disabled={loading && buyType === "pro"}
-                  className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
+                  className="w-full py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
                 >
                   {loading && buyType === "pro" ? "Холбогдож байна..." : "Pro авах — QPay"}
                 </button>
@@ -165,7 +165,7 @@ export default function Pricing() {
                 <button
                   onClick={function () { handleBuy("extra_pack"); }}
                   disabled={loading && buyType === "extra_pack"}
-                  className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition whitespace-nowrap"
+                  className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition whitespace-nowrap"
                 >
                   {loading && buyType === "extra_pack" ? "Холбогдож байна..." : "Авах — QPay"}
                 </button>

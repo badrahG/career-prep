@@ -133,7 +133,7 @@ export default function Interview() {
                     })}
                   </ul>
                   <div className={"text-center py-2 rounded-xl text-sm font-semibold transition " +
-                    (m.available ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed")}>
+                    (m.available ? "bg-gradient-to-r from-violet-500 to-indigo-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed")}>
                     {m.available ? "Эхлэх →" : "Удахгүй нээгдэнэ"}
                   </div>
                 </div>

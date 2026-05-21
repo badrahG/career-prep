@@ -45,7 +45,7 @@ export default function AdviceCategory() {
       <Layout>
         <div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <p className="text-gray-500 text-sm">Буруу категори.</p>
-          <Link to="/advice" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">← Зөвлөмжүүд</Link>
+          <Link to="/advice" className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">← Зөвлөмжүүд</Link>
         </div>
       </Layout>
     );

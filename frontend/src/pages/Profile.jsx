@@ -153,7 +153,7 @@ export default function Profile() {
               <input value={user?.created_at ? new Date(user.created_at).toLocaleDateString("mn-MN") : ""} disabled className="w-full px-4 py-2.5 border border-gray-100 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed" />
             </div>
             <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
-              <button type="submit" disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
+              <button type="submit" disabled={saving} className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
                 {saving ? "Хадгалж байна..." : "Хадгалах"}
               </button>
             </div>
@@ -178,7 +178,7 @@ export default function Profile() {
               <input type="password" value={pwForm.confirm_password} onChange={function (e) { updPw("confirm_password", e.target.value); }} placeholder="Дахин оруулна уу" className={inputCls} autoComplete="new-password" />
             </div>
             <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
-              <button type="submit" disabled={pwSaving} className="px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
+              <button type="submit" disabled={pwSaving} className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
                 {pwSaving ? "Солиж байна..." : "Нууц үг солих"}
               </button>
             </div>

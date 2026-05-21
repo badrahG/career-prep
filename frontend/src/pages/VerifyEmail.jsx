@@ -39,7 +39,7 @@ export default function VerifyEmail() {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 relative z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center h-16">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center rounded-xl shadow-sm">
               <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
             <div>
@@ -80,7 +80,7 @@ export default function VerifyEmail() {
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Баталгаажлаа!</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{message}</p>
-                <Link to="/login" className="block bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md transition">
+                <Link to="/login" className="block bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:shadow-md transition">
                   Нэвтрэх →
                 </Link>
               </>
@@ -100,7 +100,7 @@ export default function VerifyEmail() {
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Баталгаажуулж чадсангүй</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{message}</p>
                 <div className="space-y-3">
-                  <Link to="/login" className="block bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md transition">
+                  <Link to="/login" className="block bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:shadow-md transition">
                     Нэвтрэх хуудас руу очих
                   </Link>
                   <p className="text-xs text-gray-400 dark:text-gray-500">

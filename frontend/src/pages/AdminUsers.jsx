@@ -424,7 +424,7 @@ export default function AdminUsers() {
                             </td>
                             <td className="px-4 py-3 max-w-[200px]">
                               <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-full flex items-center justify-center flex-shrink-0">
                                   <span className="text-white font-bold text-xs">{(u.first_name || "U").charAt(0).toUpperCase()}</span>
                                 </div>
                                 <div className="min-w-0">

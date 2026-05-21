@@ -35,7 +35,7 @@ export default function ForgotPassword() {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 relative z-10">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center rounded-xl shadow-sm">
+            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center rounded-xl shadow-sm">
               <span className="text-white font-bold text-sm tracking-wide">CP</span>
             </div>
             <div>
@@ -66,7 +66,7 @@ export default function ForgotPassword() {
                 <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 rounded-xl p-3.5 mb-5 text-xs text-gray-600 dark:text-gray-400 text-left">
                   И-мэйл ирэхгүй бол <strong>Spam/Junk</strong> хавтас шалгана уу. Эсвэл хаягаа зөв бичсэн эсэхээ нягтална уу.
                 </div>
-                <Link to="/login" className="block bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md transition text-center">
+                <Link to="/login" className="block bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:shadow-md transition text-center">
                   Нэвтрэх хуудас руу буцах
                 </Link>
               </div>
@@ -97,7 +97,7 @@ export default function ForgotPassword() {
                   <button
                     type="submit"
                     disabled={sending}
-                    className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-3 rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
+                    className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
                   >
                     {sending ? (
                       <span className="flex items-center justify-center gap-2">

@@ -175,7 +175,7 @@ export default function ScholarshipForm() {
       <Layout>
         <div className="p-5 md:p-6 flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <p className="text-gray-500 dark:text-gray-400 text-sm">Тэтгэлэг олдсонгүй.</p>
-          <Link to="/scholarship" className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md transition">
+          <Link to="/scholarship" className="px-5 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md transition">
             ← Жагсаалт руу буцах
           </Link>
         </div>
@@ -461,7 +461,7 @@ export default function ScholarshipForm() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
+                  className="px-5 py-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition"
                 >
                   {saving ? "Хадгалж байна..." : (isEdit ? "Шинэчлэлт хадгалах" : "Хадгалах")}
                 </button>

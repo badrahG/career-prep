@@ -127,7 +127,7 @@ export default function FeedbackModal({ onClose }) {
               <button
                 type="submit"
                 disabled={loading || rating === 0}
-                className="w-full py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-semibold rounded-xl hover:shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-sm font-semibold rounded-full hover:shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Илгээж байна..." : "Илгээх"}
               </button>

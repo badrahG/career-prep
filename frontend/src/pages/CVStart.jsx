@@ -117,7 +117,7 @@ export default function CVStart() {
                     className="cursor-pointer group flex flex-col"
                   >
                     <div
-                      className="relative rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-600 shadow-md group-hover:border-violet-400 group-hover:shadow-xl transition-all duration-200"
+                      className="relative rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-600 shadow-md group-hover:border-violet-300 group-hover:shadow-xl transition-all duration-200"
                       style={{ height: "420px" }}
                     >
                       {/* Scaled CV preview */}
@@ -134,8 +134,8 @@ export default function CVStart() {
                       </div>
 
                       {/* Hover overlay with CTA */}
-                      <div className="absolute inset-0 bg-violet-600/0 group-hover:bg-violet-600/8 transition-all duration-200 flex items-end justify-center pb-5">
-                        <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-violet-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl shadow-lg">
+                      <div className="absolute inset-0 bg-violet-500/0 group-hover:bg-violet-500/8 transition-all duration-200 flex items-end justify-center pb-5">
+                        <span className="opacity-0 group-hover:opacity-100 transition-all duration-200 bg-gradient-to-r from-violet-500 to-indigo-500 text-white text-sm font-semibold px-6 py-2.5 rounded-full shadow-lg hover:opacity-90">
                           Энэ загварыг сонгох →
                         </span>
                       </div>
@@ -172,8 +172,8 @@ export default function CVStart() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             {/* Card 1: Scholarship CV — featured */}
-            <div className="bg-white dark:bg-gray-800 border-2 border-violet-400 dark:border-violet-500 rounded-2xl shadow-md p-8 flex flex-col items-center text-center hover:shadow-xl transition relative">
-              <span className="absolute top-4 right-4 text-xs bg-violet-600 text-white px-2.5 py-1 rounded-full font-bold">New</span>
+            <div className="bg-white dark:bg-gray-800 border-2 border-violet-300 dark:border-violet-400 rounded-2xl shadow-md p-8 flex flex-col items-center text-center hover:shadow-xl transition relative">
+              <span className="absolute top-4 right-4 text-xs bg-violet-500 text-white px-2.5 py-1 rounded-full font-bold">New</span>
               <div className="w-20 h-20 bg-violet-50 dark:bg-violet-900/30 rounded-2xl flex items-center justify-center mb-6">
                 <svg className="w-10 h-10 text-violet-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
@@ -186,7 +186,7 @@ export default function CVStart() {
               <p className="text-xs text-violet-500 font-medium mb-6">US · Australia · Japan</p>
               <button
                 onClick={function () { navigate("/cv/scholarship/new"); }}
-                className="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl text-sm font-semibold transition shadow-sm"
+                className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm"
               >
                 Эхлэх →
               </button>
@@ -200,7 +200,7 @@ export default function CVStart() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                   </svg>
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-violet-600 rounded-full flex items-center justify-center shadow-md">
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-violet-500 rounded-full flex items-center justify-center shadow-md">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
@@ -212,7 +212,7 @@ export default function CVStart() {
               </p>
               <button
                 onClick={function () { setParsedData(null); setStep(2); }}
-                className="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 rounded-xl text-sm font-semibold transition shadow-sm"
+                className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-3 rounded-full text-sm font-semibold hover:opacity-90 transition shadow-sm"
               >
                 Эхнээс эхлэх →
               </button>
@@ -240,7 +240,7 @@ export default function CVStart() {
               <button
                 onClick={function () { if (!uploading) fileRef.current?.click(); }}
                 disabled={uploading}
-                className="w-full border-2 border-violet-300 dark:border-violet-700 text-violet-700 dark:text-violet-400 py-3 rounded-xl text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-900/20 transition disabled:opacity-60"
+                className="w-full border-2 border-violet-300 dark:border-violet-600 text-violet-600 dark:text-violet-400 py-3 rounded-full text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-900/20 transition disabled:opacity-60"
               >
                 {uploading ? (
                   <span className="flex items-center justify-center gap-2">

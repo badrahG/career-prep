@@ -193,7 +193,7 @@ export default function CVDetail() {
       <div className="min-h-screen bg-[#f3f4f6] dark:bg-gray-950 flex items-center justify-center p-6">
         <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm p-12 text-center">
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">CV олдсонгүй.</p>
-          <Link to="/cv" className="inline-block bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition">← CV жагсаалт</Link>
+          <Link to="/cv" className="inline-block bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition">← CV жагсаалт</Link>
         </div>
       </div>
     );
@@ -251,7 +251,7 @@ export default function CVDetail() {
           <div className="flex gap-2 overflow-x-auto pb-1 md:flex-wrap md:overflow-x-visible md:pb-0 -mx-1 px-1">
             <button
               onClick={handleDownloadPDF}
-              className="flex-shrink-0 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:shadow-md transition"
+              className="flex-shrink-0 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition"
             >
               ⬇ PDF татах
             </button>
@@ -339,7 +339,7 @@ export default function CVDetail() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleDownloadTranslatedJaPDF}
-                  className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition flex items-center gap-2"
+                  className="bg-gradient-to-r from-rose-500 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-semibold hover:shadow-md transition flex items-center gap-2"
                 >
                   ⬇ PDF татах
                 </button>
@@ -391,7 +391,7 @@ export default function CVDetail() {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleDownloadTranslatedPDF}
-                  className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:shadow-md transition flex items-center gap-2"
+                  className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:shadow-md transition flex items-center gap-2"
                 >
                   ⬇ PDF татах
                 </button>

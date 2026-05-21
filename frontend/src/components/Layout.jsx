@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import SearchModal from "./SearchModal";
 import NotificationDropdown from "./NotificationDropdown";
+import FeedbackModal from "./FeedbackModal";
 import API from "../services/api";
 
 function Icon({ d, size = 18 }) {
@@ -53,6 +54,7 @@ export default function Layout({ children, rootClassName }) {
   var [logoutConfirm, setLogoutConfirm] = useState(false);
   var [notifOpen, setNotifOpen] = useState(false);
   var [unreadCount, setUnreadCount] = useState(0);
+  var [feedbackOpen, setFeedbackOpen] = useState(false);
 
   var isAdmin = user?.role === "admin";
   var firstName = user?.first_name || "Хэрэглэгч";
@@ -165,6 +167,17 @@ export default function Layout({ children, rootClassName }) {
             Тохиргоо
           </Link>
           <button
+            onClick={function () { setSidebarOpen(false); setFeedbackOpen(true); }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:text-violet-600 dark:hover:text-violet-400 transition w-full text-left"
+          >
+            <span className="text-gray-400 dark:text-gray-500">
+              <svg width={18} height={18} fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </span>
+            Санал хүсэлт
+          </button>
+          <button
             onClick={function () { setUserMenuOpen(false); setSidebarOpen(false); setLogoutConfirm(true); }}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-500 dark:hover:text-red-400 transition w-full text-left"
           >
@@ -270,6 +283,7 @@ export default function Layout({ children, rootClassName }) {
       </div>
 
       <SearchModal open={searchOpen} onClose={function () { setSearchOpen(false); }} />
+      {feedbackOpen && <FeedbackModal onClose={function () { setFeedbackOpen(false); }} />}
       <NotificationDropdown
         open={notifOpen}
         onClose={function () { setNotifOpen(false); }}

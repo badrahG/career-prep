@@ -7,6 +7,7 @@ from sqlalchemy import func
 from app.database import get_db
 from app.models.user import User
 from app.models.cv import CVTemplateFeedback
+from app.models.system_feedback import SystemFeedback
 from app.services.auth import get_current_user
 
 
@@ -123,3 +124,83 @@ def get_feedbacks(
         }
         for r in rows
     ]
+
+
+# ── System Feedback ──────────────────────────────────────────────────────────
+
+VALID_CATEGORIES = {"general", "cv", "interview", "scholarship", "other"}
+CATEGORY_LABELS = {
+    "general": "Ерөнхий",
+    "cv": "CV Builder",
+    "interview": "Ярилцлагын бэлтгэл",
+    "scholarship": "Тэтгэлэг",
+    "other": "Бусад",
+}
+
+
+class SystemFeedbackSubmit(BaseModel):
+    rating: int = Field(..., ge=1, le=5)
+    category: str = "general"
+    message: Optional[str] = None
+
+
+@router.post("/system")
+def submit_system_feedback(
+    data: SystemFeedbackSubmit,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if data.category not in VALID_CATEGORIES:
+        raise HTTPException(status_code=400, detail="Категори буруу байна")
+    fb = SystemFeedback(
+        user_id=current_user.id,
+        rating=data.rating,
+        category=data.category,
+        message=(data.message or "").strip() or None,
+    )
+    db.add(fb)
+    db.commit()
+    return {"ok": True}
+
+
+@router.get("/system/admin")
+def get_system_feedbacks(
+    skip: int = 0,
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    total = db.query(func.count(SystemFeedback.id)).scalar() or 0
+    avg_rating = db.query(func.round(func.avg(SystemFeedback.rating), 1)).scalar()
+    by_category = (
+        db.query(SystemFeedback.category, func.count(SystemFeedback.id).label("n"))
+        .group_by(SystemFeedback.category)
+        .all()
+    )
+    rows = (
+        db.query(SystemFeedback, User.email, User.first_name, User.last_name)
+        .outerjoin(User, SystemFeedback.user_id == User.id)
+        .order_by(SystemFeedback.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    items = [
+        {
+            "id": r.SystemFeedback.id,
+            "rating": r.SystemFeedback.rating,
+            "category": r.SystemFeedback.category,
+            "category_label": CATEGORY_LABELS.get(r.SystemFeedback.category, r.SystemFeedback.category),
+            "message": r.SystemFeedback.message,
+            "user_email": r.email,
+            "user_name": ((r.last_name or "") + " " + (r.first_name or "")).strip() or None,
+            "created_at": r.SystemFeedback.created_at.isoformat() if r.SystemFeedback.created_at else None,
+        }
+        for r in rows
+    ]
+    return {
+        "total": total,
+        "avg_rating": float(avg_rating) if avg_rating else None,
+        "by_category": {r.category: r.n for r in by_category},
+        "items": items,
+    }

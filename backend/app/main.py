@@ -36,6 +36,7 @@ from app.models.refresh_token import RefreshToken  # noqa
 from app.models.major import Major  # noqa
 from app.models.notification import Notification, NotificationRead  # noqa
 from app.models.subscription import SubscriptionPlan, UserSubscription, UsageTracking, ExtraPackPurchase  # noqa
+from app.models.system_feedback import SystemFeedback  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice, scholarship_cv
 from app.routers import cv_analysis
@@ -283,6 +284,20 @@ def run_migrations():
 
         # ── PDF export tracking ──────────────────────────────────────────────────
         conn.execute(text("ALTER TABLE cvs ADD COLUMN IF NOT EXISTS pdf_export_count INTEGER NOT NULL DEFAULT 0"))
+
+        # ── System feedback ──────────────────────────────────────────────────────
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS system_feedbacks (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+                category VARCHAR(30) NOT NULL DEFAULT 'general',
+                message TEXT,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sf_user ON system_feedbacks(user_id)"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sf_created ON system_feedbacks(created_at DESC)"))
 
         conn.commit()
     print("✓ Migrations applied")

@@ -40,7 +40,7 @@ var FAQS = [
 var FEATURES = [
   {
     icon: "📄",
-    title: "CV Builder",
+    title: "Ажлын CV",
     desc: "Монгол, Ази, Европ гэсэн 3 загвараар мэргэжлийн CV үүсгэнэ. PDF татах, Англи/Япон орчуулга, загварын үнэлгээ.",
     to: "/cv/start",
     cta: "CV үүсгэх",

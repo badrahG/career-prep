@@ -193,6 +193,42 @@ Return a single valid JSON object with exactly these 5 keys:
 Return ONLY the raw JSON object. No markdown code fences (no ```), no preamble, no text after the closing brace."""
 
 
+def _parse_json_response(raw: str) -> dict:
+    """AI хариуг JSON болгон parse хийнэ."""
+    if raw.startswith("```"):
+        raw = raw[raw.find("\n") + 1:]
+        if "```" in raw:
+            raw = raw[:raw.rfind("```")]
+    start = raw.find("{")
+    end = raw.rfind("}") + 1
+    if start == -1 or end == 0:
+        raise ValueError("JSON not found in response")
+    return json.loads(raw[start:end])
+
+
+def _generate_with_claude(prompt: str, api_key: str) -> dict:
+    client = anthropic.Anthropic(api_key=api_key)
+    message = client.messages.create(
+        model=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
+        max_tokens=6000,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = message.content[0].text.strip()
+    return _parse_json_response(raw)
+
+
+def _generate_with_groq(prompt: str, api_key: str) -> dict:
+    from groq import Groq
+    client = Groq(api_key=api_key)
+    completion = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        max_tokens=6000,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = completion.choices[0].message.content.strip()
+    return _parse_json_response(raw)
+
+
 @router.post("/scholarship-generate")
 async def generate_scholarship_cv(
     data: ScholarshipGenerateRequest,
@@ -201,32 +237,22 @@ async def generate_scholarship_cv(
     if not data.country or data.country not in _COUNTRY_RULES:
         raise HTTPException(status_code=400, detail="Улс сонгоно уу (United States, Australia, Japan)")
 
-    api_key = os.getenv("ANTHROPIC_API_KEY")
-    if not api_key:
+    anthropic_key = os.getenv("ANTHROPIC_API_KEY")
+    groq_key = os.getenv("GROQ_API_KEY")
+
+    if not anthropic_key and not groq_key:
         raise HTTPException(
             status_code=503,
-            detail="AI үйлчилгээ тохиргоогүй байна. ANTHROPIC_API_KEY тохируулна уу.",
+            detail="AI үйлчилгээ тохиргоогүй байна. ANTHROPIC_API_KEY эсвэл GROQ_API_KEY тохируулна уу.",
         )
 
     prompt = _build_prompt(data)
-    client = anthropic.Anthropic(api_key=api_key)
 
     try:
-        message = client.messages.create(
-            model=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
-            max_tokens=6000,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        raw = message.content[0].text.strip()
-        if raw.startswith("```"):
-            raw = raw[raw.find("\n") + 1:]
-            if "```" in raw:
-                raw = raw[:raw.rfind("```")]
-        start = raw.find("{")
-        end = raw.rfind("}") + 1
-        if start == -1 or end == 0:
-            raise ValueError("JSON not found in response")
-        result = json.loads(raw[start:end])
+        if anthropic_key:
+            result = _generate_with_claude(prompt, anthropic_key)
+        else:
+            result = _generate_with_groq(prompt, groq_key)
         return result
     except json.JSONDecodeError:
         raise HTTPException(status_code=502, detail="AI хариуг боловсруулах боломжгүй байна")
@@ -237,7 +263,11 @@ async def generate_scholarship_cv(
     except anthropic.APIError:
         raise HTTPException(status_code=502, detail="AI generation хийхэд алдаа. Дахин оролдоно уу.")
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Generation алдаа: {str(e)[:200]}")
+        err_name = type(e).__name__
+        err_msg = str(e)
+        if "RateLimit" in err_name or "rate_limit" in err_msg.lower() or "429" in err_msg:
+            raise HTTPException(status_code=429, detail="AI API-ийн хязгаар дүүрлээ. Түр хүлээгээд дахин оролдоно уу.")
+        raise HTTPException(status_code=502, detail=f"Generation алдаа: {err_msg[:200]}")
 
 
 class TranslateRequest(BaseModel):

@@ -89,6 +89,11 @@
   }
 
   body[data-print-lang^="sc-"] .scholarship-cv-screen { display: none !important; }
+
+  /* Тэтгэлгийн CV: print-д forced min-height арилгана → хоосон 2-р хуудас гарахгүй */
+  .sc-preview-root {
+    min-height: auto !important;
+  }
   body[data-print-lang="sc-original"] .scholarship-cv-print[data-lang="original"] { display: block !important; }
   body[data-print-lang="sc-en"] .scholarship-cv-print[data-lang="en"] { display: block !important; }
   body[data-print-lang="sc-ja"] .scholarship-cv-print[data-lang="ja"] { display: block !important; }

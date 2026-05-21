@@ -46,7 +46,7 @@ export default function ScholarshipCVPreview({ data, innerRef }) {
   return (
     <div
       ref={innerRef}
-      className="bg-white text-gray-800 px-8 py-7 text-xs leading-relaxed"
+      className="bg-white text-gray-800 px-8 py-7 text-xs leading-relaxed sc-preview-root"
       style={{ fontFamily: "'Georgia', 'Times New Roman', serif", width: "794px", minHeight: "1123px" }}
     >
       {/* Header */}

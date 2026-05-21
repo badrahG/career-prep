@@ -44,6 +44,7 @@ export default function Dashboard() {
   });
   var [cvs, setCvs] = useState([]);
   var [activity, setActivity] = useState([]);
+  var [usage, setUsage] = useState(null);
 
   var isAdmin = user?.role === "admin";
   var firstName = user?.first_name || "Хэрэглэгч";
@@ -54,7 +55,10 @@ export default function Dashboard() {
     API.get("/auth/dashboard-stats").then(function (r) { setStats(r.data); }).catch(function () {});
     API.get("/cv").then(function (r) { setCvs(r.data); }).catch(function () {});
     API.get("/auth/activity").then(function (r) { setActivity(r.data); }).catch(function () {});
-  }, []);
+    if (!isAdmin) {
+      API.get("/subscription/usage").then(function (r) { setUsage(r.data); }).catch(function () {});
+    }
+  }, [isAdmin]);
 
   var cvProgress = stats.cv_count > 0 ? stats.progress : 0;
   var ivProgress = Math.min(stats.studied_questions * 4 + (stats.quiz_count > 0 ? Math.round(stats.quiz_avg / 2) : 0), 100);
@@ -134,6 +138,83 @@ export default function Dashboard() {
             );
           })}
         </div>
+
+        {/* Usage card */}
+        {!isAdmin && usage && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl px-5 py-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold text-gray-800 dark:text-gray-200">Сарын ашиглалт</span>
+              <span className={
+                "text-xs font-semibold px-2.5 py-0.5 rounded-full " +
+                (usage.plan === "pro"
+                  ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")
+              }>
+                {usage.plan === "pro" ? "Pro" : "Free"}
+              </span>
+            </div>
+
+            {/* AI зөвлөмж */}
+            <div className="mb-2.5">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-gray-500 dark:text-gray-400">AI зөвлөмж</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {usage.ai_used} / {usage.ai_limit}
+                  {usage.extra_ai > 0 && (
+                    <span className="ml-1.5 text-violet-500 dark:text-violet-400">+{usage.extra_ai} extra</span>
+                  )}
+                </span>
+              </div>
+              <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: Math.min(usage.ai_used / Math.max(usage.ai_limit, 1) * 100, 100) + "%",
+                    background: usage.ai_used / Math.max(usage.ai_limit, 1) >= 0.9 ? "#EF4444" : "#7C3AED",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Орчуулга */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs text-gray-500 dark:text-gray-400">Орчуулга</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {usage.tr_used} / {usage.tr_limit}
+                  {usage.extra_tr > 0 && (
+                    <span className="ml-1.5 text-violet-500 dark:text-violet-400">+{usage.extra_tr} extra</span>
+                  )}
+                </span>
+              </div>
+              <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{
+                    width: Math.min(usage.tr_used / Math.max(usage.tr_limit, 1) * 100, 100) + "%",
+                    background: usage.tr_used / Math.max(usage.tr_limit, 1) >= 0.9 ? "#EF4444" : "#7C3AED",
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                Сэргэх: {new Date(usage.period_end).toLocaleDateString("mn-MN", { year: "numeric", month: "numeric", day: "numeric" })}
+              </span>
+              {usage.plan !== "pro" ? (
+                <Link to="/pricing" className="text-xs font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 transition">
+                  Pro болгох →
+                </Link>
+              ) : (
+                <Link to="/pricing" className="text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition">
+                  Extra Pack →
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Progress cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

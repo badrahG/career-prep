@@ -192,19 +192,29 @@ var skillTagBaseStyle = {
   wordBreak: "break-word",
 };
 
+var _API_BASE = (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL)
+  ? import.meta.env.VITE_API_BASE_URL.replace(/\/api$/, "")
+  : null;
+
+function fixUrl(url) {
+  if (!url || !_API_BASE) return url;
+  return url.replace(/^https?:\/\/localhost:8001/, _API_BASE);
+}
+
 function CertFilePreview({ url, openLabel, altLabel }) {
   if (!url) return null;
-  var lower = url.toLowerCase();
+  var safeUrl = fixUrl(url);
+  var lower = safeUrl.toLowerCase();
   var isImage = lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".png");
   if (isImage) {
     return (
-      <a href={url} target="_blank" rel="noreferrer" style={{ display: "block", marginTop: "6px" }}>
-        <img src={url} alt={altLabel || "Гэрчилгээ"} style={{ width: "130px", height: "92px", objectFit: "cover", borderRadius: "4px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.10)", display: "block" }} />
+      <a href={safeUrl} target="_blank" rel="noreferrer" style={{ display: "block", marginTop: "6px" }}>
+        <img src={safeUrl} alt={altLabel || "Гэрчилгээ"} style={{ width: "130px", height: "92px", objectFit: "cover", borderRadius: "4px", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.10)", display: "block" }} />
       </a>
     );
   }
   return (
-    <a href={url} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", padding: "5px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "4px", textDecoration: "none" }}>
+    <a href={safeUrl} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", padding: "5px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "4px", textDecoration: "none" }}>
       <span style={{ fontSize: "15px" }}>📄</span>
       <span style={{ fontSize: "10.5px", color: "#c2410c", fontWeight: "600" }}>{openLabel || "Гэрчилгээ нээх"}</span>
     </a>

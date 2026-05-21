@@ -1,7 +1,7 @@
 """
 Email service for verification and password reset.
-Uses standard smtplib with Gmail SMTP.
-Configure via .env: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, FRONTEND_URL
+- Production (Render): uses Brevo HTTP API  →  set BREVO_API_KEY + BREVO_FROM_EMAIL in env
+- Local dev:           uses Gmail SMTP       →  set SMTP_USER / SMTP_PASSWORD in .env
 """
 import os
 import smtplib
@@ -12,28 +12,57 @@ from email.utils import formataddr
 
 
 # Load config from environment
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "CareerPrep")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+BREVO_API_KEY    = os.getenv("BREVO_API_KEY", "")
+BREVO_FROM_EMAIL = os.getenv("BREVO_FROM_EMAIL", "")   # Brevo-д verified sender email
+SMTP_HOST        = os.getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT        = int(os.getenv("SMTP_PORT", "587"))
+SMTP_USER        = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD    = os.getenv("SMTP_PASSWORD", "")
+SMTP_FROM_NAME   = os.getenv("SMTP_FROM_NAME", "CareerPrep")
+FRONTEND_URL     = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 
-def _send(to_email: str, subject: str, html_body: str) -> bool:
-    """Low-level SMTP send. Returns True on success, False on failure."""
+def _send_via_brevo(to_email: str, subject: str, html_body: str) -> bool:
+    """Send via Brevo HTTP API (production)."""
+    try:
+        import requests
+        from_email = BREVO_FROM_EMAIL or SMTP_USER
+        resp = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "api-key": BREVO_API_KEY,
+                "Content-Type": "application/json",
+            },
+            json={
+                "sender":      {"name": SMTP_FROM_NAME, "email": from_email},
+                "to":          [{"email": to_email}],
+                "subject":     subject,
+                "htmlContent": html_body,
+            },
+            timeout=15,
+        )
+        if resp.status_code in (200, 201):
+            print(f"✓ Email sent via Brevo to {to_email}")
+            return True
+        print(f"✗ Brevo email failed: {resp.status_code} {resp.text}")
+        return False
+    except Exception as e:
+        print(f"✗ Brevo email failed ({type(e).__name__}): {e}")
+        return False
+
+
+def _send_via_smtp(to_email: str, subject: str, html_body: str) -> bool:
+    """Send via Gmail SMTP (local dev)."""
     if not SMTP_USER or not SMTP_PASSWORD:
-        print("⚠ SMTP_USER / SMTP_PASSWORD not configured in .env")
-        print(f"[EMAIL DEV MODE] To: {to_email}")
-        print(f"[EMAIL DEV MODE] Subject: {subject}")
-        print(f"[EMAIL DEV MODE] Body:\n{html_body}")
-        return True  # Treat as success in dev mode so flow continues
+        print("⚠ SMTP credentials not configured")
+        print(f"[EMAIL DEV MODE] To: {to_email} | Subject: {subject}")
+        return True  # dev mode-д амжилттай гэж үзнэ
 
     try:
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
-        msg["From"] = formataddr((SMTP_FROM_NAME, SMTP_USER))
-        msg["To"] = to_email
+        msg["From"]    = formataddr((SMTP_FROM_NAME, SMTP_USER))
+        msg["To"]      = to_email
         msg.attach(MIMEText(html_body, "html", "utf-8"))
 
         context = ssl.create_default_context()
@@ -41,10 +70,18 @@ def _send(to_email: str, subject: str, html_body: str) -> bool:
             server.starttls(context=context)
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_USER, to_email, msg.as_string())
+        print(f"✓ Email sent via SMTP to {to_email}")
         return True
     except Exception as e:
         print(f"✗ Email send failed ({type(e).__name__})")
         return False
+
+
+def _send(to_email: str, subject: str, html_body: str) -> bool:
+    """Route: Brevo (production) эсвэл SMTP (local)."""
+    if BREVO_API_KEY:
+        return _send_via_brevo(to_email, subject, html_body)
+    return _send_via_smtp(to_email, subject, html_body)
 
 
 def _wrap_template(title: str, content_html: str) -> str:

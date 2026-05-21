@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Request, Response
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from jose import JWTError, jwt
 from typing import Optional
 from pydantic import BaseModel
@@ -98,7 +99,11 @@ def register(request: Request, response: Response, user_data: UserCreate, backgr
         is_verified=False,
     )
     db.add(new_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="И-мэйл хаяг бүртгэлтэй байна")
     db.refresh(new_user)
 
     token = _create_token(db, new_user, TokenType.verify_email, hours=24)

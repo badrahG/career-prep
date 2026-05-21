@@ -27,11 +27,11 @@ const ICONS = {
 };
 
 const MODULES = [
-  { title: "CV бичих",       desc: "CV үүсгэж засварлах",     icon: "cv",         link: "/cv",          color: "#7C3AED", bg: "#EDE9FE", border: "#DDD6FE" },
-  { title: "Ярилцлага",      desc: "Асуулт, quiz бэлтгэл",    icon: "interview",  link: "/interview",   color: "#06B6D4", bg: "#ECFEFF", border: "#A5F3FC" },
-  { title: "Зөвлөмж",        desc: "Карьерын зөвлөмж унших",  icon: "advice",     link: "/advice",      color: "#10B981", bg: "#ECFDF5", border: "#A7F3D0" },
-  { title: "Тэтгэлэг",       desc: "Боломжит тэтгэлгүүд",     icon: "scholarship",link: "/scholarship", color: "#F59E0B", bg: "#FFFBEB", border: "#FDE68A" },
-  { title: "CV Анализ",       desc: "AI-д CV шалгуулах",       icon: "analyze",    link: "/cv-analysis", color: "#EC4899", bg: "#FDF2F8", border: "#FBCFE8" },
+  { title: "CV бичих",    desc: "CV үүсгэж засварлах",    icon: "cv",          link: "/cv" },
+  { title: "Ярилцлага",   desc: "Асуулт, quiz бэлтгэл",   icon: "interview",   link: "/interview" },
+  { title: "Зөвлөмж",     desc: "Карьерын зөвлөмж унших", icon: "advice",      link: "/advice" },
+  { title: "Тэтгэлэг",    desc: "Боломжит тэтгэлгүүд",    icon: "scholarship", link: "/scholarship" },
+  { title: "CV Анализ",   desc: "AI-д CV шалгуулах",      icon: "analyze",     link: "/cv-analysis" },
 ];
 
 export default function Dashboard() {
@@ -74,10 +74,10 @@ export default function Dashboard() {
   ];
 
   var statCards = [
-    { label: "CV",          value: stats.cv_count,           unit: "ширхэг",   color: "#7C3AED", bg: "#EDE9FE" },
-    { label: "Асуулт",      value: stats.studied_questions,  unit: "судалсан", color: "#06B6D4", bg: "#ECFEFF" },
-    { label: "Quiz",        value: stats.quiz_count,         unit: "тоглосон", color: "#10B981", bg: "#ECFDF5" },
-    { label: "Нийт явц",    value: (stats.progress || 0) + "%", unit: "гүйцэтгэл", color: "#F59E0B", bg: "#FFFBEB" },
+    { label: "CV",       value: stats.cv_count,                unit: "ширхэг" },
+    { label: "Асуулт",   value: stats.studied_questions,       unit: "судалсан" },
+    { label: "Quiz",     value: stats.quiz_count,              unit: "тоглосон" },
+    { label: "Нийт явц", value: (stats.progress || 0) + "%",  unit: "гүйцэтгэл" },
   ];
 
   var tooltipStyle = theme === "dark"
@@ -123,17 +123,9 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {statCards.map(function (s, i) {
             return (
-              <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl px-4 py-4 border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: s.bg }}>
-                  <span className="text-lg font-bold" style={{ color: s.color }}>
-                    {typeof s.value === "number" ? s.value : s.value}
-                  </span>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{s.label}</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">{s.unit}</p>
-                </div>
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl px-4 py-3.5 border border-gray-200 dark:border-gray-700">
+                <p className="text-2xl font-medium text-gray-600 dark:text-gray-300 leading-none">{s.value}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">{s.label} · {s.unit}</p>
               </div>
             );
           })}
@@ -218,19 +210,19 @@ export default function Dashboard() {
 
         {/* Progress cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#EDE9FE" }}>
-                  <span style={{ color: "#7C3AED" }}><Icon d={ICONS.cv} size={16} /></span>
+                <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-gray-500 dark:text-gray-400"><Icon d={ICONS.cv} size={15} /></span>
                 </div>
                 <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">CV явц</span>
               </div>
-              <span className="text-base font-bold" style={{ color: "#7C3AED" }}>{cvProgress}%</span>
+              <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{cvProgress}%</span>
             </div>
-            <div className="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-700"
-                style={{ width: cvProgress + "%", background: "linear-gradient(90deg, #7C3AED, #a78bfa)" }} />
+            <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700 bg-violet-600"
+                style={{ width: cvProgress + "%" }} />
             </div>
             <div className="flex items-center justify-between mt-2.5">
               <span className="text-xs text-gray-400 dark:text-gray-500">{stats.cv_count} CV үүсгэсэн</span>
@@ -238,23 +230,23 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "#ECFEFF" }}>
-                  <span style={{ color: "#06B6D4" }}><Icon d={ICONS.interview} size={16} /></span>
+                <div className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-gray-500 dark:text-gray-400"><Icon d={ICONS.interview} size={15} /></span>
                 </div>
                 <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">Ярилцлагын бэлтгэл</span>
               </div>
-              <span className="text-base font-bold" style={{ color: "#06B6D4" }}>{ivProgress}%</span>
+              <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{ivProgress}%</span>
             </div>
-            <div className="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full rounded-full transition-all duration-700"
-                style={{ width: ivProgress + "%", background: "linear-gradient(90deg, #06B6D4, #67e8f9)" }} />
+            <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-full rounded-full transition-all duration-700 bg-violet-600"
+                style={{ width: ivProgress + "%" }} />
             </div>
             <div className="flex items-center justify-between mt-2.5">
               <span className="text-xs text-gray-400 dark:text-gray-500">{stats.studied_questions} асуулт судалсан</span>
-              <Link to="/interview" className="text-xs font-semibold text-cyan-600 hover:underline">Үргэлжлүүлэх →</Link>
+              <Link to="/interview" className="text-xs font-semibold text-violet-600 hover:underline">Үргэлжлүүлэх →</Link>
             </div>
           </div>
         </div>
@@ -264,20 +256,18 @@ export default function Dashboard() {
           {MODULES.map(function (m, i) {
             return (
               <Link key={i} to={m.link}
-                className="bg-white dark:bg-gray-800 rounded-2xl p-4 border hover:shadow-md transition-all group flex flex-col gap-2"
-                style={{ borderColor: m.border }}
+                className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-700 transition group flex flex-col gap-2"
               >
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: m.bg }}>
-                  <span style={{ color: m.color }}><Icon d={ICONS[m.icon]} size={20} /></span>
+                <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                  <span className="text-gray-500 dark:text-gray-400 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition">
+                    <Icon d={ICONS[m.icon]} size={18} />
+                  </span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-gray-900 dark:group-hover:text-gray-100">{m.title}</p>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{m.title}</p>
                   <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5 leading-snug">{m.desc}</p>
                 </div>
-                <span className="text-xs font-semibold mt-auto" style={{ color: m.color }}>
-                  Нээх →
-                </span>
+                <span className="text-xs font-medium text-violet-600 dark:text-violet-400 mt-auto">Нээх →</span>
               </Link>
             );
           })}
@@ -342,24 +332,21 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="flex-1 space-y-1">
-                {cvs.slice(0, 4).map(function (cv, i) {
+                {cvs.slice(0, 4).map(function (cv) {
                   var d = new Date(cv.updated_at || cv.created_at);
                   var dateStr = d.toLocaleDateString("mn-MN", { month: "numeric", day: "numeric" });
-                  var colors = ["#7C3AED", "#06B6D4", "#10B981", "#F59E0B"];
-                  var bgs   = ["#EDE9FE", "#ECFEFF", "#ECFDF5", "#FFFBEB"];
                   return (
                     <Link key={cv.id} to={"/cv/" + cv.id}
-                      className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition group"
+                      className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition group"
                     >
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                        style={{ background: bgs[i % bgs.length] }}>
-                        <span className="text-[10px] font-bold" style={{ color: colors[i % colors.length] }}>CV</span>
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400">CV</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">{cv.name}</p>
                         <p className="text-[11px] text-gray-400 dark:text-gray-500 capitalize">{cv.template_type} · {dateStr}</p>
                       </div>
-                      <span className="text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition flex-shrink-0">
+                      <span className="text-gray-300 dark:text-gray-600 group-hover:text-gray-400 transition flex-shrink-0">
                         <Icon d={ICONS.arrow} size={14} />
                       </span>
                     </Link>
@@ -385,22 +372,21 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {activity.slice(0, 6).map(function (item, i) {
                 var ACT = {
-                  cv:             { bg: "#EDE9FE", color: "#7C3AED", icon: "cv" },
-                  cv_edit:        { bg: "#EDE9FE", color: "#7C3AED", icon: "cv" },
-                  quiz:           { bg: "#FEE2E2", color: "#EF4444", icon: "interview" },
-                  flashcard:      { bg: "#ECFDF5", color: "#10B981", icon: "advice" },
-                  checklist:      { bg: "#FFFBEB", color: "#F59E0B", icon: "scholarship" },
-                  login:          { bg: "#F1F5F9", color: "#64748B", icon: "profile" },
-                  profile_update: { bg: "#F1F5F9", color: "#64748B", icon: "profile" },
+                  cv:             "cv",
+                  cv_edit:        "cv",
+                  quiz:           "interview",
+                  flashcard:      "advice",
+                  checklist:      "scholarship",
+                  login:          "profile",
+                  profile_update: "profile",
                 };
-                var style = ACT[item.type] || { bg: "#F1F5F9", color: "#64748B", icon: "cv" };
+                var icon = ACT[item.type] || "cv";
                 var d = item.created_at ? new Date(item.created_at) : null;
                 var timeStr = d ? d.toLocaleTimeString("mn-MN", { hour: "2-digit", minute: "2-digit" }) : "";
                 return (
-                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-700">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: style.bg }}>
-                      <span style={{ color: style.color }}><Icon d={ICONS[style.icon]} size={15} /></span>
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-700/50">
+                    <div className="w-7 h-7 rounded-lg bg-gray-200 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
+                      <span className="text-gray-500 dark:text-gray-400"><Icon d={ICONS[icon]} size={14} /></span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-gray-700 dark:text-gray-300 font-medium leading-tight truncate">{item.label}</p>

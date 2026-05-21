@@ -43,11 +43,11 @@ var ADMIN_TABS = [
 ];
 
 var ADMIN_LINKS = [
-  { to: "/admin/users",       label: "Хэрэглэгчид",        icon: "👥", desc: "Эрх, төлөв удирдах" },
-  { to: "/admin/interview",   label: "Ярилцлагын асуулт",  icon: "🎯", desc: "Асуулт нэмэх, засах" },
-  { to: "/admin/advice",      label: "Зөвлөмжүүд",         icon: "💡", desc: "Нийтлэл удирдах" },
-  { to: "/admin/scholarship", label: "Тэтгэлгүүд",         icon: "🎓", desc: "Тэтгэлэг нэмэх, засах" },
-  { to: "/admin/feedback",    label: "CV Үнэлгээ",         icon: "⭐", desc: "Загварын үнэлгээ, санал" },
+  { to: "/admin/users",       label: "Хэрэглэгчид",       desc: "Эрх, төлөв удирдах" },
+  { to: "/admin/interview",   label: "Ярилцлагын асуулт", desc: "Асуулт нэмэх, засах" },
+  { to: "/admin/advice",      label: "Зөвлөмжүүд",        desc: "Нийтлэл удирдах" },
+  { to: "/admin/scholarship", label: "Тэтгэлгүүд",        desc: "Тэтгэлэг нэмэх, засах" },
+  { to: "/admin/feedback",    label: "CV Үнэлгээ",        desc: "Загварын үнэлгээ, санал" },
 ];
 
 function BarChart({ data, color }) {
@@ -80,22 +80,22 @@ function StatItem({ label, value, sub, color }) {
   );
 }
 
-function MiniDonut({ items, colors }) {
+function MiniDonut({ items }) {
   if (!items || items.length === 0) return <p className="text-sm text-gray-400 dark:text-gray-500">Өгөгдөл байхгүй</p>;
   var total = items.reduce(function (s, x) { return s + x.count; }, 0);
   if (total === 0) return <p className="text-sm text-gray-400 dark:text-gray-500">Өгөгдөл байхгүй</p>;
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {items.map(function (item, i) {
         var pct = Math.round((item.count / total) * 100);
         return (
           <div key={i}>
-            <div className="flex justify-between text-xs mb-0.5">
-              <span className="text-gray-700 dark:text-gray-300">{CATEGORY_MN[item.category || item.template] || item.category || item.template}</span>
-              <span className="font-semibold text-gray-900 dark:text-gray-100">{item.count} <span className="text-gray-400 dark:text-gray-500 font-normal">({pct}%)</span></span>
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-gray-600 dark:text-gray-400">{CATEGORY_MN[item.category || item.template] || item.category || item.template}</span>
+              <span className="text-gray-900 dark:text-gray-100 font-medium">{item.count} <span className="text-gray-400 font-normal">· {pct}%</span></span>
             </div>
-            <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-              <div className="h-full rounded-full transition-all" style={{ width: pct + "%", background: colors[i % colors.length] }} />
+            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-full rounded-full" style={{ width: pct + "%", backgroundColor: "#7c3aed", opacity: 0.7 + i * 0.1 > 1 ? 1 : 0.7 + i * 0.1 }} />
             </div>
           </div>
         );
@@ -156,31 +156,31 @@ export default function AdminDashboard() {
                 <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Хэрэглэгчид</p>
                 <div className="grid grid-cols-5 gap-3">
                   <StatItem label="Нийт" value={c?.users} />
-                  <StatItem label="Идэвхтэй" value={c?.active_users} color="text-emerald-600"
+                  <StatItem label="Идэвхтэй" value={c?.active_users}
                     sub={c ? Math.round(c.active_users / (c.users || 1) * 100) + "%" : ""} />
                   <StatItem label="Хаагдсан" value={c?.suspended_users} color="text-red-600" />
-                  <StatItem label="Баталгааж." value={c?.unverified} color="text-amber-600" />
-                  <StatItem label="Админ" value={c?.admins} color="text-violet-700" />
+                  <StatItem label="Баталгааж." value={c?.unverified} />
+                  <StatItem label="Админ" value={c?.admins} />
                 </div>
               </div>
               <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
                 <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Агуулга</p>
                 <div className="grid grid-cols-5 gap-3">
-                  <StatItem label="CV нийт" value={c?.cvs} color="text-purple-700"
+                  <StatItem label="CV нийт" value={c?.cvs}
                     sub={c && c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : ""} />
-                  <StatItem label="PDF таталт" value={data?.total_pdf_exports} color="text-rose-600"
+                  <StatItem label="PDF таталт" value={data?.total_pdf_exports}
                     sub={c && data?.total_pdf_exports && c.cvs ? (data.total_pdf_exports / c.cvs).toFixed(1) + " / CV" : ""} />
-                  <StatItem label="Тэтгэлэг" value={c?.scholarships} color="text-blue-700" />
-                  <StatItem label="Ярилцлага" value={c?.interview_questions} color="text-teal-700" />
-                  <StatItem label="Зөвлөмж" value={c?.published_advice} color="text-orange-600"
+                  <StatItem label="Тэтгэлэг" value={c?.scholarships} />
+                  <StatItem label="Ярилцлага" value={c?.interview_questions} />
+                  <StatItem label="Зөвлөмж" value={c?.published_advice}
                     sub={c ? "Нийт " + c.advice : ""} />
                 </div>
               </div>
               <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
                 <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Идэвхжилт</p>
                 <div className="grid grid-cols-3 gap-3">
-                  <StatItem label="Quiz дүн" value={c?.quiz_results} color="text-indigo-700" />
-                  <StatItem label="Тэтгэлэг хадгалсан" value={c?.bookmarks} color="text-pink-600" />
+                  <StatItem label="Quiz дүн" value={c?.quiz_results} />
+                  <StatItem label="Тэтгэлэг хадгалсан" value={c?.bookmarks} />
                   <StatItem label="30 хоногт бүртгэл"
                     value={data?.daily_registrations?.reduce(function (s, d) { return s + d.count; }, 0)} />
                 </div>
@@ -188,31 +188,25 @@ export default function AdminDashboard() {
             </div>
 
             {/* Charts */}
-            <div className="grid md:grid-cols-2 gap-5">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-1">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <div className="flex items-baseline justify-between mb-3">
                   <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Шинэ бүртгэл</p>
                   <span className="text-xs text-gray-400 dark:text-gray-500">Сүүлийн 30 хоног</span>
                 </div>
-                <p className="text-2xl font-bold text-violet-700 mb-3">
-                  {data?.daily_registrations?.reduce(function (s, d) { return s + d.count; }, 0)}
-                </p>
                 <BarChart data={data?.daily_registrations} color="#7C3AED" />
-                <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
+                <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 mt-1">
                   <span>{data?.daily_registrations?.[0]?.date?.slice(5)}</span>
                   <span>{data?.daily_registrations?.[29]?.date?.slice(5)}</span>
                 </div>
               </div>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-1">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <div className="flex items-baseline justify-between mb-3">
                   <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">Шинэ CV</p>
                   <span className="text-xs text-gray-400 dark:text-gray-500">Сүүлийн 30 хоног</span>
                 </div>
-                <p className="text-2xl font-bold text-purple-700 mb-3">
-                  {data?.daily_cvs?.reduce(function (s, d) { return s + d.count; }, 0)}
-                </p>
                 <BarChart data={data?.daily_cvs} color="#7c3aed" />
-                <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1">
+                <div className="flex justify-between text-[11px] text-gray-400 dark:text-gray-500 mt-1">
                   <span>{data?.daily_cvs?.[0]?.date?.slice(5)}</span>
                   <span>{data?.daily_cvs?.[29]?.date?.slice(5)}</span>
                 </div>
@@ -220,29 +214,22 @@ export default function AdminDashboard() {
             </div>
 
             {/* Breakdown cards */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">CV загварчлал</p>
-                <MiniDonut items={data?.cv_by_template?.map(function (x) { return { category: x.template, count: x.count }; })}
-                  colors={["#7C3AED", "#0891b2", "#16a34a"]} />
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">CV загварчлал</p>
+                <MiniDonut items={data?.cv_by_template?.map(function (x) { return { category: x.template, count: x.count }; })} />
               </div>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">PDF таталт загваргаар</p>
-                  <span className="text-xs bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded font-medium">📄</span>
-                </div>
-                <MiniDonut items={data?.pdf_by_template?.map(function (x) { return { category: x.template, count: x.count }; })}
-                  colors={["#e11d48", "#f97316", "#0891b2"]} />
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">PDF таталт загваргаар</p>
+                <MiniDonut items={data?.pdf_by_template?.map(function (x) { return { category: x.template, count: x.count }; })} />
               </div>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Ярилцлагын асуулт</p>
-                <MiniDonut items={data?.questions_by_category}
-                  colors={["#0d9488", "#0891b2", "#6366f1"]} />
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Ярилцлагын асуулт</p>
+                <MiniDonut items={data?.questions_by_category} />
               </div>
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Зөвлөмж ангилал</p>
-                <MiniDonut items={data?.advice_by_category}
-                  colors={["#ea580c", "#d97706", "#16a34a", "#7c3aed"]} />
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Зөвлөмж ангилал</p>
+                <MiniDonut items={data?.advice_by_category} />
               </div>
             </div>
 
@@ -316,15 +303,17 @@ export default function AdminDashboard() {
                     var deadline = new Date(s.deadline);
                     var today = new Date();
                     var daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+                    var urgent = daysLeft <= 7;
                     return (
-                      <Link key={s.id} to={"/scholarship/" + s.id} className="flex items-start gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition block">
-                        <div className={"flex-shrink-0 w-10 text-center rounded-lg py-1 " + (daysLeft <= 7 ? "bg-red-50" : daysLeft <= 30 ? "bg-amber-50" : "bg-blue-50")}>
-                          <p className={"text-lg font-bold leading-none " + (daysLeft <= 7 ? "text-red-600" : daysLeft <= 30 ? "text-amber-600" : "text-blue-700")}>{daysLeft}</p>
-                          <p className={"text-xs " + (daysLeft <= 7 ? "text-red-400" : daysLeft <= 30 ? "text-amber-400" : "text-blue-400")}>хоног</p>
+                      <Link key={s.id} to={"/scholarship/" + s.id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                        <div className="flex-shrink-0 text-right w-8">
+                          <p className={"text-sm font-bold leading-none " + (urgent ? "text-red-500" : "text-gray-700 dark:text-gray-300")}>{daysLeft}</p>
+                          <p className="text-[10px] text-gray-400 dark:text-gray-500">хоног</p>
                         </div>
+                        <div className={"w-px h-6 flex-shrink-0 " + (urgent ? "bg-red-200" : "bg-gray-200 dark:bg-gray-600")} />
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{s.name}</p>
-                          <p className="text-xs text-gray-400 dark:text-gray-500">{s.organization || "—"} · {s.deadline}</p>
+                          <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{s.organization || "—"} · {s.deadline}</p>
                         </div>
                       </Link>
                     );
@@ -334,17 +323,17 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick links */}
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Хурдан холбоос</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {ADMIN_LINKS.map(function (link) {
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center justify-between min-w-max w-full gap-2">
+                {ADMIN_LINKS.map(function (link, i) {
                   return (
-                    <Link key={link.to} to={link.to}
-                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-violet-300 dark:hover:border-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/10 transition group">
-                      <p className="text-2xl mb-2">{link.icon}</p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-violet-700 dark:group-hover:text-violet-400">{link.label}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{link.desc}</p>
-                    </Link>
+                    <span key={link.to} className="flex items-center gap-2">
+                      {i > 0 && <span className="text-gray-200 dark:text-gray-700 select-none text-xs">|</span>}
+                      <Link to={link.to}
+                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-violet-700 dark:hover:text-violet-400 transition font-medium whitespace-nowrap">
+                        {link.label}
+                      </Link>
+                    </span>
                   );
                 })}
               </div>

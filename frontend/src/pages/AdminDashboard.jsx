@@ -70,15 +70,12 @@ function BarChart({ data, color }) {
   );
 }
 
-function KpiCard({ label, value, sub, color, icon }) {
+function StatItem({ label, value, sub, color }) {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">{label}</span>
-        {icon && <span className="text-lg">{icon}</span>}
-      </div>
-      <p className={"text-3xl font-bold " + (color || "text-gray-900 dark:text-gray-100")}>{value ?? "—"}</p>
-      {sub && <p className="text-xs text-gray-400 dark:text-gray-500">{sub}</p>}
+    <div className="min-w-[56px]">
+      <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5 whitespace-nowrap">{label}</p>
+      <p className={"text-xl font-bold leading-none " + (color || "text-gray-900 dark:text-gray-100")}>{value ?? "—"}</p>
+      {sub && <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -153,42 +150,40 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <>
-            {/* KPI row 1 */}
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Хэрэглэгчид</p>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <KpiCard label="Нийт" value={c?.users} />
-                <KpiCard label="Идэвхтэй" value={c?.active_users} color="text-emerald-700"
-                  sub={c ? Math.round(c.active_users / (c.users || 1) * 100) + "%" : ""} />
-                <KpiCard label="Түр хаагдсан" value={c?.suspended_users} color="text-red-600" />
-                <KpiCard label="Баталгаажаагүй" value={c?.unverified} color="text-amber-600" />
-                <KpiCard label="Админ" value={c?.admins} color="text-violet-700" />
+            {/* Stats — нэгдсэн нягт card */}
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+              <div className="px-4 py-3">
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Хэрэглэгчид</p>
+                <div className="grid grid-cols-5 gap-3">
+                  <StatItem label="Нийт" value={c?.users} />
+                  <StatItem label="Идэвхтэй" value={c?.active_users} color="text-emerald-600"
+                    sub={c ? Math.round(c.active_users / (c.users || 1) * 100) + "%" : ""} />
+                  <StatItem label="Хаагдсан" value={c?.suspended_users} color="text-red-600" />
+                  <StatItem label="Баталгааж." value={c?.unverified} color="text-amber-600" />
+                  <StatItem label="Админ" value={c?.admins} color="text-violet-700" />
+                </div>
               </div>
-            </div>
-
-            {/* KPI row 2 */}
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Агуулга</p>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <KpiCard label="CV нийт" value={c?.cvs} color="text-purple-700"
-                  sub={c ? (c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : "") : ""} />
-                <KpiCard label="PDF таталт нийт" value={data?.total_pdf_exports} color="text-rose-600" icon="📄"
-                  sub={c && data?.total_pdf_exports && c.cvs ? (data.total_pdf_exports / c.cvs).toFixed(1) + " / CV" : undefined} />
-                <KpiCard label="Тэтгэлэг" value={c?.scholarships} color="text-blue-700" />
-                <KpiCard label="Ярилцлагын асуулт" value={c?.interview_questions} color="text-teal-700" />
-                <KpiCard label="Зөвлөмж нийтлэл" value={c?.published_advice} color="text-orange-600"
-                  sub={c ? "Нийт " + c.advice : ""} />
+              <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Агуулга</p>
+                <div className="grid grid-cols-5 gap-3">
+                  <StatItem label="CV нийт" value={c?.cvs} color="text-purple-700"
+                    sub={c && c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : ""} />
+                  <StatItem label="PDF таталт" value={data?.total_pdf_exports} color="text-rose-600"
+                    sub={c && data?.total_pdf_exports && c.cvs ? (data.total_pdf_exports / c.cvs).toFixed(1) + " / CV" : ""} />
+                  <StatItem label="Тэтгэлэг" value={c?.scholarships} color="text-blue-700" />
+                  <StatItem label="Ярилцлага" value={c?.interview_questions} color="text-teal-700" />
+                  <StatItem label="Зөвлөмж" value={c?.published_advice} color="text-orange-600"
+                    sub={c ? "Нийт " + c.advice : ""} />
+                </div>
               </div>
-            </div>
-
-            {/* KPI row 3 */}
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Идэвхжилт</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <KpiCard label="Quiz дүн нийт" value={c?.quiz_results} color="text-indigo-700" icon="" />
-                <KpiCard label="Тэтгэлэг хадгалсан" value={c?.bookmarks} color="text-pink-600" icon="" />
-                <KpiCard label="30 хоногт бүртгэл" color="text-gray-700" icon=""
-                  value={data?.daily_registrations?.reduce(function (s, d) { return s + d.count; }, 0)} />
+              <div className="px-4 py-3 border-t border-gray-100 dark:border-gray-700">
+                <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Идэвхжилт</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <StatItem label="Quiz дүн" value={c?.quiz_results} color="text-indigo-700" />
+                  <StatItem label="Тэтгэлэг хадгалсан" value={c?.bookmarks} color="text-pink-600" />
+                  <StatItem label="30 хоногт бүртгэл"
+                    value={data?.daily_registrations?.reduce(function (s, d) { return s + d.count; }, 0)} />
+                </div>
               </div>
             </div>
 

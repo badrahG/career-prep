@@ -362,6 +362,13 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
         .group_by(CV.template_type).all()
     )
 
+    # ── PDF exports by template ──────────────────────────────────────────────
+    pdf_by_template = (
+        db.query(CV.template_type, func.sum(CV.pdf_export_count).label("n"))
+        .group_by(CV.template_type).all()
+    )
+    total_pdf_exports = db.query(func.sum(CV.pdf_export_count)).scalar() or 0
+
     # ── Interview questions by category ─────────────────────────────────────
     q_by_cat = (
         db.query(InterviewQuestion.category, func.count(InterviewQuestion.id).label("n"))
@@ -441,6 +448,8 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
             "bookmarks": total_bookmarks,
         },
         "cv_by_template": [{"template": r.template_type, "count": r.n} for r in cv_by_template],
+        "pdf_by_template": [{"template": r.template_type, "count": int(r.n or 0)} for r in pdf_by_template],
+        "total_pdf_exports": int(total_pdf_exports),
         "questions_by_category": [{"category": str(r.category.value if hasattr(r.category, "value") else r.category), "count": r.n} for r in q_by_cat],
         "advice_by_category": [{"category": str(r.category.value if hasattr(r.category, "value") else r.category), "count": r.n} for r in adv_by_cat],
         "upcoming_scholarships": [

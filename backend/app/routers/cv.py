@@ -54,6 +54,21 @@ def _verify_image_magic(data: bytes, ext: str) -> bool:
     return False
 
 
+@router.post("/{cv_id}/track-pdf")
+def track_pdf_export(
+    cv_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """PDF татаж авах үед дуудагдана — загвараар статистик хөтөлнө."""
+    cv = db.query(CV).filter(CV.id == cv_id, CV.user_id == current_user.id).first()
+    if not cv:
+        raise HTTPException(status_code=404, detail="CV олдсонгүй")
+    cv.pdf_export_count = (cv.pdf_export_count or 0) + 1
+    db.commit()
+    return {"ok": True, "pdf_export_count": cv.pdf_export_count}
+
+
 @router.post("/upload-photo")
 async def upload_photo(
     file: UploadFile = File(...),

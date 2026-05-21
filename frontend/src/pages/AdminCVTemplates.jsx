@@ -136,7 +136,7 @@ export default function AdminCVTemplates() {
         ) : (
           <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full min-w-[540px]">
                 <thead className="bg-slate-50 dark:bg-gray-700/50 border-b border-slate-200 dark:border-gray-700">
                   <tr>
                     <th className="text-left text-xs font-semibold text-slate-600 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Загвар</th>

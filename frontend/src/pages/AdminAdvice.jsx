@@ -177,12 +177,12 @@ export default function AdminAdvice() {
       <div className="p-5 md:p-6 space-y-6">
 
         {/* Admin tabs */}
-        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6 mb-2 overflow-x-auto scrollbar-hide">
           {ADMIN_TABS.map(function (tab) {
             var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
             return (
               <Link key={tab.to} to={tab.to}
-                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
+                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition whitespace-nowrap flex-shrink-0 " +
                   (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {tab.label}
               </Link>

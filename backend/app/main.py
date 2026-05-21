@@ -281,6 +281,9 @@ def run_migrations():
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_ai_limit INTEGER"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS custom_tr_limit INTEGER"))
 
+        # ── PDF export tracking ──────────────────────────────────────────────────
+        conn.execute(text("ALTER TABLE cvs ADD COLUMN IF NOT EXISTS pdf_export_count INTEGER NOT NULL DEFAULT 0"))
+
         conn.commit()
     print("✓ Migrations applied")
 

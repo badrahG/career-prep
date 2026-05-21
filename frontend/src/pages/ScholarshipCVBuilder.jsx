@@ -139,6 +139,10 @@ export default function ScholarshipCVBuilder() {
   var [translatingJa, setTranslatingJa] = useState(false);
   var [ratings, setRatings] = useState({});
   var [certFiles, setCertFiles] = useState([]);
+  var [aiLoading, setAiLoading] = useState(false);
+  var [aiResult, setAiResult] = useState(null);
+  var [showAiModal, setShowAiModal] = useState(false);
+  var [aiTab, setAiTab] = useState("cv");
 
   var cfg = country ? COUNTRY_CONFIG[country] : null;
   var allSteps = cfg ? ["Country", ...cfg.steps] : DEFAULT_STEPS;
@@ -344,6 +348,68 @@ export default function ScholarshipCVBuilder() {
       toast.error(err.response?.data?.detail || "Орчуулахад алдаа гарлаа");
     } finally {
       setTranslatingJa(false);
+    }
+  }
+
+  async function handleAiGenerate() {
+    if (aiLoading) return;
+    if (!country) { toast.error("Эхлээд улс сонгоно уу"); return; }
+    if (!profile.fullName) { toast.error("Бүтэн нэрээ оруулна уу"); return; }
+    setAiLoading(true);
+    try {
+      var res = await API.post("/cv/scholarship-generate", {
+        country: country || "",
+        scholarshipName: req.name || "",
+        organization: req.org || "",
+        deadline: req.deadline || "",
+        program: req.program || "",
+        requirementText: req.text || "",
+        profile: {
+          fullName: profile.fullName || "",
+          email: profile.email || "",
+          phone: profile.phone || "",
+          location: profile.location || "",
+          linkedin: profile.linkedin || "",
+          portfolio: profile.portfolio || "",
+        },
+        education: {
+          school: edu.school || "",
+          degree: edu.degree || "",
+          major: edu.major || "",
+          gpa: String(edu.gpa || ""),
+          gpaScale: edu.gpaScale || "4.00",
+          graduationYear: String(edu.graduationYear || ""),
+          coursework: edu.coursework || "",
+        },
+        achievements: {
+          awards: ach.awards || "",
+          competitions: ach.competitions || "",
+          certificates: ach.certificates || "",
+          languageScores: (ach.langScores || []).map(function (ls) {
+            return { type: ls.type || "", score: ls.score || "" };
+          }),
+        },
+        leadershipExperience: ldr.leadership || "",
+        volunteerWork: ldr.volunteer || "",
+        extracurricular: ldr.extracurricular || "",
+        projects: ldr.projects || "",
+        workExperience: ldr.work || "",
+        personalBackground: ldr.background || "",
+        careerGoal: goals.careerGoal || "",
+        whyScholarship: goals.whyScholarship || "",
+        whyCountry: goals.whyCountry || "",
+        howContribute: goals.howContribute || "",
+        impactPlan: goals.impactPlan || "",
+        studyPlan: goals.studyPlan || "",
+      });
+      setAiResult(res.data);
+      setAiTab("cv");
+      setShowAiModal(true);
+    } catch (err) {
+      var detail = err.response?.data?.detail;
+      toast.error(typeof detail === "string" ? detail : "AI генерац хийхэд алдаа гарлаа");
+    } finally {
+      setAiLoading(false);
     }
   }
 
@@ -958,10 +1024,15 @@ export default function ScholarshipCVBuilder() {
             AI тань CV-г мэргэжлийн түвшинд сайжруулна. Motivation Letter, {cfg?.extraLabel}, дутуу мэдээллийн checklist автоматаар үүснэ.
           </p>
           <button
-            onClick={function () { toast("AI Premium удахгүй нэмэгдэнэ! 🚀", { duration: 3000 }); }}
-            className="w-full bg-gradient-to-r from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 text-violet-700 dark:text-violet-300 py-2.5 rounded-xl text-sm font-semibold border border-violet-200 dark:border-violet-700 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-900/50 dark:hover:to-indigo-900/50 transition"
+            onClick={handleAiGenerate}
+            disabled={aiLoading}
+            className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:from-violet-700 hover:to-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
           >
-            AI Generate (Premium) — Удахгүй
+            {aiLoading ? (
+              <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> AI боловсруулж байна...</>
+            ) : (
+              <><span>✨</span> AI Generate</>
+            )}
           </button>
         </div>
 
@@ -1276,6 +1347,91 @@ export default function ScholarshipCVBuilder() {
           </div>
         </div>
       )}
+      {/* AI Generate Result Modal */}
+      {showAiModal && aiResult && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          onClick={function () { setShowAiModal(false); }}>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            style={{ width: "min(760px, 95vw)", maxHeight: "90vh" }}
+            onClick={function (e) { e.stopPropagation(); }}>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="text-base">✨</span>
+                <p className="font-bold text-gray-800 dark:text-gray-100 text-sm">AI Generated Content</p>
+                <span className="text-xs bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 px-2 py-0.5 rounded-full font-medium">{country}</span>
+              </div>
+              <button onClick={function () { setShowAiModal(false); }}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition text-xl">×</button>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 px-4 overflow-x-auto scrollbar-hide shrink-0">
+              {[
+                { key: "cv", label: "📄 CV", show: !!aiResult.cv },
+                { key: "motivationLetter", label: "✉️ Motivation Letter", show: !!aiResult.motivationLetter },
+                { key: "extraDraft", label: "📝 " + (cfg?.extraLabel || "Extra"), show: !!aiResult.extraDraft },
+                { key: "checklist", label: "✅ Checklist", show: !!(aiResult.checklist && aiResult.checklist.length) },
+              ].filter(function (t) { return t.show; }).map(function (t) {
+                return (
+                  <button key={t.key} onClick={function () { setAiTab(t.key); }}
+                    className={"px-3 py-2.5 text-xs font-semibold border-b-2 -mb-px transition whitespace-nowrap " +
+                      (aiTab === t.key ? "border-violet-600 text-violet-700 dark:text-violet-400" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200")}>
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-5">
+              {aiTab === "checklist" ? (
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Дараах мэдээллийг нэмбэл илүү хүчтэй материал болно:</p>
+                  {(aiResult.checklist || []).length === 0 ? (
+                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-2 text-sm text-green-700 dark:text-green-300">
+                      <span>✓</span> Мэдээлэл бүрэн гүйцэт байна!
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {(aiResult.checklist || []).map(function (item, i) {
+                        return (
+                          <div key={i} className="flex gap-2.5 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
+                            <span className="text-amber-500 shrink-0 mt-0.5">⚠</span>
+                            <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="relative">
+                  <button
+                    onClick={function () {
+                      navigator.clipboard.writeText(aiResult[aiTab] || "").then(function () { toast.success("Хуулагдлаа"); });
+                    }}
+                    className="absolute top-2 right-2 text-xs px-2.5 py-1 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition font-medium z-10">
+                    Хуулах
+                  </button>
+                  <textarea
+                    readOnly
+                    value={aiResult[aiTab] || ""}
+                    className="w-full h-[400px] border border-gray-200 dark:border-gray-600 rounded-xl p-4 pr-24 text-sm text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-900 resize-none focus:outline-none font-mono leading-relaxed"
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 shrink-0">
+              <p className="text-xs text-gray-400 dark:text-gray-500">✨ AI-ийн үүсгэсэн контентийг шалгаж, өөрийн мэдээллээр нийцүүлнэ үү.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
     </Layout>
     </>
   );

@@ -133,6 +133,7 @@ export default function CVDetail() {
 
   async function handleDownloadTranslatedPDF() {
     setShowTranslateModal(false);
+    API.post("/cv/" + id + "/track-pdf").catch(function () {});
     setTimeout(function () {
       triggerWindowPrint("en", (cv?.name || "cv") + " EN");
     }, 80);
@@ -158,6 +159,7 @@ export default function CVDetail() {
 
   function handleDownloadTranslatedJaPDF() {
     setShowTranslateModalJa(false);
+    API.post("/cv/" + id + "/track-pdf").catch(function () {});
     setTimeout(function () {
       triggerWindowPrint("ja", (cv?.name || "cv") + " JA");
     }, 80);
@@ -165,6 +167,8 @@ export default function CVDetail() {
 
   function handleDownloadPDF() {
     if (!cv) { toast.error("CV агуулга ачаалагдаагүй"); return; }
+    // PDF таталт бүртгэх (fire-and-forget)
+    API.post("/cv/" + cv.id + "/track-pdf").catch(function () {});
     if (isMobile) {
       setPdfSheetAction(function () { return function () { triggerWindowPrint("original", cv.name); }; });
       setShowPDFSheet(true);

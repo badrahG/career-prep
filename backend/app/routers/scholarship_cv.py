@@ -195,15 +195,23 @@ Return ONLY the raw JSON object. No markdown code fences (no ```), no preamble, 
 
 def _parse_json_response(raw: str) -> dict:
     """AI хариуг JSON болгон parse хийнэ."""
-    if raw.startswith("```"):
-        raw = raw[raw.find("\n") + 1:]
+    # Markdown code fence арилгах
+    if "```" in raw:
+        raw = raw[raw.find("\n", raw.find("```")) + 1:]
         if "```" in raw:
             raw = raw[:raw.rfind("```")]
     start = raw.find("{")
     end = raw.rfind("}") + 1
     if start == -1 or end == 0:
         raise ValueError("JSON not found in response")
-    return json.loads(raw[start:end])
+    chunk = raw[start:end]
+    try:
+        return json.loads(chunk)
+    except json.JSONDecodeError:
+        # Literal newline-г escape хийж дахин оролдох
+        import re
+        fixed = re.sub(r'(?<!\\)\n', r'\\n', chunk)
+        return json.loads(fixed)
 
 
 def _generate_with_claude(prompt: str, api_key: str) -> dict:
@@ -222,7 +230,8 @@ def _generate_with_groq(prompt: str, api_key: str) -> dict:
     client = Groq(api_key=api_key)
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",
-        max_tokens=6000,
+        max_tokens=8000,
+        response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}],
     )
     raw = completion.choices[0].message.content.strip()

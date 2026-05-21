@@ -21,6 +21,7 @@ class CV(Base):
     template_type = Column(Enum(TemplateType), default=TemplateType.modern)
     personal_info = Column(Text, nullable=True)
     cv_type = Column(String(20), nullable=False, default='job', server_default='job')
+    pdf_export_count = Column(Integer, default=0, server_default="0", nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

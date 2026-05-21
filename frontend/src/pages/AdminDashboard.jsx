@@ -126,12 +126,12 @@ export default function AdminDashboard() {
       <div className="p-5 md:p-6 space-y-6">
 
         {/* Admin tabs */}
-        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6 mb-2">
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700 -mx-5 px-5 md:-mx-6 md:px-6 mb-2 overflow-x-auto scrollbar-hide">
           {ADMIN_TABS.map(function (tab) {
             var active = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
             return (
               <Link key={tab.to} to={tab.to}
-                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition " +
+                className={"px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition whitespace-nowrap flex-shrink-0 " +
                   (active ? "border-violet-600 text-violet-700" : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200")}>
                 {tab.label}
               </Link>
@@ -169,9 +169,11 @@ export default function AdminDashboard() {
             {/* KPI row 2 */}
             <div>
               <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Агуулга</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <KpiCard label="CV нийт" value={c?.cvs} color="text-purple-700"
                   sub={c ? (c.users > 0 ? (c.cvs / c.users).toFixed(1) + " / хэрэглэгч" : "") : ""} />
+                <KpiCard label="PDF таталт нийт" value={data?.total_pdf_exports} color="text-rose-600" icon="📄"
+                  sub={c && data?.total_pdf_exports && c.cvs ? (data.total_pdf_exports / c.cvs).toFixed(1) + " / CV" : undefined} />
                 <KpiCard label="Тэтгэлэг" value={c?.scholarships} color="text-blue-700" />
                 <KpiCard label="Ярилцлагын асуулт" value={c?.interview_questions} color="text-teal-700" />
                 <KpiCard label="Зөвлөмж нийтлэл" value={c?.published_advice} color="text-orange-600"
@@ -223,11 +225,19 @@ export default function AdminDashboard() {
             </div>
 
             {/* Breakdown cards */}
-            <div className="grid md:grid-cols-3 gap-5">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">CV загварчлал</p>
                 <MiniDonut items={data?.cv_by_template?.map(function (x) { return { category: x.template, count: x.count }; })}
-                  colors={["#7C3AED", "#7c3aed", "#0891b2"]} />
+                  colors={["#7C3AED", "#0891b2", "#16a34a"]} />
+              </div>
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">PDF таталт загваргаар</p>
+                  <span className="text-xs bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 px-1.5 py-0.5 rounded font-medium">📄</span>
+                </div>
+                <MiniDonut items={data?.pdf_by_template?.map(function (x) { return { category: x.template, count: x.count }; })}
+                  colors={["#e11d48", "#f97316", "#0891b2"]} />
               </div>
               <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 mb-4">Ярилцлагын асуулт</p>

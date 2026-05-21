@@ -135,6 +135,74 @@ def export_users_csv(db: Session = Depends(get_db), admin: User = Depends(requir
     )
 
 
+# ── Subscription / usage overview (before /{user_id} to avoid routing conflict) ──
+
+@router.get("/users/usage-overview")
+def users_usage_overview(
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_admin),
+):
+    from app.models.subscription import SubscriptionPlan, UserSubscription, UsageTracking, ExtraPackPurchase
+    from app.services.usage import get_user_plan, ensure_usage
+
+    now = datetime.now(timezone.utc)
+
+    all_users = db.query(User).filter(User.role != "admin").order_by(User.created_at.desc()).all()
+
+    rows = []
+    total_ai_used = 0
+    total_tr_used = 0
+    pro_count = 0
+
+    for u in all_users:
+        plan = get_user_plan(u.id, db)
+        usage = ensure_usage(u.id, db)
+
+        sub = (
+            db.query(UserSubscription)
+            .filter(UserSubscription.user_id == u.id, UserSubscription.period_end > now)
+            .first()
+        )
+        extra_packs = db.query(ExtraPackPurchase).filter(ExtraPackPurchase.user_id == u.id).all()
+        extra_ai = sum(e.ai_remaining for e in extra_packs if e.ai_remaining > 0)
+        extra_tr = sum(e.tr_remaining for e in extra_packs if e.tr_remaining > 0)
+
+        effective_ai = u.custom_ai_limit if u.custom_ai_limit is not None else plan.ai_limit
+        effective_tr = u.custom_tr_limit if u.custom_tr_limit is not None else plan.tr_limit
+
+        if plan.name == "pro":
+            pro_count += 1
+        total_ai_used += usage.ai_used
+        total_tr_used += usage.tr_used
+
+        rows.append({
+            "id": u.id,
+            "name": f"{u.last_name} {u.first_name}".strip(),
+            "email": u.email,
+            "is_active": u.is_active,
+            "plan": plan.name,
+            "plan_expires": sub.period_end.isoformat() if sub else None,
+            "ai_used": usage.ai_used,
+            "ai_limit": effective_ai,
+            "tr_used": usage.tr_used,
+            "tr_limit": effective_tr,
+            "extra_ai": extra_ai,
+            "extra_tr": extra_tr,
+            "period_end": usage.period_end.isoformat(),
+        })
+
+    return {
+        "summary": {
+            "total": len(all_users),
+            "pro": pro_count,
+            "free": len(all_users) - pro_count,
+            "total_ai_used": total_ai_used,
+            "total_tr_used": total_tr_used,
+        },
+        "users": rows,
+    }
+
+
 # ── Bulk delete ───────────────────────────────────────────────────────────────
 
 class BulkDeleteRequest(BaseModel):

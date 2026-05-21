@@ -70,6 +70,16 @@ export default function AdminUsers() {
   var [limitAI, setLimitAI] = useState("");
   var [limitTR, setLimitTR] = useState("");
   var [limitSaving, setLimitSaving] = useState(false);
+  var [usageData, setUsageData] = useState(null);
+  var [usageLoading, setUsageLoading] = useState(false);
+
+  function loadUsage() {
+    setUsageLoading(true);
+    API.get("/admin/users/usage-overview")
+      .then(function (res) { setUsageData(res.data); })
+      .catch(function () { toast.error("Ашиглалтын мэдээлэл ачаалахад алдаа"); })
+      .finally(function () { setUsageLoading(false); });
+  }
 
   function loadUsers() {
     setLoading(true);
@@ -103,6 +113,7 @@ export default function AdminUsers() {
   useEffect(function () {
     if (activeTab === "logs") loadLogs();
     if (activeTab === "analytics") loadStats();
+    if (activeTab === "usage") loadUsage();
   }, [activeTab]);
 
   useEffect(function () {
@@ -248,8 +259,8 @@ export default function AdminUsers() {
 
           {/* Inner tabs */}
           <div className="flex gap-1 mt-4">
-            {["users", "analytics", "logs"].map(function (tab) {
-              var labels = { users: "Хэрэглэгчид", analytics: "Аналитик", logs: "Хандалтын лог" };
+            {["users", "analytics", "logs", "usage"].map(function (tab) {
+              var labels = { users: "Хэрэглэгчид", analytics: "Аналитик", logs: "Хандалтын лог", usage: "Ашиглалт" };
               return (
                 <button key={tab} onClick={function () { setActiveTab(tab); }}
                   className={"px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition " +
@@ -539,6 +550,124 @@ export default function AdminUsers() {
                   </table>
                 </div>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Usage tab ─────────────────────────────────────────────────────── */}
+        {activeTab === "usage" && (
+          <div>
+            {usageLoading ? (
+              <ListSkeleton count={6} />
+            ) : !usageData ? (
+              <EmptyState illustration="inbox" title="Мэдээлэл байхгүй" description="Ашиглалтын өгөгдөл ачааллагдсангүй." />
+            ) : (
+              <>
+                {/* Summary cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <StatCard label="Нийт хэрэглэгч" value={usageData.summary.total} />
+                  <StatCard label="Pro эрхтэй" value={usageData.summary.pro} color="text-violet-700" />
+                  <StatCard label="Free эрхтэй" value={usageData.summary.free} color="text-gray-600" />
+                  <StatCard label="Сарын AI нийт" value={usageData.summary.total_ai_used} sub={"Орчуулга: " + usageData.summary.total_tr_used} color="text-indigo-700" />
+                </div>
+
+                {/* Table */}
+                <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                        <tr>
+                          <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Хэрэглэгч</th>
+                          <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-3">Эрх</th>
+                          <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-3 min-w-[160px]">AI зөвлөмж</th>
+                          <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-3 min-w-[160px]">Орчуулга</th>
+                          <th className="text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide px-4 py-3 hidden md:table-cell">Сэргэх</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                        {usageData.users.map(function (u) {
+                          var aiPct = u.ai_limit > 0 ? u.ai_used / u.ai_limit : 0;
+                          var trPct = u.tr_limit > 0 ? u.tr_used / u.tr_limit : 0;
+                          var aiColor = aiPct >= 0.9 ? "#EF4444" : "#7C3AED";
+                          var trColor = trPct >= 0.9 ? "#EF4444" : "#7C3AED";
+                          var resetDate = u.period_end
+                            ? new Date(u.period_end).toLocaleDateString("mn-MN", { month: "numeric", day: "numeric" })
+                            : "—";
+                          return (
+                            <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition">
+                              {/* Хэрэглэгч */}
+                              <td className="px-4 py-3">
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{u.name || "—"}</p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500">{u.email}</p>
+                              </td>
+
+                              {/* Эрх */}
+                              <td className="px-4 py-3">
+                                <span className={
+                                  "text-xs font-semibold px-2 py-0.5 rounded-full " +
+                                  (u.plan === "pro"
+                                    ? "bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300"
+                                    : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400")
+                                }>
+                                  {u.plan === "pro" ? "Pro" : "Free"}
+                                </span>
+                                {u.plan === "pro" && u.plan_expires && (
+                                  <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                                    {new Date(u.plan_expires).toLocaleDateString("mn-MN", { month: "numeric", day: "numeric" })} хүртэл
+                                  </p>
+                                )}
+                              </td>
+
+                              {/* AI bar */}
+                              <td className="px-4 py-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">{u.ai_used} / {u.ai_limit}</span>
+                                  {u.extra_ai > 0 && (
+                                    <span className="text-[10px] text-violet-500 dark:text-violet-400 ml-1">+{u.extra_ai}</span>
+                                  )}
+                                  {aiPct >= 0.9 && <span className="text-[10px] text-red-500 ml-1">⚠</span>}
+                                </div>
+                                <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden w-36">
+                                  <div className="h-full rounded-full" style={{ width: Math.min(aiPct * 100, 100) + "%", background: aiColor }} />
+                                </div>
+                              </td>
+
+                              {/* TR bar */}
+                              <td className="px-4 py-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">{u.tr_used} / {u.tr_limit}</span>
+                                  {u.extra_tr > 0 && (
+                                    <span className="text-[10px] text-violet-500 dark:text-violet-400 ml-1">+{u.extra_tr}</span>
+                                  )}
+                                  {trPct >= 0.9 && <span className="text-[10px] text-red-500 ml-1">⚠</span>}
+                                </div>
+                                <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden w-36">
+                                  <div className="h-full rounded-full" style={{ width: Math.min(trPct * 100, 100) + "%", background: trColor }} />
+                                </div>
+                              </td>
+
+                              {/* Сэргэх огноо */}
+                              <td className="px-4 py-3 text-xs text-gray-400 dark:text-gray-500 hidden md:table-cell whitespace-nowrap">
+                                {resetDate}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {usageData.users.length === 0 && (
+                    <div className="py-12 text-center text-sm text-gray-400 dark:text-gray-500">Хэрэглэгч байхгүй байна</div>
+                  )}
+                </div>
+
+                <div className="mt-3 flex justify-end">
+                  <button onClick={loadUsage} className="text-xs px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-400">
+                    Шинэчлэх
+                  </button>
+                </div>
+              </>
             )}
           </div>
         )}

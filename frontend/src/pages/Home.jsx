@@ -147,7 +147,7 @@ export default function Home() {
               </h1>
 
               <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 leading-relaxed mb-8 max-w-lg">
-                CV үүсгэх, ярилцлагад бэлтгэх, тэтгэлгийн мэдээлэл авах бүх зүйлсийг нэг газраас. Үнэгүй ашиглаарай.
+                CV үүсгэх, ярилцлагад бэлтгэх, тэтгэлгийн мэдээлэл авах бүх зүйлсийг нэг газраас. Free эрхтэй бүртгүүлж эхлэнэ.
               </p>
 
               <div className="flex flex-wrap gap-3 mb-8">
@@ -158,7 +158,7 @@ export default function Home() {
                 ) : (
                   <>
                     <Link to="/register" className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-md transition inline-flex items-center gap-2">
-                      Үнэгүй эхлэх →
+                      Эхлэх →
                     </Link>
                     <a href="#features" className="border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                       Дэлгэрэнгүй үзэх
@@ -170,7 +170,7 @@ export default function Home() {
               <div className="flex items-center gap-6 text-xs text-gray-400 dark:text-gray-500">
                 <div className="flex items-center gap-2">
                   <span className="text-emerald-500">✓</span>
-                  <span>Үнэгүй</span>
+                  <span>Free эрхтэй</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-emerald-500">✓</span>
@@ -223,7 +223,7 @@ export default function Home() {
               { value: "3", label: "CV загвар" },
               { value: "25+", label: "Ярилцлагын асуулт" },
               { value: "16+", label: "Карьерын зөвлөмж" },
-              { value: "100%", label: "Үнэгүй" },
+              { value: "Free", label: "Суурь эрх" },
             ].map(function (s, i) {
               return (
                 <div key={i} className="text-center">
@@ -299,7 +299,7 @@ export default function Home() {
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-1">
                       <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition">{t.name}</h3>
-                      <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-lg font-medium">Үнэгүй</span>
+                      <span className="text-xs bg-violet-50 dark:bg-violet-900/30 text-violet-600 border border-violet-100 dark:border-violet-800 px-2 py-0.5 rounded-lg font-medium">Free эрхтэй</span>
                     </div>
                     <p className="text-xs text-violet-600 font-semibold mb-2">{t.tagline}</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{t.desc}</p>
@@ -370,7 +370,7 @@ export default function Home() {
                 {[
                   "100% Монгол хэлээр — ойлгомжтой, танил үг хэллэг",
                   "Үнэн зөв мэдээлэл — орон нутгийн ажлын зах зээлд тулгуурласан",
-                  "Бүрэн үнэгүй — далд төлбөр байхгүй, бүртгэл нэг минутад",
+                  "Суурь эрх үнэгүй · Pro эрх ₮5,900/сар — бүртгэл нэг минутад",
                   "Аюулгүй — таны мэдээлэл шифрлэгдэж хадгалагдана",
                 ].map(function (item, i) {
                   return (
@@ -412,7 +412,7 @@ export default function Home() {
 
           <div className="space-y-3">
             {[
-              { q: "CareerPrep үнэгүй юу?", a: "Тийм, бүх функц үнэгүй. Далд төлбөр байхгүй." },
+              { q: "CareerPrep-н үнийн бодлого ямар вэ?", a: "Суурь функцүүд (CV загвар, ярилцлагын асуулт, зөвлөмж) үнэгүй. AI-тай функцэд сарын лимит байна — Free: 15 AI / 5 орчуулга, Pro: 80 AI / 40 орчуулга (₮5,900/сар)." },
               { q: "Хэн ашиглаж болох вэ?", a: "Их дээд сургуулийн оюутан, шинэ төгсөгч, ажил хайж буй хэн ч ашиглаж болно." },
               { q: "CV-гээ татаж авч болох уу?", a: "Тийм, үүсгэсэн CV-гээ PDF форматаар татаж авч болно." },
               { q: "Өгөгдөл минь аюулгүй юу?", a: "Таны нууц үг bcrypt хэшлэгдсэн, холболт HTTPS, дэлгэрэнгүйг Нууцлалын бодлогоос уншина." },
@@ -442,7 +442,7 @@ export default function Home() {
             Өнөөдрөөс ажилдаа бэлдэж эхлэе
           </h2>
           <p className="text-base md:text-lg opacity-90 mb-8 max-w-xl mx-auto">
-            Бүртгэл 1 минутад дуусна. Ямар ч төлбөр шаардахгүй.
+            Бүртгэл 1 минутад дуусна. Суурь эрхэд бүртгэл үнэгүй.
           </p>
           <div className="flex flex-wrap gap-3 justify-center">
             {token ? (
@@ -452,7 +452,7 @@ export default function Home() {
             ) : (
               <>
                 <Link to="/register" className="bg-white text-violet-700 px-8 py-3 rounded-xl text-sm font-bold hover:bg-violet-50 transition shadow-sm">
-                  Үнэгүй бүртгүүлэх →
+                  Бүртгүүлэх →
                 </Link>
                 <Link to="/login" className="border-2 border-white/40 text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-white/10 transition">
                   Нэвтрэх

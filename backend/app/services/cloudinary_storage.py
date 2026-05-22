@@ -33,7 +33,12 @@ def is_enabled() -> bool:
     return _configure()
 
 
-def upload_bytes(content: bytes, folder: str, public_id: Optional[str] = None) -> Optional[str]:
+def upload_bytes(
+    content: bytes,
+    folder: str,
+    public_id: Optional[str] = None,
+    resource_type: str = "image",
+) -> Optional[str]:
     if not _configure():
         return None
 
@@ -42,6 +47,7 @@ def upload_bytes(content: bytes, folder: str, public_id: Optional[str] = None) -
         folder=folder,
         public_id=public_id,
         overwrite=False,
-        resource_type="auto",
+        resource_type=resource_type,
+        access_mode="public",
     )
     return result.get("secure_url")

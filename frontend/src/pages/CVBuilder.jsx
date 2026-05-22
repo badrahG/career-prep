@@ -168,9 +168,9 @@ export default function CVBuilder() {
   var [photoUploading, setPhotoUploading] = useState(false);
   var [info, setInfo] = useState(prefilled ? {
     lastName: prefilled.last_name || "", firstName: prefilled.first_name || "",
-    birthDate: "", gender: "", regNo: "", license: "", marital: "",
+    birthDate: "", gender: "", regNo: "", license: [], marital: "",
     about: prefilled.about || "", salaryExpect: ""
-  } : { lastName: "", firstName: "", birthDate: "", gender: "", regNo: "", license: "", marital: "", about: "", salaryExpect: "" });
+  } : { lastName: "", firstName: "", birthDate: "", gender: "", regNo: "", license: [], marital: "", about: "", salaryExpect: "" });
   var [contact, setContact] = useState(prefilled ? {
     email: prefilled.email || "", phone: prefilled.phone || "", phone2: "", address: prefilled.address || "", linkedin: ""
   } : { email: "", phone: "", phone2: "", address: "", linkedin: "" });
@@ -423,7 +423,25 @@ export default function CVBuilder() {
                 <Inp label="Төрсөн он" value={info.birthDate} onChange={function(v) { upd(setInfo, "birthDate", v); }} type="date" />
                 <Sel label="Хүйс" value={info.gender} onChange={function(v) { upd(setInfo, "gender", v); }} options={["Эрэгтэй", "Эмэгтэй"]} />
                 <Inp label="Регистрийн дугаар" value={info.regNo} onChange={function(v) { upd(setInfo, "regNo", v); }} placeholder="ИЭ04******" />
-                <Sel label="Жолооны үнэмлэх" value={info.license} onChange={function(v) { upd(setInfo, "license", v); }} options={["Байхгүй", "B", "C", "D", "E"]} />
+                <div>
+                  <label className={labelCls}>Жолооны үнэмлэх</label>
+                  <div className="flex gap-4 flex-wrap pt-1">
+                    {["B", "C", "D", "E"].map(function(cat) {
+                      var checked = Array.isArray(info.license) && info.license.includes(cat);
+                      return (
+                        <label key={cat} className="flex items-center gap-1.5 cursor-pointer">
+                          <input type="checkbox" checked={checked}
+                            onChange={function() {
+                              var cur = Array.isArray(info.license) ? info.license : [];
+                              upd(setInfo, "license", checked ? cur.filter(function(x) { return x !== cat; }) : cur.concat(cat));
+                            }}
+                            className="w-4 h-4 accent-violet-600" />
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{cat}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
                 <Sel label="Гэрлэлтийн байдал" value={info.marital} onChange={function(v) { upd(setInfo, "marital", v); }} options={["Гэрлээгүй", "Гэрлэсэн"]} />
                 <Inp label="Цалингийн хүлээлт" value={info.salaryExpect} onChange={function(v) { upd(setInfo, "salaryExpect", v); }} placeholder="1,200,000-1,500,000" />
               </div>

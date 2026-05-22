@@ -29,11 +29,12 @@ UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads"
 API_BASE = os.getenv("API_BASE_URL", "http://localhost:8001")
 
 
-async def _store_upload(contents: bytes, filename: str, folder: str) -> str:
+async def _store_upload(contents: bytes, filename: str, folder: str, resource_type: str = "image") -> str:
     cloud_url = cloudinary_storage.upload_bytes(
         contents,
         folder=folder,
         public_id=filename.rsplit(".", 1)[0],
+        resource_type=resource_type,
     )
     if cloud_url:
         return cloud_url
@@ -215,7 +216,8 @@ async def upload_certificate(
             raise HTTPException(status_code=400, detail="Файлын агуулга зурагтай тохирохгүй байна")
 
     filename = f"cert_{user.id}_{uuid.uuid4().hex}.{ext}"
-    cert_file_url = await _store_upload(contents, filename, folder="careerprep/cv/certificates")
+    res_type = "raw" if ext == "pdf" else "image"
+    cert_file_url = await _store_upload(contents, filename, folder="careerprep/cv/certificates", resource_type=res_type)
     return {"cert_file_url": cert_file_url}
 
 

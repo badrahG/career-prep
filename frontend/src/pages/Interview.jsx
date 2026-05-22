@@ -60,7 +60,7 @@ export default function Interview() {
 
   var categories = [
     { key: "general", label: "Ерөнхий", desc: "Өөрийгөө танилцуулах, компани, карьер" },
-    { key: "technical", label: "Техникийн", desc: "Програмчлал, технологийн мэдлэг" },
+    { key: "technical", label: "Техникийн", desc: "Тухайн мэргэжлийн практик мэдлэг" },
     { key: "behavioral", label: "Зан төлөвийн", desc: "Багаар ажиллах, шийдвэр гаргах" },
   ];
 

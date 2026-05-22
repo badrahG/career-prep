@@ -85,7 +85,7 @@ export default function CVEdit() {
   var [template, setTemplate] = useState("modern");
   var [photoUrl, setPhotoUrl] = useState("");
   var [photoUploading, setPhotoUploading] = useState(false);
-  var [info, setInfo] = useState({ lastName: "", firstName: "", birthDate: "", gender: "", regNo: "", license: "", marital: "", about: "", salaryExpect: "" });
+  var [info, setInfo] = useState({ lastName: "", firstName: "", birthDate: "", gender: "", regNo: "", license: [], marital: "", about: "", salaryExpect: "" });
   var [contact, setContact] = useState({ email: "", phone: "", phone2: "", address: "", linkedin: "" });
   var [educations, setEducations] = useState([{ level: "", school: "", major: "", major_field: "", gpa: "", start_year: "", end_year: "", currently: false }]);
   var [experiences, setExperiences] = useState([{ category: "", position: "", company: "", description: "", start_date: "", end_date: "", currently: false }]);
@@ -112,7 +112,7 @@ export default function CVEdit() {
         setTemplate(cv.template_type || "modern");
         var p = {};
         try { p = JSON.parse(cv.personal_info || "{}"); } catch(e) { p = {}; }
-        setInfo({ lastName: p.lastName || "", firstName: p.firstName || "", birthDate: p.birthDate || "", gender: p.gender || "", regNo: p.regNo || "", license: p.license || "", marital: p.marital || "", about: p.about || "", salaryExpect: p.salaryExpect || "" });
+        setInfo({ lastName: p.lastName || "", firstName: p.firstName || "", birthDate: p.birthDate || "", gender: p.gender || "", regNo: p.regNo || "", license: Array.isArray(p.license) ? p.license : (p.license && p.license !== "Байхгүй" ? [p.license] : []), marital: p.marital || "", about: p.about || "", salaryExpect: p.salaryExpect || "" });
         setContact({ email: p.email || "", phone: p.phone || "", phone2: p.phone2 || "", address: p.address || "", linkedin: p.linkedin || "" });
         setPhotoUrl(p.photoUrl || "");
         setSelectedPersonal(p.personalSkills || []);
@@ -307,7 +307,25 @@ export default function CVEdit() {
                     <Inp label="Төрсөн он" value={info.birthDate} onChange={function(v) { upd(setInfo, "birthDate", v); }} type="date" />
                     <Sel label="Хүйс" value={info.gender} onChange={function(v) { upd(setInfo, "gender", v); }} options={["Эрэгтэй", "Эмэгтэй"]} />
                     <Inp label="Регистрийн дугаар" value={info.regNo} onChange={function(v) { upd(setInfo, "regNo", v); }} placeholder="ИЭ04242518" />
-                    <Sel label="Жолооны үнэмлэх" value={info.license} onChange={function(v) { upd(setInfo, "license", v); }} options={["Байхгүй", "B", "C", "D", "E"]} />
+                    <div>
+                      <label className={labelCls}>Жолооны үнэмлэх</label>
+                      <div className="flex gap-4 flex-wrap pt-1">
+                        {["B", "C", "D", "E"].map(function(cat) {
+                          var checked = Array.isArray(info.license) && info.license.includes(cat);
+                          return (
+                            <label key={cat} className="flex items-center gap-1.5 cursor-pointer">
+                              <input type="checkbox" checked={checked}
+                                onChange={function() {
+                                  var cur = Array.isArray(info.license) ? info.license : [];
+                                  upd(setInfo, "license", checked ? cur.filter(function(x) { return x !== cat; }) : cur.concat(cat));
+                                }}
+                                className="w-4 h-4 accent-violet-600" />
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{cat}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
                     <Sel label="Гэрлэлтийн байдал" value={info.marital} onChange={function(v) { upd(setInfo, "marital", v); }} options={["Гэрлээгүй", "Гэрлэсэн"]} />
                     <Inp label="Цалингийн хүлээлт" value={info.salaryExpect} onChange={function(v) { upd(setInfo, "salaryExpect", v); }} placeholder="1,200,000-1,500,000" />
                   </div>

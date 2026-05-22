@@ -266,7 +266,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, L, jaFon
     info.gender ? { label: L.gender, value: info.gender } : null,
     info.regNo ? { label: L.regNo, value: info.regNo } : null,
     info.marital ? { label: L.marital, value: info.marital } : null,
-    info.license ? { label: L.license, value: info.license } : null,
+    (Array.isArray(info.license) ? info.license.length > 0 : !!info.license) ? { label: L.license, value: Array.isArray(info.license) ? info.license.join(", ") : info.license } : null,
     info.salaryExpect ? { label: L.salary, value: info.salaryExpect } : null,
   ].filter(Boolean);
 
@@ -527,7 +527,7 @@ function ModernMongolianTemplate({ info, educations, experiences, skills }) {
     info.gender ? { label: "Хүйс", value: info.gender } : null,
     info.marital ? { label: "Гэрлэлтийн байдал", value: info.marital } : null,
     info.regNo ? { label: "Регистрийн дугаар", value: info.regNo } : null,
-    info.license ? { label: "Жолооны үнэмлэх", value: info.license } : null,
+    (Array.isArray(info.license) ? info.license.length > 0 : !!info.license) ? { label: "Жолооны үнэмлэх", value: Array.isArray(info.license) ? info.license.join(", ") : info.license } : null,
     info.salaryExpect ? { label: "Цалингийн хүлээлт", value: info.salaryExpect } : null,
   ].filter(Boolean);
 
@@ -724,14 +724,14 @@ function ModernTemplate({ info, educations, experiences, skills }) {
         </div>
       </div>
       <div style={{ padding: "24px 36px" }}>
-        {(info.birthDate || info.gender || info.marital || info.regNo || info.license || info.salaryExpect) && (
+        {(info.birthDate || info.gender || info.marital || info.regNo || (Array.isArray(info.license) ? info.license.length > 0 : !!info.license) || info.salaryExpect) && (
           <ModernSection title="Ерөнхий мэдээлэл">
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "4px 24px", fontSize: "11.5px" }}>
               {info.birthDate && <div><span style={{ color: "#6b7280" }}>Төрсөн огноо: </span><b>{info.birthDate}</b></div>}
               {info.gender && <div><span style={{ color: "#6b7280" }}>Хүйс: </span><b>{info.gender}</b></div>}
               {info.marital && <div><span style={{ color: "#6b7280" }}>Гэрлэлт: </span><b>{info.marital}</b></div>}
               {info.regNo && <div><span style={{ color: "#6b7280" }}>Регистр: </span><b>{info.regNo}</b></div>}
-              {info.license && <div><span style={{ color: "#6b7280" }}>Жолоо: </span><b>{info.license}</b></div>}
+              {(Array.isArray(info.license) ? info.license.length > 0 : !!info.license) && <div><span style={{ color: "#6b7280" }}>Жолоо: </span><b>{Array.isArray(info.license) ? info.license.join(", ") : info.license}</b></div>}
               {info.salaryExpect && <div><span style={{ color: "#6b7280" }}>Цалин: </span><b>{info.salaryExpect}</b></div>}
             </div>
           </ModernSection>
@@ -875,7 +875,7 @@ function AsianTemplate({ info, educations, experiences, skills, L, jaFont = "" }
     info.address ? { label: L.address, value: info.address } : null,
     info.linkedin ? { label: "LinkedIn", value: info.linkedin } : null,
   ].filter(Boolean);
-  var hasPersonalInfo = info.birthDate || info.gender || info.marital || info.regNo || info.license || info.salaryExpect;
+  var hasPersonalInfo = info.birthDate || info.gender || info.marital || info.regNo || (Array.isArray(info.license) ? info.license.length > 0 : !!info.license) || info.salaryExpect;
 
   return (
     <div className="cv-print-document" style={{ background: "#fff", fontFamily: jaFont + "'Inter', 'Segoe UI', Arial, sans-serif", color: "#172033", minHeight: "297mm" }}>
@@ -909,7 +909,7 @@ function AsianTemplate({ info, educations, experiences, skills, L, jaFont = "" }
                 {info.gender && <AsianInfoItem label={L.gender} value={info.gender} />}
                 {info.marital && <AsianInfoItem label={L.marital} value={info.marital} />}
                 {info.regNo && <AsianInfoItem label={L.regNoFull} value={info.regNo} />}
-                {info.license && <AsianInfoItem label={L.license} value={info.license} />}
+                {(Array.isArray(info.license) ? info.license.length > 0 : !!info.license) && <AsianInfoItem label={L.license} value={Array.isArray(info.license) ? info.license.join(", ") : info.license} />}
                 {info.salaryExpect && <AsianInfoItem label={L.salary} value={info.salaryExpect} />}
               </AsianInfoList>
             </AsianSideSection>
@@ -1037,12 +1037,12 @@ function ClassicTemplate({ info, educations, experiences }) {
       </div>
       <div style={{ display: "flex", alignItems: "stretch" }}>
         <div style={{ width: "29%", background: "#f8f8f8", padding: "20px 16px 20px 22px", borderRight: "1px solid #e5e5e5", minHeight: "200mm", boxSizing: "border-box" }}>
-          {(info.birthDate || info.gender || info.marital || info.license || info.salaryExpect) && (
+          {(info.birthDate || info.gender || info.marital || (Array.isArray(info.license) ? info.license.length > 0 : !!info.license) || info.salaryExpect) && (
             <ClassicSideSection title="Мэдээлэл">
               <div style={{ fontSize: "11px", lineHeight: 1.9 }}>
                 {info.birthDate && <div><span style={{ color: "#666", display: "block", fontSize: "9.5px", textTransform: "uppercase", letterSpacing: "0.5px" }}>Төрсөн огноо</span><b>{info.birthDate}</b></div>}
                 {info.gender && <div style={{ marginTop: "4px" }}><span style={{ color: "#666", display: "block", fontSize: "9.5px", textTransform: "uppercase" }}>Хүйс</span><b>{info.gender}</b></div>}
-                {info.license && <div style={{ marginTop: "4px" }}><span style={{ color: "#666", display: "block", fontSize: "9.5px", textTransform: "uppercase" }}>Жолоо</span><b>{info.license}</b></div>}
+                {(Array.isArray(info.license) ? info.license.length > 0 : !!info.license) && <div style={{ marginTop: "4px" }}><span style={{ color: "#666", display: "block", fontSize: "9.5px", textTransform: "uppercase" }}>Жолоо</span><b>{Array.isArray(info.license) ? info.license.join(", ") : info.license}</b></div>}
                 {info.salaryExpect && <div style={{ marginTop: "4px" }}><span style={{ color: "#666", display: "block", fontSize: "9.5px", textTransform: "uppercase" }}>Цалин</span><b>{info.salaryExpect}</b></div>}
               </div>
             </ClassicSideSection>

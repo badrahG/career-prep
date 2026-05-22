@@ -23,9 +23,7 @@ export default function Terms() {
       <nav className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
           <Link to={backLink} className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center rounded-xl shadow-sm">
-              <span className="text-white font-bold text-sm tracking-wide">CP</span>
-            </div>
+            <img src="/logo.svg" alt="CareerPrep" className="w-9 h-9 drop-shadow-sm" />
             <div>
               <div className="text-base font-bold text-gray-900 dark:text-gray-100 leading-none">CareerPrep</div>
               <div className="text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-0.5">Career Platform</div>
@@ -195,8 +193,8 @@ export default function Terms() {
                   <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-3">
                     Үйлчилгээний нөхцөлтэй холбоотой асуулт байвал доорх хаягаар холбогдоно уу.
                   </p>
-                  <a href="mailto:info@careerprep.mn" className="inline-flex items-center gap-2 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 text-violet-600 dark:text-violet-400 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-100 dark:hover:bg-violet-900/50 transition">
-                    ✉ info@careerprep.mn
+                  <a href="mailto:g.badrakh98@gmail.com" className="inline-flex items-center gap-2 bg-violet-50 dark:bg-violet-900/30 border border-violet-200 dark:border-violet-700 text-violet-600 dark:text-violet-400 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-100 dark:hover:bg-violet-900/50 transition">
+                    ✉ g.badrakh98@gmail.com
                   </a>
                 </section>
 

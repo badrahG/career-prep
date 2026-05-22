@@ -238,7 +238,7 @@ function parseSkillsFromInfo(info) {
 function PrintFooter() {
   return (
     <div className="cv-print-footer">
-      <span className="cv-watermark-logo"><img src="/logo.svg" className="cv-watermark-icon" alt="" /><span>careerprep.mn</span></span>
+      <span className="cv-watermark-logo"><img src="/logo.svg" className="cv-watermark-icon" alt="" /><span>careerprep</span></span>
     </div>
   );
 }
@@ -330,7 +330,7 @@ function BestMongolianTemplate({ info, educations, experiences, skills, L, jaFon
                     key={i}
                     title={exp.position}
                     company={exp.company}
-                    date={exp.start_date ? exp.start_date + " - " + (exp.end_date || L.present) : ""}
+                    date={exp.start_date ? exp.start_date + " - " + (exp.end_date === "Одоо" ? L.present : exp.end_date || L.present) : ""}
                     description={exp.description}
                     last={i === experiences.length - 1}
                   />
@@ -448,13 +448,11 @@ function BestExperienceItem({ title, company, date, description, last }) {
 function BestCompactItem({ title, subtitle, date, description, fileUrl, openLabel, altLabel, last }) {
   return (
     <div style={{ marginBottom: last ? 0 : "13px", pageBreakInside: "avoid" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 138px", gap: "10px" }}>
-        <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: "12.2px", fontWeight: "820", color: "#293044", margin: 0, lineHeight: 1.3, overflowWrap: "break-word" }}>{title}</p>
-          {subtitle && <p style={{ fontSize: "10.8px", color: "#667085", margin: "2px 0 0", lineHeight: 1.4, overflowWrap: "break-word" }}>{subtitle}</p>}
-        </div>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: "10px" }}>
+        <p style={{ fontSize: "12.2px", fontWeight: "820", color: "#293044", margin: 0, lineHeight: 1.3 }}>{title}</p>
         {date && <p style={{ fontSize: "10px", color: "#7b8494", margin: 0, textAlign: "right", lineHeight: 1.35, whiteSpace: "nowrap" }}>{date}</p>}
       </div>
+      {subtitle && <p style={{ fontSize: "10.8px", color: "#667085", margin: "3px 0 0", lineHeight: 1.55, overflowWrap: "break-word" }}>{subtitle}</p>}
       {description && <p style={{ fontSize: "10.8px", color: "#667085", margin: "5px 0 0", lineHeight: 1.5, whiteSpace: "pre-line", overflowWrap: "break-word" }}>{description}</p>}
       <CertFilePreview url={fileUrl} openLabel={openLabel} altLabel={altLabel} />
     </div>
@@ -576,14 +574,14 @@ function ModernMongolianTemplate({ info, educations, experiences, skills }) {
           {experiences.length > 0 && (
             <ModernMongolianSection title="Ажлын туршлага">
               {experiences.map(function (exp, i) {
-                return <ModernTimelineItem key={i} title={exp.position} subtitle={exp.company} date={exp.start_date ? exp.start_date + " - " + (exp.end_date || "Одоо") : ""} description={exp.description} last={i === experiences.length - 1} />;
+                return <ModernTimelineItem key={i} title={exp.position} subtitle={exp.company} date={exp.start_date ? exp.start_date + " - " + (exp.end_date === "Одоо" ? L.present : exp.end_date || L.present) : ""} description={exp.description} last={i === experiences.length - 1} />;
               })}
             </ModernMongolianSection>
           )}
           {educations.length > 0 && (
             <ModernMongolianSection title="Боловсрол">
               {educations.map(function (edu, i) {
-                return <ModernTimelineItem key={i} title={edu.school} subtitle={[edu.level || edu.degree, edu.major, edu.gpa ? "Голч: " + edu.gpa : ""].filter(Boolean).join(" | ")} date={edu.start_year ? edu.start_year + " - " + (edu.end_year || "Одоо") : ""} last={i === educations.length - 1} />;
+                return <ModernTimelineItem key={i} title={edu.school} subtitle={[edu.level || edu.degree, edu.major, edu.gpa ? "Голч: " + edu.gpa : ""].filter(Boolean).join(" | ")} date={edu.start_year ? edu.start_year + " - " + (edu.end_year || L.present) : ""} last={i === educations.length - 1} />;
               })}
             </ModernMongolianSection>
           )}
@@ -600,12 +598,10 @@ function ModernMongolianTemplate({ info, educations, experiences, skills }) {
                 return (
                   <div key={i} style={{ marginBottom: i < certs.length - 1 ? "11px" : 0, paddingBottom: i < certs.length - 1 ? "11px" : 0, borderBottom: i < certs.length - 1 ? "1px solid #e8eef5" : "none", pageBreakInside: "avoid" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", gap: "14px" }}>
-                      <div>
-                        <p style={{ fontWeight: "800", fontSize: "12.3px", color: "#142033", margin: 0 }}>{c.name}</p>
-                        {c.organization && <p style={{ fontSize: "11.1px", color: "#526276", margin: "2px 0 0" }}>{c.organization}</p>}
-                      </div>
+                      <p style={{ fontWeight: "800", fontSize: "12.3px", color: "#142033", margin: 0 }}>{c.name}</p>
                       <p style={{ fontSize: "10.5px", color: "#7b8aa1", whiteSpace: "nowrap", margin: 0 }}>{c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : ""}</p>
                     </div>
+                    {c.organization && <p style={{ fontSize: "11.1px", color: "#526276", margin: "3px 0 0", lineHeight: 1.55 }}>{c.organization}</p>}
                     <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                   </div>
                 );
@@ -761,7 +757,7 @@ function ModernTemplate({ info, educations, experiences, skills }) {
                       <p style={{ fontWeight: "700", fontSize: "13px", color: "#0f172a", margin: 0 }}>{exp.position}</p>
                       <p style={{ fontSize: "12px", color: "#1e40af", marginTop: "1px" }}>{exp.company}</p>
                     </div>
-                    <p style={{ fontSize: "11px", color: "#94a3b8", whiteSpace: "nowrap", marginLeft: "12px" }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || "Одоо") : ""}</p>
+                    <p style={{ fontSize: "11px", color: "#94a3b8", whiteSpace: "nowrap", marginLeft: "12px" }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date === "Одоо" ? L.present : exp.end_date || L.present) : ""}</p>
                   </div>
                   {exp.description && <p style={{ fontSize: "11.5px", color: "#475569", marginTop: "5px", lineHeight: 1.6, whiteSpace: "pre-line" }}>{exp.description}</p>}
                 </div>
@@ -791,12 +787,10 @@ function ModernTemplate({ info, educations, experiences, skills }) {
               return (
                 <div key={i} style={{ marginBottom: "10px", pageBreakInside: "avoid" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div>
-                      <p style={{ fontWeight: "700", fontSize: "12.5px", color: "#0f172a", margin: 0 }}>{c.name}</p>
-                      {c.organization && <p style={{ fontSize: "11.5px", color: "#475569", margin: "2px 0 0" }}>{c.organization}</p>}
-                    </div>
+                    <p style={{ fontWeight: "700", fontSize: "12.5px", color: "#0f172a", margin: 0 }}>{c.name}</p>
                     <p style={{ fontSize: "11px", color: "#94a3b8", whiteSpace: "nowrap", marginLeft: "12px" }}>{c.start_date ? c.start_date + (c.end_date ? " – " + c.end_date : "") : ""}</p>
                   </div>
+                  {c.organization && <p style={{ fontSize: "11.5px", color: "#475569", margin: "3px 0 0", lineHeight: 1.55 }}>{c.organization}</p>}
                   <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                 </div>
               );
@@ -941,7 +935,7 @@ function AsianTemplate({ info, educations, experiences, skills, L, jaFont = "" }
                   <div key={i} style={{ marginBottom: i < experiences.length - 1 ? "13px" : 0, paddingBottom: i < experiences.length - 1 ? "12px" : 0, borderBottom: i < experiences.length - 1 ? "1px solid #e8edf3" : "none", pageBreakInside: "avoid" }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 112px", gap: "12px" }}>
                       <div><p style={{ fontWeight: "800", fontSize: "12.5px", margin: 0, color: "#172033" }}>{exp.position}</p><p style={{ fontSize: "11.2px", color: "#335f8f", margin: "2px 0 0", fontWeight: "700" }}>{exp.company}</p></div>
-                      <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{exp.start_date ? exp.start_date + " - " + (exp.end_date || L.present) : ""}</p>
+                      <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{exp.start_date ? exp.start_date + " - " + (exp.end_date === "Одоо" ? L.present : exp.end_date || L.present) : ""}</p>
                     </div>
                     {exp.description && <p style={{ fontSize: "11px", color: "#3f4d63", margin: "6px 0 0", lineHeight: 1.55, whiteSpace: "pre-line" }}>{exp.description}</p>}
                   </div>
@@ -966,13 +960,11 @@ function AsianTemplate({ info, educations, experiences, skills, L, jaFont = "" }
               {certs.map(function (c, i) {
                 return (
                   <div key={i} style={{ marginBottom: i < certs.length - 1 ? "11px" : 0, pageBreakInside: "avoid" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 112px", gap: "12px" }}>
-                      <div>
-                        <p style={{ fontWeight: "800", fontSize: "12px", margin: 0 }}>{c.name}</p>
-                        {c.organization && <p style={{ fontSize: "10.8px", color: "#526176", margin: "2px 0 0" }}>{c.organization}</p>}
-                      </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "12px" }}>
+                      <p style={{ fontWeight: "800", fontSize: "12px", margin: 0 }}>{c.name}</p>
                       <p style={{ fontSize: "10.5px", color: "#64748b", whiteSpace: "nowrap", textAlign: "right", margin: 0 }}>{c.start_date ? c.start_date + (c.end_date ? " - " + c.end_date : "") : ""}</p>
                     </div>
+                    {c.organization && <p style={{ fontSize: "10.8px", color: "#526176", margin: "3px 0 0", lineHeight: 1.55 }}>{c.organization}</p>}
                     <CertFilePreview url={c.file_url} openLabel={L.openCert} altLabel={L.certAlt} />
                   </div>
                 );
@@ -1063,7 +1055,7 @@ function ClassicTemplate({ info, educations, experiences }) {
                   <div key={i} style={{ marginBottom: "14px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between" }}>
                       <div><p style={{ fontWeight: "700", fontSize: "13px", margin: 0 }}>{exp.position}</p><p style={{ fontSize: "12px", color: "#444", fontStyle: "italic", margin: "1px 0" }}>{exp.company}</p></div>
-                      <p style={{ fontSize: "11px", color: "#777", whiteSpace: "nowrap" }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || "Одоо") : ""}</p>
+                      <p style={{ fontSize: "11px", color: "#777", whiteSpace: "nowrap" }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date === "Одоо" ? L.present : exp.end_date || L.present) : ""}</p>
                     </div>
                     {exp.description && <p style={{ fontSize: "11.5px", color: "#444", marginTop: "5px", lineHeight: 1.6, whiteSpace: "pre-line" }}>{exp.description}</p>}
                   </div>
@@ -1077,7 +1069,7 @@ function ClassicTemplate({ info, educations, experiences }) {
                 return (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                     <div><p style={{ fontWeight: "700", fontSize: "13px", margin: 0 }}>{edu.school}</p><p style={{ fontSize: "11.5px", color: "#555", margin: "2px 0" }}>{[edu.level || edu.degree, edu.major, edu.gpa ? edu.gpa + " голч" : ""].filter(Boolean).join(" · ")}</p></div>
-                    <p style={{ fontSize: "11px", color: "#777", whiteSpace: "nowrap" }}>{edu.start_year ? edu.start_year + " – " + (edu.end_year || "Одоо") : ""}</p>
+                    <p style={{ fontSize: "11px", color: "#777", whiteSpace: "nowrap" }}>{edu.start_year ? edu.start_year + " – " + (edu.end_year || L.present) : ""}</p>
                   </div>
                 );
               })}
@@ -1182,7 +1174,7 @@ function MinimalTemplate({ info, educations, experiences, skills, L, jaFont = ""
           {experiences.map(function (exp, i) {
             return (
               <div key={i} className="cv-print-section" style={{ display: "grid", gridTemplateColumns: "96px 1fr 110px", gap: "14px", marginBottom: i < experiences.length - 1 ? "14px" : 0 }}>
-                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date || L.present) : ""}</div>
+                <div style={{ fontSize: "10px", color: "#5f5f5f", lineHeight: 1.5 }}>{exp.start_date ? exp.start_date + " – " + (exp.end_date === "Одоо" ? L.present : exp.end_date || L.present) : ""}</div>
                 <div>
                   <p style={{ fontSize: "12.5px", color: "#222", fontWeight: "700", margin: 0 }}>{exp.position}{exp.company ? ", " + exp.company : ""}</p>
                   {exp.description && <div style={{ fontSize: "10.8px", color: "#4a4a4a", marginTop: "5px", lineHeight: 1.7, whiteSpace: "pre-line" }}>{exp.description}</div>}

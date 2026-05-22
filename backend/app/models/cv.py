@@ -37,6 +37,7 @@ class Education(Base):
     cv_id = Column(Integer, ForeignKey("cvs.id", ondelete="CASCADE"), nullable=False)
     school = Column(String(200), nullable=False)
     major = Column(String(200), nullable=True)
+    level = Column(String(100), nullable=True)
     start_year = Column(Integer, nullable=True)
     end_year = Column(Integer, nullable=True)
     gpa = Column(Float, nullable=True)

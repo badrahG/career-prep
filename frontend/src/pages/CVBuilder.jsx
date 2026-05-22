@@ -256,7 +256,7 @@ export default function CVBuilder() {
       languages: langList.filter(function(l) { return l.name; }), certs: certs.filter(function(c) { return c.name; }),
       internships: interns.filter(function(n) { return n.company; }), awards: awards.filter(function(a) { return a.name; })
     });
-    var edus = educations.filter(function(e) { return e.school; }).map(function(e) { return { school: e.school, major: e.major || e.major_field, start_year: parseInt(e.start_year) || null, end_year: e.currently ? null : (parseInt(e.end_year) || null), gpa: parseFloat(e.gpa) || null }; });
+    var edus = educations.filter(function(e) { return e.school; }).map(function(e) { return { school: e.school, major: e.major || e.major_field, level: e.level || null, start_year: parseInt(e.start_year) || null, end_year: e.currently ? null : (parseInt(e.end_year) || null), gpa: parseFloat(e.gpa) || null }; });
     var exps = experiences.filter(function(e) { return e.company; }).map(function(e) { return { company: e.company, position: e.position, start_date: e.start_date, end_date: e.currently ? "Одоо" : e.end_date, description: e.description }; });
     var sk = selectedPersonal.map(function(s) { return { skill_name: s, skill_type: "soft", level: "intermediate" }; });
     sk = sk.concat(selectedTech.map(function(s) { return { skill_name: s, skill_type: "technical", level: "intermediate" }; }));
@@ -356,10 +356,10 @@ export default function CVBuilder() {
         </div>
 
         {/* Step tabs */}
-        <div className="flex gap-1 mb-5 overflow-x-auto pb-2">
+        <div className="flex gap-1 mb-5 overflow-x-auto pb-2 scrollbar-hide">
           {stepNames.map(function(t, idx) {
             var s = idx + 1;
-            var cls = "px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition border ";
+            var cls = "flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition border ";
             if (step === s) cls += "bg-violet-600 text-white border-violet-600";
             else if (step > s) cls += "bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-700";
             else cls += "bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500";
@@ -563,10 +563,17 @@ export default function CVBuilder() {
                       {certs.length > 1 && <button type="button" onClick={function() { setCerts(removeAt(certs, i)); }} className="text-xs text-red-600 hover:text-red-700 font-medium">Устгах</button>}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <Inp label="Сургалт/Сайн дурын ажил нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" />
-                      <Inp label="Сургалтын дэлгэрэнгүй *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Pinecone" />
+                      <Inp label="Сургалт/Сайн дурын ажил нэр *" value={c.name} onChange={function(v) { updList(certs, setCerts, i, "name", v); }} placeholder="Web Development" cls="sm:col-span-2" />
                       <Inp label="Эхэлсэн" value={c.start_date} onChange={function(v) { updList(certs, setCerts, i, "start_date", v); }} type="date" />
                       <Inp label="Дууссан" value={c.end_date} onChange={function(v) { updList(certs, setCerts, i, "end_date", v); }} type="date" />
+                      {(template === "modern" || template === "classic") ? (
+                        <div className="sm:col-span-2">
+                          <label className={labelCls}>Сургалт/Сайн дурын ажил дэлгэрэнгүй *</label>
+                          <textarea defaultValue={c.organization} onBlur={function(e) { updList(certs, setCerts, i, "organization", e.target.value); }} placeholder="Дэлгэрэнгүй мэдээлэл оруулах" rows={2} className={inputCls + " field-sizing-fixed"} />
+                        </div>
+                      ) : (
+                        <Inp label="Сургалт/Сайн дурын ажил дэлгэрэнгүй *" value={c.organization} onChange={function(v) { updList(certs, setCerts, i, "organization", v); }} placeholder="Дэлгэрэнгүй мэдээлэл оруулах" cls="sm:col-span-2" />
+                      )}
                     </div>
                     <div className="mt-3">
                       <label className={labelCls}>Гэрчилгээний файл <span className="text-gray-400 font-normal">(PDF, JPG, PNG — 10MB хүртэл)</span></label>

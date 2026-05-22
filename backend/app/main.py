@@ -204,6 +204,7 @@ def run_migrations():
 
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_prefs TEXT"))
 
+        conn.execute(text("ALTER TABLE educations ADD COLUMN IF NOT EXISTS level VARCHAR(100)"))
         conn.execute(text("ALTER TABLE cvs ADD COLUMN IF NOT EXISTS cv_type VARCHAR(20) NOT NULL DEFAULT 'job'"))
         conn.execute(text("ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS directions TEXT"))
         conn.execute(text("ALTER TABLE scholarships ADD COLUMN IF NOT EXISTS opportunities TEXT"))

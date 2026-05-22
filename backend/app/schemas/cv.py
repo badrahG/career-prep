@@ -6,6 +6,7 @@ from datetime import datetime
 class EducationCreate(BaseModel):
     school: str
     major: Optional[str] = None
+    level: Optional[str] = None
     start_year: Optional[int] = None
     end_year: Optional[int] = None
     gpa: Optional[float] = None

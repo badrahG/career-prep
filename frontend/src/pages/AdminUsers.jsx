@@ -44,10 +44,10 @@ function BarChart({ data, color }) {
 
 function StatCard({ label, value, sub, color }) {
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4">
-      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-      <p className={"text-2xl font-bold " + (color || "text-gray-900 dark:text-gray-100")}>{value}</p>
-      {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3">
+      <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-0.5 whitespace-nowrap">{label}</p>
+      <p className={"text-xl font-medium leading-none " + (color || "text-gray-500 dark:text-gray-400")}>{value}</p>
+      {sub && <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -277,10 +277,10 @@ export default function AdminUsers() {
           <div>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               <StatCard label="Нийт хэрэглэгч" value={stats?.total_users ?? "—"} />
-              <StatCard label="Идэвхтэй" value={stats?.active_users ?? "—"} color="text-emerald-700" />
+              <StatCard label="Идэвхтэй" value={stats?.active_users ?? "—"} />
               <StatCard label="Түр хаагдсан" value={stats?.suspended_users ?? "—"} color="text-red-600" />
-              <StatCard label="Админ" value={stats?.total_admins ?? "—"} color="text-violet-700" />
-              <StatCard label="Нийт CV" value={stats?.total_cvs ?? "—"} color="text-purple-700" />
+              <StatCard label="Админ" value={stats?.total_admins ?? "—"} />
+              <StatCard label="Нийт CV" value={stats?.total_cvs ?? "—"} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -331,9 +331,9 @@ export default function AdminUsers() {
             {stats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard label="Нийт" value={stats.total_users} />
-                <StatCard label="Идэвхтэй" value={stats.active_users} color="text-emerald-700" />
+                <StatCard label="Идэвхтэй" value={stats.active_users} />
                 <StatCard label="Түр хаагдсан" value={stats.suspended_users} color="text-red-600" />
-                <StatCard label="Нийт CV" value={stats.total_cvs} color="text-violet-700" />
+                <StatCard label="Нийт CV" value={stats.total_cvs} />
               </div>
             )}
 
@@ -467,12 +467,11 @@ export default function AdminUsers() {
                                     {u.role === "admin" ? "Хэрэглэгч" : "Админ"}
                                   </button>
                                   <button onClick={function () { openLimitModal(u); }}
-                                    className="text-xs px-2 py-1 border border-violet-200 text-violet-700 hover:bg-violet-50 rounded-lg font-medium transition whitespace-nowrap">
+                                    className="text-xs px-2 py-1 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition whitespace-nowrap">
                                     Лимит{(u.custom_ai_limit !== null && u.custom_ai_limit !== undefined) || (u.custom_tr_limit !== null && u.custom_tr_limit !== undefined) ? " ✦" : ""}
                                   </button>
                                   <button onClick={function () { toggleActive(u); }}
-                                    className={"text-xs px-2 py-1 border rounded-lg font-medium transition whitespace-nowrap " +
-                                      (u.is_active ? "border-amber-200 text-amber-700 hover:bg-amber-50" : "border-emerald-200 text-emerald-700 hover:bg-emerald-50")}>
+                                    className="text-xs px-2 py-1 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg font-medium transition whitespace-nowrap">
                                     {u.is_active ? "Хаах" : "Нээх"}
                                   </button>
                                   <button onClick={function () { deleteUser(u); }}

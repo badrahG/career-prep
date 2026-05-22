@@ -74,7 +74,7 @@ function StatItem({ label, value, sub, color }) {
   return (
     <div className="min-w-[56px]">
       <p className="text-[11px] text-gray-400 dark:text-gray-500 mb-0.5 whitespace-nowrap">{label}</p>
-      <p className={"text-xl font-bold leading-none " + (color || "text-gray-900 dark:text-gray-100")}>{value ?? "—"}</p>
+      <p className={"text-xl font-medium leading-none " + (color || "text-gray-500 dark:text-gray-400")}>{value ?? "—"}</p>
       {sub && <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
     </div>
   );

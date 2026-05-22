@@ -206,7 +206,7 @@ export default function CVStart() {
                   </svg>
                 </div>
               </div>
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Шинээр үүсгэх</h2>
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">Ажилд орох CV үүсгэх</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 flex-1">
                 Эхнээс мэдээллээ алхам алхмаар оруулж, CareerPrep системийн загвар дээр CV үүсгэнэ үү.
               </p>

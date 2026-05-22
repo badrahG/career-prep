@@ -247,6 +247,9 @@ export default function Layout({ children, rootClassName }) {
               </button>
 
               {userMenuOpen && (
+                <div className="fixed inset-0 z-10" onClick={function () { setUserMenuOpen(false); }} />
+              )}
+              {userMenuOpen && (
                 <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-lg py-2 z-20">
                   <div className="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700 mb-1">
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{user?.last_name} {user?.first_name}</p>
@@ -312,7 +315,7 @@ export default function Layout({ children, rootClassName }) {
               </button>
               <button
                 onClick={function () { logout(); window.location.href = "/login"; }}
-                className="flex-1 py-2.5 rounded-xl text-sm font-semibold bg-red-500 hover:bg-red-600 text-white transition"
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
               >
                 Гарах
               </button>

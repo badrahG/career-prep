@@ -213,8 +213,11 @@ function CertFilePreview({ url, openLabel, altLabel }) {
       </a>
     );
   }
+  var downloadUrl = safeUrl.includes("res.cloudinary.com") && safeUrl.includes("/raw/upload/")
+    ? safeUrl.replace("/raw/upload/", "/raw/upload/fl_attachment/")
+    : safeUrl;
   return (
-    <a href={safeUrl} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", padding: "5px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "4px", textDecoration: "none" }}>
+    <a href={downloadUrl} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", padding: "5px 10px", background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: "4px", textDecoration: "none" }}>
       <span style={{ fontSize: "15px" }}>📄</span>
       <span style={{ fontSize: "10.5px", color: "#c2410c", fontWeight: "600" }}>{openLabel || "Гэрчилгээ нээх"}</span>
     </a>

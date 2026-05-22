@@ -30,10 +30,11 @@ API_BASE = os.getenv("API_BASE_URL", "http://localhost:8001")
 
 
 async def _store_upload(contents: bytes, filename: str, folder: str, resource_type: str = "image") -> str:
+    pid = filename if resource_type == "raw" else filename.rsplit(".", 1)[0]
     cloud_url = cloudinary_storage.upload_bytes(
         contents,
         folder=folder,
-        public_id=filename.rsplit(".", 1)[0],
+        public_id=pid,
         resource_type=resource_type,
     )
     if cloud_url:

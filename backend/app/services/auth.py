@@ -43,8 +43,13 @@ def create_access_token(data: dict) -> str:
 
 
 def create_refresh_token(user_id: int) -> str:
+    import secrets
     expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
-    return jwt.encode({"sub": str(user_id), "type": "refresh", "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(
+        {"sub": str(user_id), "type": "refresh", "exp": expire, "jti": secrets.token_hex(16)},
+        SECRET_KEY,
+        algorithm=ALGORITHM,
+    )
 
 
 def get_current_user(

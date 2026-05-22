@@ -156,7 +156,11 @@ def login(request: Request, response: Response, user_data: UserLogin, db: Sessio
         token_hash=hashlib.sha256(refresh_token_str.encode()).hexdigest(),
         expires_at=expires_at,
     ))
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=429, detail="Хэт олон нэвтрэх оролдлого. Түр хүлээгээд дахин оролдоно уу.")
 
     write_audit_log(db, user.id, "login", request, details=user.email)
     return {"access_token": access_token, "refresh_token": refresh_token_str, "token_type": "bearer"}

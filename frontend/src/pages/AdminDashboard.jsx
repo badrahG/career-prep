@@ -233,6 +233,83 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* Ярилцлагын горимын хэрэглээ + Мэргэжлийн рейтинг + Зөвлөмж */}
+            <div className="grid md:grid-cols-3 gap-4">
+
+              {/* Горимын хэрэглээ */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Ярилцлагын горим</p>
+                <div className="space-y-3">
+                  {[
+                    { label: "Flashcard", key: "flashcard", color: "bg-violet-500", sub: "үзэлт", val: data?.mode_usage?.flashcard?.views, users: data?.mode_usage?.flashcard?.users },
+                    { label: "Quiz", key: "quiz", color: "bg-blue-500", sub: "тоглолт", val: data?.mode_usage?.quiz?.sessions, users: data?.mode_usage?.quiz?.users },
+                    { label: "Дадлага горим", key: "star", color: "bg-emerald-500", sub: "дадлага", val: data?.mode_usage?.star?.sessions, users: data?.mode_usage?.star?.users },
+                  ].map(function (m) {
+                    var total = (data?.mode_usage?.flashcard?.views || 0) + (data?.mode_usage?.quiz?.sessions || 0) + (data?.mode_usage?.star?.sessions || 0);
+                    var pct = total > 0 ? Math.round(((m.val || 0) / total) * 100) : 0;
+                    return (
+                      <div key={m.key}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-gray-600 dark:text-gray-400 font-medium">{m.label}</span>
+                          <span className="text-gray-900 dark:text-gray-100 font-semibold">{m.val || 0} <span className="text-gray-400 font-normal">{m.sub} · {m.users || 0} хэрэглэгч</span></span>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div className={"h-full rounded-full " + m.color} style={{ width: pct + "%" }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Мэргэжлийн рейтинг */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Мэргэжлийн рейтинг</p>
+                {!data?.top_majors?.length ? (
+                  <p className="text-sm text-gray-400 dark:text-gray-500">Өгөгдөл байхгүй</p>
+                ) : (
+                  <div className="space-y-2.5">
+                    {(function () {
+                      var max = Math.max.apply(null, data.top_majors.map(function (m) { return m.views; }));
+                      return data.top_majors.map(function (m, i) {
+                        var pct = max > 0 ? Math.round((m.views / max) * 100) : 0;
+                        return (
+                          <div key={i}>
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-gray-600 dark:text-gray-400 truncate max-w-[130px]">{m.name}</span>
+                              <span className="text-gray-900 dark:text-gray-100 font-semibold flex-shrink-0 ml-2">{m.views}</span>
+                            </div>
+                            <div className="h-1 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-violet-500" style={{ width: pct + "%", opacity: 0.6 + i * 0.05 > 1 ? 1 : 0.6 }} />
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                )}
+              </div>
+
+              {/* Хамгийн их үзэгдсэн зөвлөмж */}
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Их уншигдсан зөвлөмж</p>
+                {!data?.top_advice?.length ? (
+                  <p className="text-sm text-gray-400 dark:text-gray-500">Өгөгдөл байхгүй</p>
+                ) : (
+                  <div className="space-y-2">
+                    {data.top_advice.map(function (a) {
+                      return (
+                        <div key={a.id} className="flex items-center justify-between gap-2">
+                          <p className="text-xs text-gray-700 dark:text-gray-300 truncate flex-1">{a.title}</p>
+                          <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 flex-shrink-0">{a.view_count}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Bottom row */}
             <div className="grid md:grid-cols-3 gap-5">
 

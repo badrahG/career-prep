@@ -340,6 +340,8 @@ def delete_case(cid: int, db: Session = Depends(get_db), admin: User = Depends(r
 def create_question(data: QuestionCreate, db: Session = Depends(get_db), admin: User = Depends(require_admin)):
     if data.category not in ("general", "technical", "behavioral", "case"):
         raise HTTPException(status_code=400, detail="Буруу категори")
+    if not data.major_id:
+        raise HTTPException(status_code=400, detail="Мэргэжил заавал сонгоно уу")
 
     # If is_quiz=True, validate quiz fields
     if data.is_quiz:
@@ -365,6 +367,8 @@ def update_question(qid: int, data: QuestionCreate, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="Асуулт олдсонгүй")
     if data.category not in ("general", "technical", "behavioral", "case"):
         raise HTTPException(status_code=400, detail="Буруу категори")
+    if not data.major_id:
+        raise HTTPException(status_code=400, detail="Мэргэжил заавал сонгоно уу")
 
     if data.is_quiz:
         if not all([data.option_a, data.option_b, data.option_c, data.option_d, data.correct_option]):
@@ -616,6 +620,18 @@ def evaluate_open_ended(
                 suggestion=item.get("suggestion", ""),
                 open_ended_sample=q.open_ended_sample,
             ))
+
+    # STAR горимын session бүртгэх
+    try:
+        from app.models.progress import UserStarSession
+        major_id = submission.answers[0].question_id if submission.answers else None
+        if major_id:
+            q = questions_map.get(major_id)
+            major_id = q.major_id if q else None
+        db.add(UserStarSession(user_id=current_user.id, major_id=major_id))
+        db.commit()
+    except Exception:
+        db.rollback()
 
     return OpenEndedResult(
         overall_score=max(0, min(100, int(raw.get("overall_score", 0)))),

@@ -24,5 +24,6 @@ class Advice(Base):
     external_links = Column(Text, nullable=True)  # JSON string of [{title, url}]
     sort_order = Column(Integer, default=0, nullable=False)
     is_published = Column(Boolean, default=True, nullable=False)
+    view_count = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

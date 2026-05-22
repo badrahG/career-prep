@@ -89,6 +89,21 @@ def get_advice(
     return advice
 
 
+@router.post("/{advice_id}/view")
+def record_view(
+    advice_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Нийтлэл үзсэн тоог нэмэгдүүлнэ"""
+    advice = db.query(Advice).filter(Advice.id == advice_id, Advice.is_published == True).first()
+    if not advice:
+        return {"ok": False}
+    advice.view_count = (advice.view_count or 0) + 1
+    db.commit()
+    return {"ok": True}
+
+
 # ---------- Admin CRUD ----------
 
 @router.post("/", response_model=AdviceResponse)

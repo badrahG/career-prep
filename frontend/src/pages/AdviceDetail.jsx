@@ -28,6 +28,7 @@ export default function AdviceDetail() {
     API.get("/advice/" + id)
       .then(function (res) {
         setArticle(res.data);
+        API.post("/advice/" + id + "/view").catch(function () {});
         return API.get("/advice/", { params: { category: res.data.category } });
       })
       .then(function (res) {

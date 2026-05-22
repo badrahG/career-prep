@@ -28,7 +28,7 @@ from app.models.email_token import EmailToken  # noqa
 from app.models.interview import InterviewQuestion  # noqa
 from app.models.interview_case import InterviewCase  # noqa
 from app.models.advice import Advice  # noqa
-from app.models.progress import UserQuizResult, UserFlashcardProgress  # noqa
+from app.models.progress import UserQuizResult, UserFlashcardProgress, UserStarSession  # noqa
 from app.models.audit_log import AuditLog  # noqa
 from app.models.scholarship_checklist import UserScholarshipChecklist  # noqa
 from app.models.scholarship_bookmark import ScholarshipBookmark  # noqa
@@ -298,6 +298,19 @@ def run_migrations():
         """))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sf_user ON system_feedbacks(user_id)"))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_sf_created ON system_feedbacks(created_at DESC)"))
+
+        # ── Analytics ────────────────────────────────────────────────────────────
+        conn.execute(text("ALTER TABLE advices ADD COLUMN IF NOT EXISTS view_count INTEGER NOT NULL DEFAULT 0"))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS user_star_sessions (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                major_id INTEGER REFERENCES majors(id) ON DELETE SET NULL,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_uss_user ON user_star_sessions(user_id)"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_uss_major ON user_star_sessions(major_id)"))
 
         conn.commit()
     print("✓ Migrations applied")

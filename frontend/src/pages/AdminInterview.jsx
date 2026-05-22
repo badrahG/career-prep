@@ -153,8 +153,8 @@ export default function AdminInterview() {
     if (qForm.category === "case" && !qForm.case_id) {
       toast.error("Кейс асуулт үүсгэхдээ кейс сонгоно уу"); return;
     }
-    if (qForm.is_open_ended && !qForm.major_id) {
-      toast.error("Нээлттэй асуултад мэргэжил заавал шаардлагатай"); return;
+    if (!qForm.major_id) {
+      toast.error("Мэргэжлээ сонгоно уу"); return;
     }
     if (qForm.is_quiz) {
       if (!qForm.option_a || !qForm.option_b || !qForm.option_c || !qForm.option_d) {

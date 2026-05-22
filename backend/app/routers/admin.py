@@ -337,9 +337,10 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
     from app.models.interview import InterviewQuestion
     from app.models.advice import Advice
     from app.models.scholarship import Scholarship
-    from app.models.progress import UserQuizResult
+    from app.models.progress import UserQuizResult, UserFlashcardProgress, UserStarSession
     from app.models.scholarship_bookmark import ScholarshipBookmark
     from app.models.audit_log import AuditLog
+    from app.models.major import Major
     from datetime import date
 
     # ── Counts ──────────────────────────────────────────────────────────────
@@ -410,6 +411,35 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
     daily_registrations = [{"date": str(d), "count": reg_map.get(d, 0)} for d in date_range]
     daily_cvs           = [{"date": str(d), "count": cv_map.get(d, 0)} for d in date_range]
 
+    # ── Горимын хэрэглээ ─────────────────────────────────────────────────────
+    flashcard_users = db.query(func.count(func.distinct(UserFlashcardProgress.user_id))).scalar() or 0
+    flashcard_views = db.query(func.count(UserFlashcardProgress.id)).scalar() or 0
+    quiz_sessions   = db.query(func.count(UserQuizResult.id)).scalar() or 0
+    quiz_users      = db.query(func.count(func.distinct(UserQuizResult.user_id))).scalar() or 0
+    star_sessions   = db.query(func.count(UserStarSession.id)).scalar() or 0
+    star_users      = db.query(func.count(func.distinct(UserStarSession.user_id))).scalar() or 0
+
+    # ── Мэргэжлийн рейтинг (flashcard үзэлт) ────────────────────────────────
+    from app.models.interview import InterviewQuestion as IQ
+    major_rows = (
+        db.query(Major.name, func.count(UserFlashcardProgress.id).label("views"))
+        .join(IQ, IQ.major_id == Major.id)
+        .join(UserFlashcardProgress, UserFlashcardProgress.question_id == IQ.id)
+        .group_by(Major.id, Major.name)
+        .order_by(func.count(UserFlashcardProgress.id).desc())
+        .limit(8)
+        .all()
+    )
+
+    # ── Зөвлөмжийн хамгийн их үзэгдсэн нийтлэлүүд ───────────────────────────
+    top_advice = (
+        db.query(Advice.id, Advice.title, Advice.category, Advice.view_count)
+        .filter(Advice.is_published == True)
+        .order_by(Advice.view_count.desc())
+        .limit(8)
+        .all()
+    )
+
     # ── Recent users ─────────────────────────────────────────────────────────
     recent_users = db.query(User).order_by(User.created_at.desc()).limit(7).all()
 
@@ -471,6 +501,21 @@ def admin_dashboard(db: Session = Depends(get_db), admin: User = Depends(require
             for u in recent_users
         ],
         "recent_logs": logs_out,
+        "mode_usage": {
+            "flashcard": {"users": flashcard_users, "views": flashcard_views},
+            "quiz":      {"users": quiz_users,      "sessions": quiz_sessions},
+            "star":      {"users": star_users,      "sessions": star_sessions},
+        },
+        "top_majors": [{"name": r.name, "views": r.views} for r in major_rows],
+        "top_advice": [
+            {
+                "id": r.id,
+                "title": r.title,
+                "category": str(r.category.value if hasattr(r.category, "value") else r.category),
+                "view_count": r.view_count or 0,
+            }
+            for r in top_advice
+        ],
     }
 
 

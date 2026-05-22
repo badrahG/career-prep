@@ -54,7 +54,7 @@ def _analyze_with_claude(cv_text: str, api_key: str) -> dict:
     client = anthropic.Anthropic(api_key=api_key)
     try:
         message = client.messages.create(
-            model="claude-sonnet-4-6",
+            model="claude-haiku-4-5-20251001",
             max_tokens=4096,
             messages=[{"role": "user", "content": _PROMPT.format(cv_text=cv_text[:6000])}],
         )

@@ -217,7 +217,7 @@ def _parse_json_response(raw: str) -> dict:
 def _generate_with_claude(prompt: str, api_key: str) -> dict:
     client = anthropic.Anthropic(api_key=api_key)
     message = client.messages.create(
-        model=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
+        model=os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001"),
         max_tokens=6000,
         messages=[{"role": "user", "content": prompt}],
     )

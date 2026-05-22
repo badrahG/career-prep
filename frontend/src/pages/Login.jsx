@@ -9,11 +9,14 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [unverified, setUnverified] = useState(false);
   const [resending, setResending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async function (e) {
     e.preventDefault();
+    if (loading) return;
     setUnverified(false);
+    setLoading(true);
     try {
       await login(email, password);
       toast.success("Амжилттай нэвтэрлээ!");
@@ -24,6 +27,8 @@ export default function Login() {
       if (msg.indexOf("баталгаажуул") !== -1) {
         setUnverified(true);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,9 +108,20 @@ export default function Login() {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition mt-2"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 text-white py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition mt-2 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Нэвтрэх →
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                    </svg>
+                    Нэвтэрж байна...
+                  </>
+                ) : (
+                  "Нэвтрэх →"
+                )}
               </button>
             </form>
 

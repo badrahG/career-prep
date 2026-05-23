@@ -98,13 +98,12 @@ export default function Dashboard() {
 
         {/* Onboarding banner */}
         {stats.cv_count === 0 && stats.studied_questions === 0 && !isAdmin && (
-          <div className="rounded-2xl p-4 text-white flex items-center justify-between gap-4 shadow-sm"
-            style={{ background: "linear-gradient(135deg, #8c54ef 0%, #554de5 100%)" }}>
+          <div className="bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-800 rounded-2xl p-4 flex items-center justify-between">
             <div>
-              <p className="font-bold text-sm">CareerPrep системд тавтай морилно уу!</p>
-              <p className="text-xs opacity-80 mt-0.5"> CV үүсгэж, ярилцлагын бэлтгэлээ эхлүүлнэ үү.</p>
+              <p className="text-sm font-semibold text-violet-700 dark:text-violet-400">CareerPrep системд тавтай морилно уу!</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5"> CV үүсгэж, ярилцлагын бэлтгэлээ эхлүүлнэ үү.</p>
             </div>
-            <Link to="/cv/start" className="bg-white text-violet-500 px-4 py-2 rounded-xl text-sm font-bold hover:bg-violet-50 transition whitespace-nowrap flex-shrink-0">
+            <Link to="/cv/start" className="bg-violet-500 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-violet-700 transition">
               CV үүсгэх →
             </Link>
           </div>

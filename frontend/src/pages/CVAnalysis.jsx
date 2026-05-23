@@ -133,7 +133,7 @@ export default function CVAnalysis() {
         <div className="mb-6">
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">AI Шинжилгээ</p>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">CV Анализ</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">AI-ийн тусламжтайгаар CV-ийгээ сайжруул</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">AI тусламжтайгаар CV загвараа сайжруул</p>
         </div>
         {!result ? (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
@@ -144,8 +144,8 @@ export default function CVAnalysis() {
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">CV-ийгээ оруулна уу</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Claude AI таны CV-г задлан шинжилж, Монгол хэлээр зөвлөгөө өгнө</p>
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">CV загвараа оруулна уу</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400"> CV загварыг задлан шинжилж, Монгол хэлээр зөвлөгөө өгнө</p>
             </div>
 
             {/* Drop zone */}

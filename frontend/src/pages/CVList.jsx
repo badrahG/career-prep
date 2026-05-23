@@ -7,7 +7,7 @@ import CVPreview from "../components/CVPreview";
 import ScholarshipCVPreview from "../components/ScholarshipCVPreview";
 import Layout from "../components/Layout";
 
-var TEMPLATE_LABELS = { modern: "Монгол стандарт", classic: "Ази загвар", minimal: "Европ загвар" };
+var TEMPLATE_LABELS = { modern: "Монгол хэв маяг", classic: "Ази хэв маяг", minimal: "Европ хэв маяг" };
 
 var COUNTRY_FLAG = { "United States": "🇺🇸", "Australia": "🇦🇺", "Japan": "🇯🇵" };
 

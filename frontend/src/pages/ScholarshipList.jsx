@@ -78,7 +78,7 @@ export default function ScholarshipList() {
           <div>
             <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Тэтгэлэг & Internship</p>
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Тэтгэлэг & Internship</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Дотоодын тэтгэлэг, дадлагын хөтөлбөрүүд.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Дотоод болон гадаадын тэтгэлэг, дадлагын хөтөлбөрүүд.</p>
           </div>
           {isAdmin && <Link to="/scholarship/new" className="bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-md transition whitespace-nowrap">+ Нэмэх</Link>}
         </div>

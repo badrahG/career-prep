@@ -164,10 +164,7 @@ export default function Home() {
               {/* Feature pills */}
               <div className="flex flex-wrap gap-2 mb-7">
                 {[
-                  { icon: "📄", label: "CV үүсгэх" },
-                  { icon: "💬", label: "AI зөвлөмж" },
-                  { icon: "🎓", label: "Тэтгэлэг" },
-                  { icon: "⚡", label: "Ярилцлагын бэлтгэл" },
+                  { icon: "🎓", label: "Залуучуудын хөгжлийг дэмжих платформ" },
                 ].map(function (p, i) {
                   return (
                     <span key={i} className="inline-flex items-center gap-1.5 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-semibold px-3 py-1.5 rounded-full border border-violet-100 dark:border-violet-800">
@@ -179,8 +176,8 @@ export default function Home() {
               </div>
 
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-700 dark:text-gray-200 leading-tight mb-5">
-                Ажилдаа бэлэн бол,<br />
-                <span className="text-violet-500 dark:text-violet-400">амжилтанд ойртоно</span>
+                Ирээдүйн амжилт<br />
+                <span className="text-violet-500 dark:text-violet-400">эндээс эхэлнэ</span>
               </h1>
 
               <p className="text-sm md:text-base text-gray-400 dark:text-gray-500 leading-relaxed mb-8 max-w-lg">

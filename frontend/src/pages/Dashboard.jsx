@@ -91,7 +91,7 @@ export default function Dashboard() {
         {/* Greeting */}
         <div className="pt-6 pb-1">
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 leading-tight">
-            Сайн уу, {lastName ? lastName + " " : ""}{firstName}
+            Тавтай морил, {lastName ? lastName + " " : ""}{firstName}
           </h1>
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{todayStr}</p>
         </div>

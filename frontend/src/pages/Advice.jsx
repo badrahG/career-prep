@@ -111,7 +111,7 @@ export default function Advice() {
           <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
             {["Өөрт тохирох сэдвээс эхэл — CV бичих гэж байвал эхлээд CV хэсэг.",
               "Нэг зөвлөмжийг уншаад шууд ажлын практикт тусга.",
-              "Видео хавсралттай зөвлөмжүүд — илүү гүн сурах боломж."].map(function (t, i) {
+              "Видео хавсралттай зөвлөмжүүд — илүү сурах боломж."].map(function (t, i) {
               return (
                 <li key={i} className="flex items-start gap-2">
                   <span className="text-violet-600 font-bold">{i + 1}.</span>

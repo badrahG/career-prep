@@ -203,7 +203,7 @@ export default function Profile() {
             </div>
             <div>
               <label className={labelCls}>Оюутны код</label>
-              <input value={form.student_code} onChange={function (e) { upd("student_code", e.target.value); }} placeholder="B222270033" className={inputCls} />
+              <input value={form.student_code} onChange={function (e) { upd("student_code", e.target.value); }} placeholder="B2222*****" className={inputCls} />
               <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">VolunteerChain дээрх оюутны код. Хадгалахад certificate автоматаар татагдана.</p>
             </div>
             <div>

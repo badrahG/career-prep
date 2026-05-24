@@ -76,6 +76,8 @@ def update_profile(request: Request, data: ProfileUpdate, db: Session = Depends(
         current_user.last_name = data.last_name
     if data.phone is not None:
         current_user.phone = data.phone
+    if data.student_code is not None:
+        current_user.student_code = data.student_code
     db.commit()
     db.refresh(current_user)
     write_audit_log(db, current_user.id, "profile_update", request)

@@ -25,6 +25,7 @@ class UserResponse(BaseModel):
     is_active: bool = True
     is_verified: bool = False
     created_at: datetime
+    student_code: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -87,3 +88,4 @@ class ProfileUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone: Optional[str] = None
+    student_code: Optional[str] = None

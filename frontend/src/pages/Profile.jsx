@@ -13,8 +13,13 @@ export default function Profile() {
     first_name: user?.first_name || "",
     last_name: user?.last_name || "",
     phone: user?.phone || "",
+    student_code: user?.student_code || "",
   });
   var [saving, setSaving] = useState(false);
+
+  var [certs, setCerts] = useState([]);
+  var [certsLoading, setCertsLoading] = useState(false);
+  var [fetching, setFetching] = useState(false);
 
   var [pwForm, setPwForm] = useState({ old_password: "", new_password: "", confirm_password: "" });
   var [pwSaving, setPwSaving] = useState(false);
@@ -30,6 +35,44 @@ export default function Profile() {
     }
   }, [user]);
 
+  useEffect(function () {
+    if (user?.student_code) {
+      setCertsLoading(true);
+      API.get("/certificates")
+        .then(function (r) { setCerts(r.data); })
+        .catch(function () {})
+        .finally(function () { setCertsLoading(false); });
+    }
+  }, [user?.student_code]);
+
+  async function handleFetchCerts() {
+    setFetching(true);
+    try {
+      var res = await API.post("/certificates/fetch");
+      if (res.data.added === 0) {
+        toast.error("Certificate олдсонгүй.");
+      } else {
+        toast.success(res.data.message || "Certificate татагдлаа!");
+      }
+      var r = await API.get("/certificates");
+      setCerts(r.data);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || "Алдаа гарлаа");
+    } finally {
+      setFetching(false);
+    }
+  }
+
+  async function handleDeleteCert(id) {
+    try {
+      await API.delete("/certificates/" + id);
+      setCerts(function (prev) { return prev.filter(function (c) { return c.id !== id; }); });
+      toast.success("Устгагдлаа");
+    } catch {
+      toast.error("Устгахад алдаа гарлаа");
+    }
+  }
+
   function upd(field, value) {
     setForm(function (p) { return { ...p, [field]: value }; });
   }
@@ -41,8 +84,18 @@ export default function Profile() {
     e.preventDefault();
     setSaving(true);
     try {
+      var hadCode = !!user?.student_code;
       await API.put("/auth/profile", form);
       toast.success("Профайл шинэчлэгдлээ!");
+      // Шинээр оюутны код оруулсан бол certificate татна
+      if (form.student_code && !hadCode) {
+        try {
+          var res = await API.post("/certificates/fetch");
+          if (res.data.added > 0) {
+            toast.success(res.data.message);
+          }
+        } catch {}
+      }
       window.location.reload();
     } catch (err) {
       toast.error("Алдаа гарлаа");
@@ -149,6 +202,11 @@ export default function Profile() {
               <input value={form.phone} onChange={function (e) { upd("phone", e.target.value); }} placeholder="9999-9999" className={inputCls} />
             </div>
             <div>
+              <label className={labelCls}>Оюутны код</label>
+              <input value={form.student_code} onChange={function (e) { upd("student_code", e.target.value); }} placeholder="B222270033" className={inputCls} />
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">VolunteerChain дээрх оюутны код. Хадгалахад certificate автоматаар татагдана.</p>
+            </div>
+            <div>
               <label className={labelCls}>Бүртгүүлсэн огноо</label>
               <input value={user?.created_at ? new Date(user.created_at).toLocaleDateString("mn-MN") : ""} disabled className="w-full px-4 py-2.5 border border-gray-100 dark:border-gray-700 rounded-xl text-sm bg-gray-50 dark:bg-gray-700/50 text-gray-400 dark:text-gray-500 cursor-not-allowed" />
             </div>
@@ -235,6 +293,73 @@ export default function Profile() {
                 <Link to="/pricing" className="block w-full text-center py-2 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 rounded-xl text-sm font-medium hover:bg-amber-50 dark:hover:bg-amber-900/20 transition">
                   Extra Pack нэмэх — ₮3,900
                 </Link>
+              )}
+            </div>
+          </div>
+        )}
+
+        {form.student_code && (
+          <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl shadow-sm mb-5">
+            <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200"> Миний гэрчилгээнүүд</h2>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">VolunteerChain дээрх certificate-үүд</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleFetchCerts}
+                disabled={fetching}
+                className="flex items-center gap-1.5 px-4 py-2 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-700 rounded-xl text-sm font-medium hover:bg-violet-100 dark:hover:bg-violet-900/50 disabled:opacity-50 transition"
+              >
+                <span className={fetching ? "animate-spin" : ""}></span>
+                {fetching ? "Татаж байна..." : "Шинэчлэх"}
+              </button>
+            </div>
+            <div className="p-6">
+              {certsLoading ? (
+                <div className="text-center py-6 text-gray-400 dark:text-gray-500 text-sm">Ачааллаж байна...</div>
+              ) : certs.length === 0 ? (
+                <div className="text-center py-6">
+                  <p className="text-gray-400 dark:text-gray-500 text-sm">Certificate олдсонгүй.</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">"Шинэчлэх" дарж VolunteerChain-аас татна уу.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {certs.map(function (cert) {
+                    return (
+                      <div key={cert.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-2xl flex-shrink-0">📄</span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate">{cert.title}</p>
+                            {cert.issued_date && (
+                              <p className="text-xs text-gray-400 dark:text-gray-500">{new Date(cert.issued_date).toLocaleDateString("mn-MN")}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+                          {cert.cloudinary_url && (
+                            <a
+                              href={cert.cloudinary_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1.5 text-xs font-medium bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 rounded-lg hover:bg-violet-200 dark:hover:bg-violet-900/60 transition"
+                            >
+                              Харах
+                            </a>
+                          )}
+                          <button
+                            type="button"
+                            onClick={function () { handleDeleteCert(cert.id); }}
+                            className="px-3 py-1.5 text-xs font-medium text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                          >
+                            Устгах
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>

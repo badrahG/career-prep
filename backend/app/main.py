@@ -37,8 +37,10 @@ from app.models.major import Major  # noqa
 from app.models.notification import Notification, NotificationRead  # noqa
 from app.models.subscription import SubscriptionPlan, UserSubscription, UsageTracking, ExtraPackPurchase  # noqa
 from app.models.system_feedback import SystemFeedback  # noqa
+from app.models.certificate import Certificate  # noqa
 
 from app.routers import auth, cv, interview, scholarship, admin, advice, scholarship_cv
+from app.routers import certificates
 from app.routers import cv_analysis
 from app.routers import search
 from app.routers import notification
@@ -59,6 +61,7 @@ def run_migrations():
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS verified_at TIMESTAMP WITH TIME ZONE"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER NOT NULL DEFAULT 0"))
         conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP WITH TIME ZONE"))
+        conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS student_code VARCHAR(50)"))
 
         # Convert native questioncategory enum to VARCHAR to support new 'case' value
         conn.execute(text("""
@@ -126,6 +129,21 @@ def run_migrations():
         """))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_al_user ON audit_logs(user_id)"))
         conn.execute(text("CREATE INDEX IF NOT EXISTS idx_al_created ON audit_logs(created_at DESC)"))
+
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS certificates (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                title VARCHAR(255) NOT NULL,
+                issued_date DATE,
+                cloudinary_url VARCHAR(500),
+                cloudinary_public_id VARCHAR(255),
+                external_id INTEGER,
+                source VARCHAR(100) DEFAULT 'volunteerchain',
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+            )
+        """))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS idx_cert_user ON certificates(user_id)"))
 
         conn.execute(text("""
             CREATE TABLE IF NOT EXISTS user_scholarship_checklists (
@@ -444,6 +462,7 @@ app.include_router(notification.router)
 app.include_router(settings.router)
 app.include_router(feedback.router)
 app.include_router(subscription.router)
+app.include_router(certificates.router)
 
 UPLOAD_DIR = Path(__file__).parent.parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)

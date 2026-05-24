@@ -26,6 +26,7 @@ class User(Base):
     failed_login_attempts = Column(Integer, default=0, nullable=False)
     locked_until = Column(DateTime(timezone=True), nullable=True)
     notification_prefs = Column(Text, nullable=True)
+    student_code = Column(String(50), nullable=True)
     custom_ai_limit = Column(Integer, nullable=True)
     custom_tr_limit = Column(Integer, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

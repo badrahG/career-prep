@@ -790,10 +790,14 @@ export default function CVBuilder() {
                     key={pc.id}
                     type="button"
                     onClick={function() {
-                      updList(certs, setCerts, certPickerIdx, "file_url", pc.cloudinary_url || "");
-                      if (!certs[certPickerIdx].name) {
-                        updList(certs, setCerts, certPickerIdx, "name", pc.title);
-                      }
+                      setCerts(function(prev) {
+                        var c = prev.slice();
+                        var item = Object.assign({}, c[certPickerIdx]);
+                        item.file_url = pc.cloudinary_url || "";
+                        if (!item.name) item.name = pc.title;
+                        c[certPickerIdx] = item;
+                        return c;
+                      });
                       setCertPickerIdx(null);
                       toast.success("Гэрчилгээ нэмэгдлээ!");
                     }}

@@ -75,4 +75,11 @@ def auth_headers(client, registered_user):
     })
     assert res.status_code == 200, f"Login failed: {res.text}"
     token = res.json()["access_token"]
-    return {"Authorization": f"Bearer {token}"}
+
+    csrf_res = client.get("/api/auth/csrf-token")
+    csrf_token = csrf_res.json()["csrf_token"]
+
+    return {
+        "Authorization": f"Bearer {token}",
+        "X-CSRF-Token": csrf_token,
+    }

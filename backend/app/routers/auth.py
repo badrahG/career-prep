@@ -371,7 +371,7 @@ def get_activity(db: Session = Depends(get_db), current_user: User = Depends(get
 
 @router.post("/change-password")
 @limiter.limit("5/minute")
-def change_password(request: Request, data: PasswordChange, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def change_password(request: Request, response: Response, data: PasswordChange, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if not verify_password(data.old_password, current_user.password):
         raise HTTPException(status_code=400, detail="Хуучин нууц үг буруу байна")
 

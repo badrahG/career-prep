@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
 
@@ -11,6 +11,8 @@ export default function Login() {
   const [resending, setResending] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const [searchParams] = useSearchParams();
+  const timedOut = searchParams.get("reason") === "timeout";
 
   const handleSubmit = async function (e) {
     e.preventDefault();
@@ -70,6 +72,15 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-8 md:p-10 shadow-sm">
+            {timedOut && (
+              <div className="mb-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-4 flex items-start gap-3">
+                <span className="text-xl leading-none">🔒</span>
+                <div>
+                  <p className="text-sm text-amber-900 dark:text-amber-300">Аюулгүй байдлын үүднээс 15 минут идэвхгүй байсан тул автоматаар гарлаа. Дахин нэвтэрнэ үү.</p>
+                </div>
+              </div>
+            )}
+
             <div className="mb-8">
               <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-2">Нэвтрэх</p>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Тавтай морил</h1>

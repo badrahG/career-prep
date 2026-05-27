@@ -88,7 +88,7 @@ API.interceptors.response.use(
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
         clearCsrfToken();
-        window.location.href = "/login";
+        window.location.href = "/login?reason=timeout";
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

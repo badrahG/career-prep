@@ -52,7 +52,7 @@ var FEATURES = [
   },
   {
     title: "Ярилцлагын бэлтгэл",
-    desc: "Flashcard, Quiz, STAR арга гэсэн 3 горимоор ярилцлагад бэлдэнэ. Ерөнхий, техникийн, зан үйлийн асуултууд.",
+    desc: "Flashcard, Quiz, AI зөвлөмж гэсэн 3 горимоор ярилцлагад бэлдэнэ. Ерөнхий, техникийн, зан үйлийн асуултууд.",
     to: "/interview",
     cta: "Бэлтгэл эхлэх",
   },
@@ -70,7 +70,7 @@ var FEATURES = [
   },
   {
     title: "CV Анализ",
-    desc: "CV болон ажлын байрны тодорхойлолтыг AI-аар харьцуулж тохирох байдал, дутуу ур чадварыг олж тогтооно.",
+    desc: "CV болон ажлын байрны тодорхойлолтыг AI харьцуулж тохирох байдал, дутуу ур чадварыг олж тогтооно.",
     to: "/cv-analysis",
     cta: "Анализ хийх",
   },
@@ -124,7 +124,7 @@ export default function Help() {
         <div>
           <p className="text-xs text-violet-600 font-bold uppercase tracking-wider mb-1">Тусламж</p>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Яаж ашиглах вэ?</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">CareerPrep-ийн функцуудыг хэрхэн ашиглах заавар болон түгээмэл асуулт хариулт.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">CareerPrep системийн  функцуудыг хэрхэн ашиглах заавар болон түгээмэл асуулт хариулт.</p>
         </div>
 
         {/* Features */}

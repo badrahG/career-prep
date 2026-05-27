@@ -7,14 +7,14 @@ import Layout from "../components/Layout";
 var CATEGORY_MN = {
   general: "Ерөнхий",
   technical: "Техникийн",
-  behavioral: "Зан үйлийн",
+  behavioral: "Зан төлөвийн",
   cv: "CV зөвлөмж",
   interview: "Ярилцлага",
   job_search: "Ажил хайлт",
   career: "Карьер",
-  modern: "Монгол стандарт",
-  classic: "Ази загвар",
-  minimal: "Европ загвар",
+  modern: "Монгол хэв маяг",
+  classic: "Ази хэв маяг",
+  minimal: "Европ хэв маяг",
 };
 
 var ACTION_MN = {

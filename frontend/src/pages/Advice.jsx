@@ -37,7 +37,7 @@ export default function Advice() {
     },
     {
       key: "job_search",
-      title: "Ажил олох",
+      title: "Ажилд хэрхэн бэлтгэх",
       subtitle: "Job Search",
       description: "Ажлын сайтууд, networking, cover letter бичих, remote ажил олох арга замууд.",
       link: "/advice/job_search",

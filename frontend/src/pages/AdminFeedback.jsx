@@ -14,9 +14,9 @@ var ADMIN_TABS = [
 ];
 
 var TEMPLATE_LABELS = {
-  modern:          "Монгол стандарт",
-  classic:         "Ази загвар",
-  minimal:         "Европ загвар",
+  modern:          "Монгол хэв маяг",
+  classic:         "Ази хэв маяг",
+  minimal:         "Европ маяг",
   "United States": "🇺🇸 АНУ тэтгэлгийн CV",
   "Australia":     "🇦🇺 Австрали тэтгэлгийн CV",
   "Japan":         "🇯🇵 Япон тэтгэлгийн CV",

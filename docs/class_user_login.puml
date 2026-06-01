@@ -1,0 +1,32 @@
+@startuml
+title Analysis Class Diagram - User Login
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+left to right direction
+
+class AuthControl <<control>> {
+  -requestStatus: string
+  --
+  +login(email: string, password: string): string
+  +showError(message: string): void
+}
+
+class User <<entity>> {
+  -email: string
+  -password: string
+  -isVerified: boolean
+  --
+  +checkPassword(password: string): boolean
+  +getStatus(): string
+}
+
+AuthControl ..> User : authenticates
+
+@enduml

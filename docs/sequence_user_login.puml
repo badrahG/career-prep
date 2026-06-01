@@ -1,0 +1,21 @@
+@startuml
+title Sequence Diagram - User Login
+
+actor UserActor as "User"
+participant "AuthControl" as AuthControl
+participant "User" as User
+
+UserActor -> AuthControl : login(email, password)
+AuthControl -> User : checkPassword(password)
+User --> AuthControl : passwordMatched
+AuthControl -> User : getStatus()
+User --> AuthControl : userStatus
+
+alt login successful
+  AuthControl --> UserActor : return access token
+else login failed
+  AuthControl -> AuthControl : showError(message)
+  AuthControl --> UserActor : show login error
+end
+
+@enduml

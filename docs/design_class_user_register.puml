@@ -1,0 +1,45 @@
+@startuml
+title Design Class Diagram - User Register
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+left to right direction
+
+class AuthRouter <<boundary>> {
+  -prefix: string
+  -tags: List<string>
+  --
+  +register(user_data: UserCreate): UserResponse
+}
+
+class AuthService <<control>> {
+  -secretKey: string
+  -algorithm: string
+  --
+  +register(user_data: UserCreate): UserResponse
+  +hash_password(password: string): string
+}
+
+class User <<entity>> {
+  -id: int
+  -first_name: string
+  -last_name: string
+  -email: string
+  -password: string
+  -is_active: boolean
+  -is_verified: boolean
+  --
+  +find(email: string): User
+  +create(data): User
+}
+
+AuthRouter --> AuthService : uses
+AuthService --> User : finds / creates
+
+@enduml

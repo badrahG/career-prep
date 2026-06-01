@@ -1,0 +1,25 @@
+@startuml
+title Design Sequence Diagram - View Interview Questions
+
+actor UserActor as "User"
+participant "InterviewRouter\n<<boundary>>" as InterviewRouter
+participant "AuthService\n<<control>>" as AuthService
+participant "InterviewService\n<<control>>" as InterviewService
+participant "InterviewQuestion\n<<entity>>" as InterviewQuestion
+
+UserActor -> InterviewRouter : get_questions(category)
+InterviewRouter -> AuthService : get_current_user(token)
+AuthService --> InterviewRouter : currentUser
+
+alt category selected
+  InterviewRouter -> InterviewService : select_questions(category)
+else all categories
+  InterviewRouter -> InterviewService : select_questions("all")
+end
+
+InterviewService -> InterviewQuestion : list(category)
+InterviewQuestion --> InterviewService : List<InterviewQuestion>
+InterviewService --> InterviewRouter : questions
+InterviewRouter --> UserActor : show interview questions
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+title Sequence Diagram - Edit Profile
+
+actor UserActor as "User"
+participant "AuthControl" as AuthControl
+participant "User" as User
+
+UserActor -> AuthControl : editProfile(user, profileData)
+AuthControl -> User : validateProfileData()
+User --> AuthControl : validationResult
+
+alt valid profile data
+  AuthControl -> User : updateProfile(firstName, lastName, phone)
+  User --> AuthControl : profileUpdated
+  AuthControl -> AuthControl : showProfile(user)
+  AuthControl --> UserActor : show updated profile
+else invalid profile data
+  AuthControl -> AuthControl : showError(message)
+  AuthControl --> UserActor : show validation error
+end
+
+@enduml

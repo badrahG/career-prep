@@ -1,0 +1,24 @@
+@startuml
+title Sequence Diagram - View Scholarship Details
+
+actor UserActor as "User"
+participant "ScholarshipControl" as ScholarshipControl
+participant "Scholarship" as Scholarship
+
+UserActor -> ScholarshipControl : viewScholarshipList()
+ScholarshipControl --> UserActor : show scholarship list
+
+UserActor -> ScholarshipControl : viewScholarshipDetails(scholarship)
+ScholarshipControl -> Scholarship : getDetails()
+Scholarship --> ScholarshipControl : scholarshipDetails
+ScholarshipControl -> Scholarship : isExpired()
+Scholarship --> ScholarshipControl : expiredStatus
+
+alt scholarship is active
+  ScholarshipControl --> UserActor : show scholarship details
+else scholarship is expired
+  ScholarshipControl -> ScholarshipControl : showExpiredNotice()
+  ScholarshipControl --> UserActor : show details with expired notice
+end
+
+@enduml

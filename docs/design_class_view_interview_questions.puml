@@ -1,0 +1,49 @@
+@startuml
+title Design Class Diagram - View Interview Questions
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+left to right direction
+
+class InterviewRouter <<boundary>> {
+  -prefix: string
+  -tags: List<string>
+  --
+  +get_questions(category: string): List<InterviewQuestion>
+}
+
+class AuthService <<control>> {
+  -secretKey: string
+  -algorithm: string
+  --
+  +get_current_user(token: string): User
+}
+
+class InterviewService <<control>> {
+  -defaultQuestionLimit: int
+  -passingPercent: float
+  --
+  +select_questions(category: string): List<InterviewQuestion>
+}
+
+class InterviewQuestion <<entity>> {
+  -id: int
+  -question_mn: text
+  -category: string
+  -sample_answer: text
+  -correct_option: string
+  --
+  +list(category: string): List
+}
+
+InterviewRouter --> AuthService : authenticates
+InterviewRouter --> InterviewService : uses
+InterviewService --> InterviewQuestion : loads
+
+@enduml

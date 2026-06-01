@@ -1,0 +1,110 @@
+@startuml
+title ERD диаграмм
+
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam entity {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+entity "users" as users {
+  * id : int <<PK>>
+  --
+  first_name : varchar
+  last_name : varchar
+  email : varchar
+  password : varchar
+  phone : varchar
+  role : enum
+  is_active : boolean
+  is_verified : boolean
+  created_at : datetime
+}
+
+entity "admins" as admins {
+  * admin_id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  permission_level : varchar
+}
+
+entity "cvs" as cvs {
+  * id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  name : varchar
+  template_type : enum
+  personal_info : text
+  created_at : datetime
+}
+
+entity "cv_details" as cv_details {
+  * id : int <<PK>>
+  --
+  cv_id : int <<FK>>
+  type : varchar
+  title : varchar
+  organization : varchar
+  start_date : varchar
+  end_date : varchar
+  level : varchar
+  description : text
+}
+
+entity "scholarships" as scholarships {
+  * id : int <<PK>>
+  --
+  admin_id : int <<FK>>
+  name : varchar
+  organization : varchar
+  target : varchar
+  requirements : text
+  deadline : date
+  website_url : varchar
+}
+
+entity "interview_questions" as interview_questions {
+  * id : int <<PK>>
+  --
+  question : text
+  category : enum
+  sample_answer : text
+  correct_option : varchar
+}
+
+entity "quiz_results" as quiz_results {
+  * id : int <<PK>>
+  --
+  user_id : int <<FK>>
+  question_id : int <<FK>>
+  total : int
+  correct : int
+  percentage : float
+  created_at : datetime
+}
+
+entity "advices" as advices {
+  * id : int <<PK>>
+  --
+  admin_id : int <<FK>>
+  category : varchar
+  title : varchar
+  summary : text
+  content : text
+  view_count : int
+}
+
+users ||--o| admins : админ эрхтэй
+users ||--o{ cvs : үүсгэнэ
+cvs ||--o{ cv_details : агуулна
+
+admins ||--o{ scholarships : удирдана
+admins ||--o{ advices : удирдана
+
+users ||--o{ quiz_results : авна
+interview_questions ||--o{ quiz_results : үндэслэнэ
+
+@enduml

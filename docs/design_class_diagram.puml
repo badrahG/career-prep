@@ -1,0 +1,229 @@
+@startuml
+title Design Class Diagram - Career Platform Backend
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 55
+skinparam ranksep 70
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+top to bottom direction
+
+class AuthRouter <<boundary>> {
+  -prefix: string
+  -tags: List<string>
+  --
+  +register(user_data: UserCreate): UserResponse
+  +login(user_data: UserLogin): Token
+  +update_profile(data: ProfileUpdate): UserResponse
+  +verify_email(data: VerifyEmailRequest): dict
+}
+
+class AdminRouter <<boundary>> {
+  -prefix: string
+  -adminOnly: boolean
+  --
+  +list_users(): dict
+  +get_user_detail(user_id: int): dict
+  +update_user(user_id: int): dict
+  +admin_dashboard(): dict
+}
+
+class CVRouter <<boundary>> {
+  -prefix: string
+  -uploadDir: string
+  --
+  +create_cv(data: CVCreate): CVResponse
+  +update_cv(cv_id: int, data: CVCreate): CVResponse
+  +track_pdf_export(cv_id: int): dict
+  +upload_photo(file: UploadFile): dict
+}
+
+class ScholarshipRouter <<boundary>> {
+  -prefix: string
+  -defaultLimit: int
+  --
+  +listScholarships(): List
+  +getScholarship(id: int): Scholarship
+  +createScholarship(data): Scholarship
+  +updateScholarship(id: int, data): Scholarship
+}
+
+class InterviewRouter <<boundary>> {
+  -prefix: string
+  -tags: List<string>
+  --
+  +get_questions(category: string): List<InterviewQuestion>
+  +get_quiz_questions(limit: int): List<InterviewQuestion>
+  +submit_quiz(answers: list): QuizResult
+  +mark_question_viewed(qid: int): dict
+  +create_question(question_data: dict): InterviewQuestion
+  +update_question(qid: int, question_data: dict): InterviewQuestion
+  +delete_question(qid: int): dict
+}
+
+class AuthService <<control>> {
+  -secretKey: string
+  -algorithm: string
+  -accessTokenExpireMinutes: int
+  --
+  +register(user_data: UserCreate): UserResponse
+  +hash_password(password: string): string
+  +verify_password(plain_password: string, hashed_password: string): boolean
+  +create_access_token(data: dict): string
+  +create_refresh_token(user_id: int): string
+  +get_current_user(token: string): User
+}
+
+class FileService <<control>> {
+  -allowedImageTypes: Set<string>
+  -maxFileSize: int
+  -uploadFolder: string
+  --
+  +validate_file_type(filename: string): boolean
+  +upload_photo(file: UploadFile): string
+}
+
+class CacheService <<control>> {
+  -ttl: int
+  -prefix: string
+  --
+  +cache_get(key: string, ttl: int): object
+  +cache_set(key: string, value: object): void
+  +cache_clear_prefix(prefix: string): void
+}
+
+class InterviewService <<control>> {
+  -defaultQuestionLimit: int
+  -passingPercent: float
+  --
+  +select_questions(category: string): List<InterviewQuestion>
+  +check_answers(answers: list): QuizResult
+  +calculate_score(total: int, correct: int): float
+  +create_question(question_data: dict): InterviewQuestion
+  +update_question(qid: int, question_data: dict): InterviewQuestion
+  +delete_question(qid: int): dict
+}
+
+class User <<entity>> {
+  -id: int
+  -first_name: string
+  -last_name: string
+  -email: string
+  -password: string
+  -role: UserRole
+  -is_active: boolean
+  -is_verified: boolean
+  --
+  +find(email: string): User
+  +create(data): User
+}
+
+class RefreshToken <<entity>> {
+  -id: int
+  -user_id: int
+  -token_hash: string
+  -expires_at: datetime
+  -revoked_at: datetime
+}
+
+class CV <<entity>> {
+  -id: int
+  -user_id: int
+  -name: string
+  -template_type: TemplateType
+  -personal_info: text
+  -pdf_export_count: int
+}
+
+class CVItem <<entity>> {
+  -id: int
+  -cv_id: int
+  -type: string
+  -title: string
+  -organization: string
+  -description: text
+}
+
+class Scholarship <<entity>> {
+  -id: int
+  -name: string
+  -organization: string
+  -target: string
+  -requirements: text
+  -deadline: date
+  -website_url: string
+}
+
+class InterviewQuestion <<entity>> {
+  -id: int
+  -question_mn: text
+  -category: string
+  -sample_answer: text
+  -correct_option: string
+  --
+  +list(category: string): List
+  +get(id: int): InterviewQuestion
+}
+
+class QuizResult <<entity>> {
+  -id: int
+  -user_id: int
+  -total: int
+  -correct: int
+  -percentage: float
+}
+
+' Row alignment
+AuthRouter -[hidden]right- AdminRouter
+AdminRouter -[hidden]right- CVRouter
+CVRouter -[hidden]right- ScholarshipRouter
+ScholarshipRouter -[hidden]right- InterviewRouter
+
+AuthService -[hidden]right- FileService
+FileService -[hidden]right- CacheService
+CacheService -[hidden]right- InterviewService
+
+User -[hidden]right- RefreshToken
+RefreshToken -[hidden]right- CV
+CV -[hidden]right- CVItem
+CVItem -[hidden]right- Scholarship
+Scholarship -[hidden]right- InterviewQuestion
+InterviewQuestion -[hidden]right- QuizResult
+
+' Boundary to control
+AuthRouter -down-> AuthService : uses
+AdminRouter -down-> AuthService : authorizes
+CVRouter -down-> FileService : uploads
+ScholarshipRouter -down-> CacheService : caches
+InterviewRouter -down-> InterviewService : uses
+
+' Control to entity
+AuthService -down-> User : authenticates
+AuthService -down-> RefreshToken : creates
+FileService -down-> CV : attaches file
+CacheService -down-> Scholarship : stores list
+InterviewService -down-> InterviewQuestion : selects
+InterviewService -down-> QuizResult : creates
+
+' Boundary to main entity
+AdminRouter -down-> User : manages
+CVRouter -down-> CV : manages
+ScholarshipRouter -down-> Scholarship : manages
+
+' Entity composition only
+CV "1" *-right- "0..*" CVItem : contains
+
+note bottom
+  Boundary classes are FastAPI routers.
+  Control classes handle service logic.
+  Entity classes are SQLAlchemy ORM models.
+  Entity-to-entity links are shown only for composition.
+end note
+
+@enduml

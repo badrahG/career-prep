@@ -1,0 +1,29 @@
+@startuml
+title Sequence Diagram - Create CV
+
+actor UserActor as "User"
+participant "CVControl" as CVControl
+participant "CV" as CV
+
+UserActor -> CVControl : createCV(user, cvData)
+CVControl -> CV : updateContent(personalInfo)
+CV --> CVControl : contentUpdated
+
+== Include: Select CV Template ==
+UserActor -> CVControl : selectTemplate(cv, templateName)
+CVControl -> CV : setTemplate(templateName)
+CV --> CVControl : templateSelected
+CVControl -> CV : generatePreview()
+CV --> CVControl : previewGenerated
+CVControl -> CVControl : showPreview(cv)
+CVControl --> UserActor : show CV preview
+
+== Include: Download PDF ==
+UserActor -> CVControl : downloadPDF(cv)
+CVControl -> CV : preparePDF()
+CV --> CVControl : pdfContent
+CVControl -> CV : exportPDF()
+CV --> CVControl : pdfFile
+CVControl --> UserActor : download PDF
+
+@enduml

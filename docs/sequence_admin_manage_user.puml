@@ -1,0 +1,29 @@
+@startuml
+title Sequence Diagram - Admin Manage User
+
+actor AdminActor as "Admin"
+participant "AuthControl" as AuthControl
+participant "Admin" as Admin
+participant "User" as User
+
+AdminActor -> AuthControl : manageUser(admin, user)
+AuthControl -> Admin : viewStatistics()
+Admin --> AuthControl : statisticsData
+AuthControl -> User : getStatus()
+User --> AuthControl : currentStatus
+AuthControl -> AuthControl : showUserStatus(user)
+AuthControl --> AdminActor : show user information
+
+alt activate user
+  AdminActor -> AuthControl : activateUser(user)
+  AuthControl -> User : setActiveStatus(true)
+  User --> AuthControl : userActivated
+  AuthControl --> AdminActor : show activation result
+else deactivate user
+  AdminActor -> AuthControl : deactivateUser(user)
+  AuthControl -> User : setActiveStatus(false)
+  User --> AuthControl : userDeactivated
+  AuthControl --> AdminActor : show deactivation result
+end
+
+@enduml

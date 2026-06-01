@@ -1,0 +1,44 @@
+@startuml
+title Analysis Class Diagram - View Scholarship Details
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+left to right direction
+
+class ScholarshipControl <<control>> {
+  -searchKeyword: string
+  --
+  +viewScholarshipList(): List<Scholarship>
+  +viewScholarshipDetails(scholarship: Scholarship): string
+  +showExpiredNotice(): void
+}
+
+class User <<entity>> {
+  -firstName: string
+  -lastName: string
+  -email: string
+  --
+  +updateProfile(firstName: string, lastName: string, phone: string): void
+}
+
+class Scholarship <<entity>> {
+  -name: string
+  -organization: string
+  -requirements: text
+  -deadline: date
+  -websiteUrl: string
+  --
+  +getDetails(): string
+  +isExpired(): boolean
+}
+
+ScholarshipControl ..> Scholarship : uses
+User "1" -- "0..*" Scholarship : views
+
+@enduml

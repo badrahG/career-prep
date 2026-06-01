@@ -1,0 +1,28 @@
+@startuml
+title Design Sequence Diagram - User Register
+
+actor GuestActor as "Guest"
+participant "AuthRouter\n<<boundary>>" as AuthRouter
+participant "AuthService\n<<control>>" as AuthService
+participant "User\n<<entity>>" as User
+
+GuestActor -> AuthRouter : register(user_data)
+AuthRouter -> AuthService : register(user_data)
+AuthService -> User : find(user_data.email)
+User --> AuthService : existingUser
+
+alt email already registered
+  AuthService --> AuthRouter : emailExists
+  AuthRouter --> GuestActor : show email already exists error
+else new email
+  AuthService -> AuthService : hash_password(user_data.password)
+  AuthService --> AuthService : hashedPassword
+
+  AuthService -> User : create(user_data)
+  User --> AuthService : newUser
+
+  AuthService --> AuthRouter : UserResponse
+  AuthRouter --> GuestActor : return UserResponse
+end
+
+@enduml

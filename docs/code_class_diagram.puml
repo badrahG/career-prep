@@ -1,0 +1,107 @@
+@startuml
+title Analysis Class Diagram
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam class {
+  BackgroundColor White
+  BorderColor #555555
+  ArrowColor #555555
+}
+
+left to right direction
+
+class User <<entity>> {
+  -firstName: string
+  -lastName: string
+  -email: string
+  -password: string
+  -phone: string
+  -isVerified: boolean
+  --
+  +checkPassword(password: string): boolean
+  +validateProfileData(): boolean
+  +updateProfile(firstName: string, lastName: string, phone: string): void
+  +getStatus(): string
+  +setActiveStatus(status: boolean): void
+}
+
+class Admin <<entity>> {
+  -permissionLevel: string
+  --
+  +viewStatistics(): void
+}
+
+class AuthControl <<control>> {
+  -requestStatus: string
+  --
+  +login(email: string, password: string): string
+  +editProfile(user: User, profileData: User): void
+  +showProfile(user: User): User
+  +showError(message: string): void
+  +manageUser(admin: Admin, user: User): void
+  +activateUser(user: User): void
+  +deactivateUser(user: User): void
+  +showUserStatus(user: User): string
+}
+
+class CVControl <<control>> {
+  -selectedTemplate: string
+  --
+  +createCV(user: User, cvData: CV): CV
+  +selectTemplate(cv: CV, templateName: string): void
+  +downloadPDF(cv: CV): void
+  +showPreview(cv: CV): void
+}
+
+class ScholarshipControl <<control>> {
+  -searchKeyword: string
+  --
+  +viewScholarshipList(): List<Scholarship>
+  +viewScholarshipDetails(scholarship: Scholarship): string
+  +showExpiredNotice(): void
+}
+
+class CV <<entity>> {
+  -name: string
+  -templateType: string
+  -personalInfo: text
+  -createdAt: datetime
+  --
+  +updateContent(personalInfo: text): void
+  +setTemplate(templateName: string): void
+  +generatePreview(): void
+  +preparePDF(): string
+  +exportPDF(): void
+}
+
+class Scholarship <<entity>> {
+  -name: string
+  -organization: string
+  -requirements: text
+  -deadline: date
+  -websiteUrl: string
+  --
+  +getDetails(): string
+  +isExpired(): boolean
+}
+
+Admin --|> User : inheritance
+
+User -- AuthControl : uses
+User -- CVControl : uses
+User -- ScholarshipControl : uses
+Admin -- AuthControl : uses
+
+AuthControl -- User : authenticates / updates / manages
+AuthControl -- Admin : checks permission
+CVControl -- CV : creates / manages
+ScholarshipControl -- Scholarship : views
+
+note bottom
+  Entity classes are connected directly only by inheritance.
+  User and Admin use control classes.
+  Control classes coordinate actions with entity classes.
+end note
+
+@enduml

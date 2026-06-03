@@ -478,7 +478,6 @@ async def serve_upload(file_path: str):
 
 
 @app.get("/api/health")
-@limiter.exempt
 def health_check():
     return {"status": "ok"}
 

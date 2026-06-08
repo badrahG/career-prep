@@ -227,7 +227,7 @@ export default function CVAnalysis() {
 
             {loading && (
               <p className="text-center text-xs text-gray-400 mt-3">
-                Claude AI таны CV-г уншиж байна... 10-20 секунд хүлээнэ үү
+                Claude AI таны CV загварыг уншиж байна... 10-20 секунд хүлээнэ үү
               </p>
             )}
           </div>

@@ -119,7 +119,7 @@ export default function AdminCVTemplates() {
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-200 dark:border-gray-700">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-gray-200">CV Загвар удирдлага</h1>
-            <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">CV-д ашиглах загваруудыг нэмэх, засах, идэвхжүүлэх.</p>
+            <p className="text-sm text-slate-600 dark:text-gray-400 mt-1">CV ашиглах загваруудыг нэмэх, засах, идэвхжүүлэх.</p>
           </div>
           <button
             onClick={openCreate}

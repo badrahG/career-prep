@@ -24,7 +24,8 @@
       "PowerShell(& \"C:\\\\career-platform\\\\backend\\\\venv\\\\Scripts\\\\pip.exe\" install groq)",
       "Bash(.\\\\venv\\\\Scripts\\\\python.exe -c \"from app.models.major import Major; print\\('Major model OK'\\)\")",
       "Bash(pip install *)",
-      "PowerShell(python -c \"import slowapi; print\\(slowapi.__version__\\)\")"
+      "PowerShell(python -c \"import slowapi; print\\(slowapi.__version__\\)\")",
+      "Bash(npx eslint *)"
     ]
   }
 }

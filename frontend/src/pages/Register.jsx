@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -183,8 +184,7 @@ export default function Register() {
 
                 <div>
                   <label className={labelCls}>Нууц үг</label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     name="password"
                     value={form.password}
                     onChange={handleChange}
@@ -211,8 +211,7 @@ export default function Register() {
 
                 <div>
                   <label className={labelCls}>Нууц үг давтах</label>
-                  <input
-                    type="password"
+                  <PasswordInput
                     name="password_confirm"
                     value={form.password_confirm}
                     onChange={handleChange}

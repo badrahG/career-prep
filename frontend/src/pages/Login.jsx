@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -107,8 +108,7 @@ export default function Login() {
                     Нууц үг мартсан уу?
                   </Link>
                 </div>
-                <input
-                  type="password"
+                <PasswordInput
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required

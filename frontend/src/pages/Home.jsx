@@ -164,7 +164,7 @@ export default function Home() {
               {/* Feature pills */}
               <div className="flex flex-wrap gap-2 mb-7">
                 {[
-                  { icon: "🎓", label: "Залуучуудын хөгжлийг дэмжих платформ" },
+                  { icon: "n", label: "Залуучуудын хөгжлийг дэмжих платформ" },
                 ].map(function (p, i) {
                   return (
                     <span key={i} className="inline-flex items-center gap-1.5 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-xs font-semibold px-3 py-1.5 rounded-full border border-violet-100 dark:border-violet-800">

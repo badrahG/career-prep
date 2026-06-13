@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import API from "../services/api";
+import PasswordInput from "../components/PasswordInput";
 
 export default function ResetPassword() {
   var [searchParams] = useSearchParams();
@@ -80,8 +81,7 @@ export default function ResetPassword() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-1.5">Шинэ нууц үг <span className="text-red-500">*</span></label>
-                <input
-                  type="password"
+                <PasswordInput
                   value={password}
                   onChange={function (e) { setPassword(e.target.value); }}
                   required
@@ -94,8 +94,7 @@ export default function ResetPassword() {
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-gray-300 mb-1.5">Нууц үг давтах <span className="text-red-500">*</span></label>
-                <input
-                  type="password"
+                <PasswordInput
                   value={confirm}
                   onChange={function (e) { setConfirm(e.target.value); }}
                   required

@@ -4,6 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "set-ip": "node scripts/set-api-ip.mjs",
+    "predev": "node scripts/set-api-ip.mjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import API from "../services/api";
 import toast from "react-hot-toast";
 import Layout from "../components/Layout";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Profile() {
   var { user, logout } = useAuth();
@@ -225,15 +226,15 @@ export default function Profile() {
           <form onSubmit={handlePasswordChange} className="p-6 space-y-4">
             <div>
               <label className={labelCls}>Хуучин нууц үг <span className="text-red-500">*</span></label>
-              <input type="password" value={pwForm.old_password} onChange={function (e) { updPw("old_password", e.target.value); }} placeholder="Одоогийн нууц үг" className={inputCls} autoComplete="current-password" />
+              <PasswordInput value={pwForm.old_password} onChange={function (e) { updPw("old_password", e.target.value); }} placeholder="Одоогийн нууц үг" className={inputCls} autoComplete="current-password" />
             </div>
             <div>
               <label className={labelCls}>Шинэ нууц үг <span className="text-red-500">*</span></label>
-              <input type="password" value={pwForm.new_password} onChange={function (e) { updPw("new_password", e.target.value); }} placeholder="8+ тэмдэгт" className={inputCls} autoComplete="new-password" />
+              <PasswordInput value={pwForm.new_password} onChange={function (e) { updPw("new_password", e.target.value); }} placeholder="8+ тэмдэгт" className={inputCls} autoComplete="new-password" />
             </div>
             <div>
               <label className={labelCls}>Шинэ нууц үг давтах <span className="text-red-500">*</span></label>
-              <input type="password" value={pwForm.confirm_password} onChange={function (e) { updPw("confirm_password", e.target.value); }} placeholder="Дахин оруулна уу" className={inputCls} autoComplete="new-password" />
+              <PasswordInput value={pwForm.confirm_password} onChange={function (e) { updPw("confirm_password", e.target.value); }} placeholder="Дахин оруулна уу" className={inputCls} autoComplete="new-password" />
             </div>
             <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700">
               <button type="submit" disabled={pwSaving} className="px-6 py-2.5 bg-gradient-to-r from-violet-500 to-indigo-500 text-white rounded-full text-sm font-semibold hover:shadow-md disabled:opacity-50 transition">
